@@ -51,14 +51,52 @@ namespace Heroes.Client.ConsoleApp
 
 		static async Task StartClient(ClientConfiguration config)
 		{
-			IClusterClient client = new ClientBuilder()
-				.UseConfiguration(config)
-				.Build();
+			IClusterClient client = null;
+			try
+			{
+				client = await InitializeWithRetriesAsync(config, 7);
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Orleans client initialization failed failed due to {ex}");
 
-			await client.Connect();
+				Console.ReadLine();
+			}
 
 			await AddHeroes(client);
 			GetHero(client);
+		}
+
+		private static async Task<IClusterClient> InitializeWithRetriesAsync(ClientConfiguration config, int initializeAttemptsBeforeFailing)
+		{
+			int attempt = 0;
+			IClusterClient client;
+			while (true)
+			{
+				try
+				{
+					//GrainClient.Initialize(config);
+					client = new ClientBuilder()
+						.UseConfiguration(config)
+						.Build();
+
+					await client.Connect();
+					Console.WriteLine("Client successfully connect to silo host");
+					break;
+				}
+				catch (SiloUnavailableException)
+				{
+					attempt++;
+					Console.WriteLine($"Attempt {attempt} of {initializeAttemptsBeforeFailing} failed to initialize the Orleans client.");
+					if (attempt > initializeAttemptsBeforeFailing)
+					{
+						throw;
+					}
+					Thread.Sleep(TimeSpan.FromSeconds(2));
+				}
+			}
+
+			return client;
 		}
 
 		private static void InitializeWithRetries(ClientConfiguration config, int initializeAttemptsBeforeFailing)
