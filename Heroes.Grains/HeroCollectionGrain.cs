@@ -1,4 +1,5 @@
-﻿using Heroes.Contracts.Grains;
+﻿using System;
+using Heroes.Contracts.Grains;
 using Orleans;
 using Orleans.Providers;
 using System.Collections.Generic;
@@ -12,33 +13,36 @@ namespace Heroes.Grains
 	{
 		public Task Set(Hero hero)
 		{
-			var heroGrain = GrainClient.GrainFactory.GetGrain<IHeroGrain>(hero.Key);
+			var heroGrain = GrainFactory.GetGrain<IHeroGrain>(hero.Key);
 			heroGrain.Set(hero);
-			State.Heroes.Add(hero);
+			State.HeroKeys.Add(hero.Key);
 			return WriteStateAsync();
 		}
 
-		public Task SetAll(params Hero[] heroes)
+		public async Task SetAll(params Hero[] heroes)
 		{
+			var tasks = new List<Task>();
 			foreach (var hero in heroes)
 			{
-				var heroGrain = GrainClient.GrainFactory.GetGrain<IHeroGrain>(hero.Key);
-				heroGrain.Set(hero);
-				State.Heroes.Add(hero);
+				var heroGrain = GrainFactory.GetGrain<IHeroGrain>(hero.Key);
+				tasks.Add(heroGrain.Set(hero));
+				State.HeroKeys.Add(hero.Key);
 			}
+			await Task.WhenAll(tasks);
+			await WriteStateAsync();
+		}
 
-			return WriteStateAsync();
+		public override Task OnActivateAsync()
+		{
+			// todo: reload state
+			Console.WriteLine("HeroCollectionGrain :: OnActivateAsync :: triggered");
+			return base.OnActivateAsync();
 		}
 
 		public Task<List<Hero>> GetAll()
 		{
-			return Task.FromResult(State.Heroes);
+			return Task.FromResult(new List<Hero>());
 		}
 
-		public Task<Hero> GetById(string key)
-		{
-			var hero = State.Heroes.FirstOrDefault(x => x.Key == key);
-			return Task.FromResult(hero);
-		}
 	}
 }

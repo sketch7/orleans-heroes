@@ -4,6 +4,7 @@ using Orleans.Runtime;
 using Orleans.Runtime.Configuration;
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Heroes.Client.ConsoleApp
 {
@@ -12,9 +13,11 @@ namespace Heroes.Client.ConsoleApp
 		static int Main(string[] args)
 		{
 			var config = ClientConfiguration.LocalhostSilo();
+			// StartClient(config).Wait();
+
 			try
 			{
-				InitializeWithRetries(config, 5);
+				InitializeWithRetries(config, 7);
 			}
 			catch (Exception ex)
 			{
@@ -24,12 +27,30 @@ namespace Heroes.Client.ConsoleApp
 				return 1;
 			}
 
-			AddHeroes();
-			GetHero();
+			DoServiceWork();
+
 
 			Console.WriteLine("Press Enter to terminate...");
 			Console.ReadLine();
 			return 0;
+		}
+
+		private static async void DoServiceWork()
+		{
+			await AddHeroes();
+			GetHero();
+		}
+
+		static async Task StartClient(ClientConfiguration config)
+		{
+			IClusterClient client = new ClientBuilder()
+				.UseConfiguration(config)
+				.Build();
+
+			await client.Connect();
+
+			//await AddHeroes(client);
+			//GetHero(client);
 		}
 
 		private static void InitializeWithRetries(ClientConfiguration config, int initializeAttemptsBeforeFailing)
@@ -69,14 +90,31 @@ namespace Heroes.Client.ConsoleApp
 			Console.WriteLine($"{hero.Name} is awaken!");
 		}
 
-		private static async void AddHeroes()
+		private static Task AddHeroes()
 		{
 			var list = GrainClient.GrainFactory.GetGrain<IHeroCollectionGrain>(0);
-			await list.SetAll(new Hero { Name = "Rengar", Key = "rengar" },
+			return list.SetAll(new Hero { Name = "Rengar", Key = "rengar" },
 				new Hero { Name = "Kha 'Zix", Key = "kha-zix" },
 				new Hero { Name = "Singed", Key = "singed" }
-				);
+			);
 		}
+
+
+		//private static async void GetHero(IClusterClient client)
+		//{
+		//	var grain = client.GetGrain<IHeroGrain>("rengar");
+		//	var hero = await grain.Get();
+		//	Console.WriteLine($"{hero.Name} is awaken!");
+		//}
+
+		//private static Task AddHeroes(IClusterClient client)
+		//{
+		//	var list = client.GetGrain<IHeroCollectionGrain>(0);
+		//	return list.SetAll(new Hero { Name = "Rengar", Key = "rengar" },
+		//		new Hero { Name = "Kha 'Zix", Key = "kha-zix" },
+		//		new Hero { Name = "Singed", Key = "singed" }
+		//		);
+		//}
 
 	}
 }

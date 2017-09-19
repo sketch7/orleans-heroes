@@ -22,7 +22,7 @@ namespace Heroes.Grains
 
 		public override Task OnActivateAsync()
 		{
-			Console.WriteLine("OnActivateAsync :: triggered");
+			Console.WriteLine("HeroGrain :: OnActivateAsync :: triggered");
 			return Task.CompletedTask;
 		}
 
