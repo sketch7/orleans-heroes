@@ -34,6 +34,7 @@ namespace Heroes.Grains
 
 		public override Task OnActivateAsync()
 		{
+			State.HeroKeys = new List<string>();
 			// todo: reload state
 			Console.WriteLine("HeroCollectionGrain :: OnActivateAsync :: triggered");
 			return base.OnActivateAsync();
