@@ -23,10 +23,11 @@ namespace Heroes.Grains
 		public override Task OnActivateAsync()
 		{
 			Console.WriteLine("HeroGrain :: OnActivateAsync :: triggered");
-			return Task.WhenAll(
-				this.ReadStateAsync(),
-				base.OnActivateAsync()
-			);
+			return ReadStateAsync();
+			//return Task.WhenAll(
+			//	this.ReadStateAsync(),
+			//	base.OnActivateAsync()
+			//);
 		}
 
 		public override Task OnDeactivateAsync()
