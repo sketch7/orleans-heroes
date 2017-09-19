@@ -13,8 +13,23 @@ namespace Heroes.Client.ConsoleApp
 		static int Main(string[] args)
 		{
 			var config = ClientConfiguration.LocalhostSilo();
-			// StartClient(config).Wait();
+			StartClient(config).Wait();
 
+			//var taskHasErrors = UseOldImplementation(config);
+			//taskHasErrors.Wait();
+
+			//if (taskHasErrors.Result)
+			//{
+			//	return 1;
+			//}
+
+			Console.WriteLine("Press Enter to terminate...");
+			Console.ReadLine();
+			return 0;
+		}
+
+		private static async Task<bool> UseOldImplementation(ClientConfiguration config)
+		{
 			try
 			{
 				InitializeWithRetries(config, 7);
@@ -24,21 +39,14 @@ namespace Heroes.Client.ConsoleApp
 				Console.WriteLine($"Orleans client initialization failed failed due to {ex}");
 
 				Console.ReadLine();
-				return 1;
+
+				return true;
 			}
 
-			DoServiceWork();
-
-
-			Console.WriteLine("Press Enter to terminate...");
-			Console.ReadLine();
-			return 0;
-		}
-
-		private static async void DoServiceWork()
-		{
 			await AddHeroes();
 			GetHero();
+
+			return false;
 		}
 
 		static async Task StartClient(ClientConfiguration config)
@@ -49,8 +57,8 @@ namespace Heroes.Client.ConsoleApp
 
 			await client.Connect();
 
-			//await AddHeroes(client);
-			//GetHero(client);
+			await AddHeroes(client);
+			GetHero(client);
 		}
 
 		private static void InitializeWithRetries(ClientConfiguration config, int initializeAttemptsBeforeFailing)
@@ -80,7 +88,7 @@ namespace Heroes.Client.ConsoleApp
 		private static async void AddHero()
 		{
 			var hero = GrainClient.GrainFactory.GetGrain<IHeroGrain>("rengar");
-			await hero.Set(new Hero { Name = "Rengar", Key = "rengar" });
+			await hero.Set(new Hero { Name = "Rengar", Key = "rengar", Role = HeroRoleType.Assassin });
 		}
 
 		private static async void GetHero()
@@ -93,28 +101,28 @@ namespace Heroes.Client.ConsoleApp
 		private static Task AddHeroes()
 		{
 			var list = GrainClient.GrainFactory.GetGrain<IHeroCollectionGrain>(0);
-			return list.SetAll(new Hero { Name = "Rengar", Key = "rengar" },
-				new Hero { Name = "Kha 'Zix", Key = "kha-zix" },
-				new Hero { Name = "Singed", Key = "singed" }
+			return list.SetAll(new Hero { Name = "Rengar", Key = "rengar", Role = HeroRoleType.Assassin },
+				new Hero { Name = "Kha 'Zix", Key = "kha-zix", Role = HeroRoleType.Assassin },
+				new Hero { Name = "Singed", Key = "singed", Role = HeroRoleType.Tank }
 			);
 		}
 
 
-		//private static async void GetHero(IClusterClient client)
-		//{
-		//	var grain = client.GetGrain<IHeroGrain>("rengar");
-		//	var hero = await grain.Get();
-		//	Console.WriteLine($"{hero.Name} is awaken!");
-		//}
+		private static async void GetHero(IClusterClient client)
+		{
+			var grain = client.GetGrain<IHeroGrain>("rengar");
+			var hero = await grain.Get();
+			Console.WriteLine($"{hero.Name} is awaken!");
+		}
 
-		//private static Task AddHeroes(IClusterClient client)
-		//{
-		//	var list = client.GetGrain<IHeroCollectionGrain>(0);
-		//	return list.SetAll(new Hero { Name = "Rengar", Key = "rengar" },
-		//		new Hero { Name = "Kha 'Zix", Key = "kha-zix" },
-		//		new Hero { Name = "Singed", Key = "singed" }
-		//		);
-		//}
+		private static Task AddHeroes(IClusterClient client)
+		{
+			var list = client.GetGrain<IHeroCollectionGrain>(0);
+			return list.SetAll(new Hero { Name = "Rengar", Key = "rengar", Role = HeroRoleType.Assassin },
+				new Hero { Name = "Kha 'Zix", Key = "kha-zix", Role = HeroRoleType.Assassin },
+				new Hero { Name = "Singed", Key = "singed", Role = HeroRoleType.Tank }
+				);
+		}
 
 	}
 }

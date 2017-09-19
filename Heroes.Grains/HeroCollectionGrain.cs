@@ -28,8 +28,10 @@ namespace Heroes.Grains
 				tasks.Add(heroGrain.Set(hero));
 				State.HeroKeys.Add(hero.Key);
 			}
+
+			tasks.Add(WriteStateAsync());
 			await Task.WhenAll(tasks);
-			await WriteStateAsync();
+			//await WriteStateAsync();
 		}
 
 		public override Task OnActivateAsync()
@@ -37,7 +39,10 @@ namespace Heroes.Grains
 			State.HeroKeys = new List<string>();
 			// todo: reload state
 			Console.WriteLine("HeroCollectionGrain :: OnActivateAsync :: triggered");
-			return base.OnActivateAsync();
+			return Task.WhenAll(
+				this.ReadStateAsync(),
+				base.OnActivateAsync()
+			);
 		}
 
 		public Task<List<Hero>> GetAll()

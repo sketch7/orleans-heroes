@@ -1,15 +1,20 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+VisualStudioVersion = 15.0.26730.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Heroes.Grains", "Heroes.Grains\Heroes.Grains.csproj", "{812E3337-C3B3-4232-B546-22216DFC5D2E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Heroes.Contracts.Grains", "Heroes.Contracts.Grains\Heroes.Contracts.Grains.csproj", "{663092C6-1939-4E55-AEFA-2CF731DD21D3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Heroes.Client.ConsoleApp", "Heroes.Client.ConsoleApp\Heroes.Client.ConsoleApp.csproj", "{E41408EF-E16E-48F4-9F82-752DD8F3DD48}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Heroes.Client.ConsoleApp", "Heroes.Client.ConsoleApp\Heroes.Client.ConsoleApp.csproj", "{E41408EF-E16E-48F4-9F82-752DD8F3DD48}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Heroes.SiloHost.ConsoleApp", "Heroes.SiloHost.ConsoleApp\Heroes.SiloHost.ConsoleApp.csproj", "{8FAC33D1-54B1-473F-BE9C-2777F71F1D7A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Heroes.SiloHost.ConsoleApp", "Heroes.SiloHost.ConsoleApp\Heroes.SiloHost.ConsoleApp.csproj", "{8FAC33D1-54B1-473F-BE9C-2777F71F1D7A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Root", "Root", "{C5911799-6F6D-4CDA-B2AB-EEFD9D54A473}"
+	ProjectSection(SolutionItems) = preProject
+		readme.md = readme.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

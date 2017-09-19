@@ -26,6 +26,8 @@ namespace Heroes.SiloHost.ConsoleApp
 			// define the cluster configuration
 			var config = ClusterConfiguration.LocalhostPrimarySilo();
 			config.AddMemoryStorageProvider();
+			//config.AddMemoryStorageProvider("Default");
+
 			// config.Defaults.DefaultTraceLevel = Orleans.Runtime.Severity.Verbose3;
 
 			hostWrapper = new OrleansHostWrapper(config, args);

@@ -4,9 +4,11 @@ using System.Threading.Tasks;
 
 namespace Heroes.Contracts.Grains
 {
-	public class HeroCollectionState
+	public class HeroCollectionState : IGrainState
 	{
 		public List<string> HeroKeys { get; set; }
+		public object State { get; set; }
+		public string ETag { get; set; }
 	}
 
 	public interface IHeroCollectionGrain : IGrainWithIntegerKey
