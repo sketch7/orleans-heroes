@@ -1,4 +1,5 @@
-﻿using Orleans;
+﻿using System.Diagnostics;
+using Orleans;
 using System.Threading.Tasks;
 
 namespace Heroes.Contracts.Grains
@@ -16,11 +17,15 @@ namespace Heroes.Contracts.Grains
 		Task<Hero> Get();
 	}
 
+	[DebuggerDisplay("{DebuggerDisplay,nq}")]
 	public class Hero
 	{
+		protected string DebuggerDisplay => $"Key: '{Key}', Name: '{Name}', Role: {Role}";
 		public string Key { get; set; }
 		public string Name { get; set; }
 		public HeroRoleType Role { get; set; }
+
+		public override string ToString() => DebuggerDisplay;
 	}
 
 	public enum HeroRoleType

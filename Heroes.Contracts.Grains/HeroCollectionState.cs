@@ -14,6 +14,6 @@ namespace Heroes.Contracts.Grains
 	public interface IHeroCollectionGrain : IGrainWithIntegerKey
 	{
 		Task Set(params Hero[] heroes);
-		Task<List<Hero>> GetAll(HeroRoleType? role);
+		Task<List<Hero>> GetAll(HeroRoleType? role = null);
 	}
 }

@@ -65,6 +65,7 @@ namespace Heroes.Client.ConsoleApp
 
 			await AddHeroes(client);
 			GetHero(client);
+			GetAll(client);
 		}
 
 		private static async Task<IClusterClient> InitializeWithRetriesAsync(ClientConfiguration config, int initializeAttemptsBeforeFailing)
@@ -157,9 +158,20 @@ namespace Heroes.Client.ConsoleApp
 		{
 			var list = client.GetGrain<IHeroCollectionGrain>(0);
 			return list.Set(new Hero { Name = "Rengar", Key = "rengar", Role = HeroRoleType.Assassin },
-				new Hero { Name = "Kha 'Zix", Key = "kha-zix", Role = HeroRoleType.Assassin },
-				new Hero { Name = "Singed", Key = "singed", Role = HeroRoleType.Tank }
+				new Hero { Name = "Kha 'Zix", Key = "kha-zix", Role = HeroRoleType.Support },
+				new Hero { Name = "Singed", Key = "singed", Role = HeroRoleType.Tank },
+				new Hero { Name = "Kha 'Zix", Key = "kha-zix", Role = HeroRoleType.Assassin }
 				);
+		}
+
+		private static async void GetAll(IClusterClient client)
+		{
+			var grain = client.GetGrain<IHeroCollectionGrain>(0);
+			var heroes = await grain.GetAll();
+
+			foreach (var hero in heroes){
+				Console.WriteLine(hero);
+			}
 		}
 
 	}

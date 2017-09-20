@@ -9,6 +9,8 @@ namespace Heroes.Grains
 	[StorageProvider(ProviderName = "MemoryStore")]
 	public class HeroGrain : Grain<HeroState>, IHeroGrain
 	{
+		private const string Source = nameof(HeroGrain);
+
 		public Task Set(Hero hero)
 		{
 			State.Hero = hero;
@@ -22,8 +24,9 @@ namespace Heroes.Grains
 
 		public override Task OnActivateAsync()
 		{
-			Console.WriteLine("HeroGrain :: OnActivateAsync :: triggered");
-			return ReadStateAsync();
+			Console.WriteLine($"{Source} :: OnActivateAsync PK {GetPrimaryKey()}");
+			return Task.CompletedTask;
+
 			//return Task.WhenAll(
 			//	this.ReadStateAsync(),
 			//	base.OnActivateAsync()
@@ -32,7 +35,7 @@ namespace Heroes.Grains
 
 		public override Task OnDeactivateAsync()
 		{
-			Console.WriteLine("OnDeactivateAsync :: triggered");
+			Console.WriteLine($"{Source} :: OnDeactivateAsync PK {GetPrimaryKey()}");
 			return Task.CompletedTask;
 		}
 
