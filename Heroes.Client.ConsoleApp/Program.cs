@@ -139,7 +139,7 @@ namespace Heroes.Client.ConsoleApp
 		private static Task AddHeroes()
 		{
 			var list = GrainClient.GrainFactory.GetGrain<IHeroCollectionGrain>(0);
-			return list.SetAll(new Hero { Name = "Rengar", Key = "rengar", Role = HeroRoleType.Assassin },
+			return list.Set(new Hero { Name = "Rengar", Key = "rengar", Role = HeroRoleType.Assassin },
 				new Hero { Name = "Kha 'Zix", Key = "kha-zix", Role = HeroRoleType.Assassin },
 				new Hero { Name = "Singed", Key = "singed", Role = HeroRoleType.Tank }
 			);
@@ -156,7 +156,7 @@ namespace Heroes.Client.ConsoleApp
 		private static Task AddHeroes(IClusterClient client)
 		{
 			var list = client.GetGrain<IHeroCollectionGrain>(0);
-			return list.SetAll(new Hero { Name = "Rengar", Key = "rengar", Role = HeroRoleType.Assassin },
+			return list.Set(new Hero { Name = "Rengar", Key = "rengar", Role = HeroRoleType.Assassin },
 				new Hero { Name = "Kha 'Zix", Key = "kha-zix", Role = HeroRoleType.Assassin },
 				new Hero { Name = "Singed", Key = "singed", Role = HeroRoleType.Tank }
 				);

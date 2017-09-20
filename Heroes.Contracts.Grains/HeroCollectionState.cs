@@ -6,15 +6,14 @@ namespace Heroes.Contracts.Grains
 {
 	public class HeroCollectionState : IGrainState
 	{
-		public List<string> HeroKeys { get; set; }
+		public Dictionary<string, HeroRoleType> HeroKeys { get; set; }
 		public object State { get; set; }
 		public string ETag { get; set; }
 	}
 
 	public interface IHeroCollectionGrain : IGrainWithIntegerKey
 	{
-		Task Set(Hero hero);
-		Task SetAll(params Hero[] heroes);
-		Task<List<Hero>> GetAll();
+		Task Set(params Hero[] heroes);
+		Task<List<Hero>> GetAll(HeroRoleType? role);
 	}
 }

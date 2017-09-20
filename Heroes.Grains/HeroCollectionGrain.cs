@@ -1,7 +1,7 @@
-﻿using System;
-using Heroes.Contracts.Grains;
+﻿using Heroes.Contracts.Grains;
 using Orleans;
 using Orleans.Providers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,22 +11,23 @@ namespace Heroes.Grains
 	[StorageProvider(ProviderName = "MemoryStore")]
 	public class HeroCollectionGrain : Grain<HeroCollectionState>, IHeroCollectionGrain
 	{
-		public Task Set(Hero hero)
-		{
-			var heroGrain = GrainFactory.GetGrain<IHeroGrain>(hero.Key);
-			heroGrain.Set(hero);
-			State.HeroKeys.Add(hero.Key);
-			return WriteStateAsync();
-		}
-
-		public async Task SetAll(params Hero[] heroes)
+		public async Task Set(params Hero[] heroes)
 		{
 			var tasks = new List<Task>();
 			foreach (var hero in heroes)
 			{
 				var heroGrain = GrainFactory.GetGrain<IHeroGrain>(hero.Key);
 				tasks.Add(heroGrain.Set(hero));
-				State.HeroKeys.Add(hero.Key);
+
+				if (State.HeroKeys.ContainsKey(hero.Key))
+				{
+					State.HeroKeys[hero.Key] = hero.Role;
+				}
+				else
+				{
+					State.HeroKeys.Add(hero.Key, hero.Role);
+				}
+
 			}
 
 			tasks.Add(WriteStateAsync());
@@ -36,7 +37,7 @@ namespace Heroes.Grains
 
 		public override Task OnActivateAsync()
 		{
-			State.HeroKeys = new List<string>();
+			State.HeroKeys = new Dictionary<string, HeroRoleType>();
 			// todo: reload state
 			Console.WriteLine("HeroCollectionGrain :: OnActivateAsync :: triggered");
 			return Task.WhenAll(
@@ -45,8 +46,12 @@ namespace Heroes.Grains
 			);
 		}
 
-		public Task<List<Hero>> GetAll()
+		public Task<List<Hero>> GetAll(HeroRoleType? role)
 		{
+			var heroIds = State.HeroKeys.Where(x => x.Value == role)
+				.Select(x => new { key = x.Key, value = x.Value })
+				.ToList();
+
 			return Task.FromResult(new List<Hero>());
 		}
 
