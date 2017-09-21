@@ -15,16 +15,16 @@ namespace Heroes.Grains
 
 		public async Task Set(params Hero[] heroes)
 		{
-			var tasks = new List<Task>();
+			var promises = new List<Task>();
 			foreach (var hero in heroes)
 			{
 				var heroGrain = GrainFactory.GetHeroGrain(hero.Key);
-				tasks.Add(heroGrain.Set(hero));
+				promises.Add(heroGrain.Set(hero));
 
 				State.HeroKeys[hero.Key] = hero.Role;
 			}
-			tasks.Add(WriteStateAsync());
-			await Task.WhenAll(tasks);
+			promises.Add(WriteStateAsync());
+			await Task.WhenAll(promises);
 		}
 
 		public override Task OnActivateAsync()
@@ -45,14 +45,14 @@ namespace Heroes.Grains
 				.Select(x => x.Key)
 				.ToList();
 
-			var tasks = new List<Task<Hero>>();
+			var promises = new List<Task<Hero>>();
 			foreach (var heroId in heroIds)
 			{
 				var heroGrain = GrainFactory.GetHeroGrain(heroId);
-				tasks.Add(heroGrain.Get());
+				promises.Add(heroGrain.Get());
 			}
 
-			var result = await Task.WhenAll(tasks);
+			var result = await Task.WhenAll(promises);
 			return result.ToList();
 		}
 

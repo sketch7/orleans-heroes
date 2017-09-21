@@ -26,11 +26,6 @@ namespace Heroes.Grains
 		{
 			Console.WriteLine($"{Source} :: OnActivateAsync PK {GetPrimaryKey()}");
 			return Task.CompletedTask;
-
-			//return Task.WhenAll(
-			//	this.ReadStateAsync(),
-			//	base.OnActivateAsync()
-			//);
 		}
 
 		public override Task OnDeactivateAsync()
