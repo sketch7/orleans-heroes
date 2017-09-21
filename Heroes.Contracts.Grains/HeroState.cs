@@ -1,5 +1,6 @@
-﻿using System.Diagnostics;
-using Orleans;
+﻿using Orleans;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Heroes.Contracts.Grains
@@ -24,6 +25,7 @@ namespace Heroes.Contracts.Grains
 		public string Key { get; set; }
 		public string Name { get; set; }
 		public HeroRoleType Role { get; set; }
+		public HashSet<string> Abilities { get; set; }
 
 		public override string ToString() => DebuggerDisplay;
 	}

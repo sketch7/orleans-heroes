@@ -1,30 +1,31 @@
 ﻿using Heroes.Contracts.Grains;
+using Heroes.Contracts.Grains.Mocks;
 using Orleans;
-using Orleans.Providers;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Heroes.Grains
 {
-	[StorageProvider(ProviderName = "MemoryStore")]
-	public class HeroGrain : Grain<HeroState>, IHeroGrain
+	public class HeroStatsGrain : Grain<HeroStatsState>, IHeroStatsGrain
 	{
-		private const string Source = nameof(HeroGrain);
+		private const string Source = nameof(HeroStatsGrain);
 
-		public Task Set(Hero hero)
+		public Task Set(HeroStats hero)
 		{
-			State.Hero = hero;
+			State.HeroStats = hero;
 			return WriteStateAsync();
 		}
 
-		public Task<Hero> Get()
+		public Task<HeroStats> Get()
 		{
-			return Task.FromResult(State.Hero);
+			return Task.FromResult(State.HeroStats);
 		}
 
 		public override Task OnActivateAsync()
 		{
 			Console.WriteLine($"{Source} :: OnActivateAsync PK {this.GetPrimaryKeyString()}");
+			State.HeroStats = MockDataService.GetHeroStats().SingleOrDefault(x => x.HeroId == this.GetPrimaryKeyString());
 			return Task.CompletedTask;
 		}
 
@@ -33,6 +34,5 @@ namespace Heroes.Grains
 			Console.WriteLine($"{Source} :: OnDeactivateAsync PK {this.GetPrimaryKeyString()}");
 			return Task.CompletedTask;
 		}
-
 	}
 }

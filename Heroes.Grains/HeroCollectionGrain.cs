@@ -13,7 +13,7 @@ namespace Heroes.Grains
 	{
 		private const string Source = nameof(HeroCollectionGrain);
 
-		public async Task Set(params Hero[] heroes)
+		public async Task Set(List<Hero> heroes)
 		{
 			var promises = new List<Task>();
 			foreach (var hero in heroes)
