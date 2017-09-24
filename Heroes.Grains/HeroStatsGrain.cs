@@ -1,5 +1,5 @@
-﻿using Heroes.Contracts.Grains;
-using Heroes.Contracts.Grains.Mocks;
+﻿using Heroes.Contracts.Grains.Mocks;
+using Heroes.Contracts.Grains.Stats;
 using Orleans;
 using System;
 using System.Linq;

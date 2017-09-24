@@ -1,4 +1,4 @@
-﻿using Heroes.Contracts.Grains;
+﻿using Heroes.Contracts.Grains.Heroes;
 using Heroes.Contracts.Grains.Mocks;
 using Orleans;
 using System;

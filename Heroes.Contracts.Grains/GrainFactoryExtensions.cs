@@ -1,4 +1,6 @@
-﻿using Orleans;
+﻿using Heroes.Contracts.Grains.Heroes;
+using Heroes.Contracts.Grains.Stats;
+using Orleans;
 
 namespace Heroes.Contracts.Grains
 {

@@ -2,11 +2,13 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace Heroes.Contracts.Grains
+namespace Heroes.Contracts.Grains.Stats
 {
-	public class HeroStatsState
+	public class HeroStatsState : IGrainState
 	{
 		public HeroStats HeroStats { get; set; }
+		public object State { get; set; }
+		public string ETag { get; set; }
 	}
 
 	public interface IHeroStatsGrain : IGrainWithStringKey

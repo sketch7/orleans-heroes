@@ -1,13 +1,15 @@
-﻿using System.Collections.Generic;
-using Orleans;
+﻿using Orleans;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace Heroes.Contracts.Grains
+namespace Heroes.Contracts.Grains.Heroes
 {
-	public class HeroAbilitiesState
+	public class HeroAbilitiesState : IGrainState
 	{
 		public List<HeroAbility> HeroAbilities { get; set; }
+		public object State { get; set; }
+		public string ETag { get; set; }
 	}
 
 	public interface IHeroAbilitiesGrain : IGrainWithStringKey

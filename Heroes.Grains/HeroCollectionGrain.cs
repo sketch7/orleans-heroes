@@ -1,4 +1,5 @@
 ﻿using Heroes.Contracts.Grains;
+using Heroes.Contracts.Grains.Heroes;
 using Orleans;
 using Orleans.Providers;
 using System;

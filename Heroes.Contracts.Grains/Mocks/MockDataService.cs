@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Heroes.Contracts.Grains.Heroes;
+using Heroes.Contracts.Grains.Stats;
+using System.Collections.Generic;
 
 namespace Heroes.Contracts.Grains.Mocks
 {

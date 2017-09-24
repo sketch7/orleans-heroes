@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Heroes.Contracts.Grains
+namespace Heroes.Contracts.Grains.Heroes
 {
 	public class HeroCollectionState : IGrainState
 	{

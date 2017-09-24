@@ -1,13 +1,11 @@
-﻿using Heroes.Contracts.Grains;
-using Heroes.Contracts.Grains.Mocks;
+﻿using Heroes.Contracts.Grains.Mocks;
 using Orleans;
 using Orleans.Runtime;
 using Orleans.Runtime.Configuration;
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Heroes.Contracts.Grains.Heroes;
 
 namespace Heroes.Client.ConsoleApp
 {
@@ -91,7 +89,7 @@ namespace Heroes.Client.ConsoleApp
 		{
 			var grain = client.GetGrain<IHeroCollectionGrain>(0);
 			var heroes = await grain.GetAll();
-		
+
 			foreach (var hero in heroes)
 			{
 				Console.WriteLine(hero);
