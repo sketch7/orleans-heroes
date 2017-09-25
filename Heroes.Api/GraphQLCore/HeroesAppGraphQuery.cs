@@ -5,19 +5,20 @@ using Orleans;
 
 namespace Heroes.Api.GraphQLCore.Queries
 {
-    public class HeroesAppGraphQuery : ObjectGraphType<object>
-    {
-        public HeroesAppGraphQuery(IClusterClient clusterClient)
-        {
-            Name = "Hero Query";
-            Field<HeroType>(
-                name: "hero",
-                description: "hero full object",
-                arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "key", Description = "Unique key for specific hero"}
-                    ),
-                resolve: context => clusterClient.GetHeroGrain(context.GetArgument<string>("id"))
-                );
-        }
-    }
+	public class HeroesAppGraphQuery : ObjectGraphType
+	{
+		public HeroesAppGraphQuery(IClusterClient clusterClient)
+		{
+			Name = "HeroQuery";
+			Field<HeroType>(
+				name: "hero",
+				description: "hero full object",
+				//arguments: new QueryArguments(
+				//	new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "key", Description = "Unique key for specific hero" }
+				//	),
+				//resolve: context => clusterClient.GetHeroGrain(context.GetArgument<string>("key")).Get()
+				resolve: context => clusterClient.GetHeroGrain("rengar").Get()
+				);
+		}
+	}
 }
