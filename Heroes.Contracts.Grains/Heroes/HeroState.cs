@@ -32,11 +32,11 @@ namespace Heroes.Contracts.Grains.Heroes
 
 	public enum HeroRoleType
 	{
-		Assassin,
-		Fighter,
-		Mage,
-		Support,
-		Tank,
-		Marksman
+		Assassin = 1,
+		Fighter = 2,
+		Mage = 3,
+		Support = 4,
+		Tank = 5,
+		Marksman = 6
 	}
 }

@@ -2,6 +2,7 @@
 using GraphQL.Types;
 using Heroes.Api.GraphQLCore.Types;
 using Heroes.Contracts.Grains;
+using Heroes.Contracts.Grains.Heroes;
 using Orleans;
 
 namespace Heroes.Api.GraphQLCore.Queries
@@ -23,7 +24,23 @@ namespace Heroes.Api.GraphQLCore.Queries
 					return grain.Get();
 				}
 				//resolve: context => clusterClient.GetHeroGrain("rengar").Get()
-				);
+			);
+
+			Field<ListGraphType<HeroType>>(
+				name: "heroes",
+				description: "heroes list",
+				arguments: new QueryArguments(
+					new QueryArgument<HeroRoleEnum> { Name = "role", Description = "filtering heroes by role." }
+				),
+				resolve: context =>
+				{
+					var grain = clusterClient.GetHeroCollectionGrain();
+					var role = context.GetArgument<int?>("role");
+					var roleType = (HeroRoleType?) role;
+					
+					return grain.GetAll(roleType);
+				}
+			);
 		}
 	}
 }
