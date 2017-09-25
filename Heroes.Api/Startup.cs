@@ -1,7 +1,4 @@
-﻿using GraphQl.AspNetCore;
-using GraphQL.Types;
-using Heroes.Api.GraphQLCore;
-using Heroes.Api.GraphQLCore.Queries;
+﻿using Heroes.Api.GraphQLCore;
 using Heroes.Api.Infrastructure;
 using Heroes.Clients;
 using Heroes.Contracts.Grains.Core;
@@ -10,7 +7,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Orleans;
 
 namespace Heroes.Api
 {
@@ -37,7 +33,6 @@ namespace Heroes.Api
 			IApplicationBuilder app,
 			IHostingEnvironment env,
 			IWarmUpClient warmUpClient,
-			IClusterClient clusterClient,
 			ILoggerFactory loggerFactory)
 		{
 			loggerFactory.AddConsole(Configuration.GetSection("Logging"));
@@ -46,11 +41,6 @@ namespace Heroes.Api
 			warmUpClient.Initialize();
 
 			app.SetGraphQLMiddleWare();
-			//app.UseGraphQl(options =>
-			//{
-			//	options.GraphApiUrl = "/graphql";
-			//	options.RootGraphType = new HeroesAppGraphQuery(clusterClient);
-			//});
 
 			if (env.IsDevelopment())
 			{
