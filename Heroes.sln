@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+VisualStudioVersion = 15.0.26730.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Heroes.Grains", "Heroes.Grains\Heroes.Grains.csproj", "{812E3337-C3B3-4232-B546-22216DFC5D2E}"
 EndProject
@@ -11,17 +11,21 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Heroes.Client.ConsoleApp", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Heroes.SiloHost.ConsoleApp", "Heroes.SiloHost.ConsoleApp\Heroes.SiloHost.ConsoleApp.csproj", "{8FAC33D1-54B1-473F-BE9C-2777F71F1D7A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Root", "Root", "{C5911799-6F6D-4CDA-B2AB-EEFD9D54A473}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1. Root", "1. Root", "{C5911799-6F6D-4CDA-B2AB-EEFD9D54A473}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\cpm\odin.gaming\NuGet.Config = ..\..\cpm\odin.gaming\NuGet.Config
+		NuGet.Config = NuGet.Config
 		readme.md = readme.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Heroes.Clients", "Heroes.Clients\Heroes.Clients.csproj", "{886FD2D5-5C53-46CB-A609-7D71A4F191DD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Heroes.Clients", "Heroes.Clients\Heroes.Clients.csproj", "{886FD2D5-5C53-46CB-A609-7D71A4F191DD}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Clients", "Clients", "{3C40A18B-D47B-4671-9994-D2E52B6DFA1D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2. Clients", "2. Clients", "{3C40A18B-D47B-4671-9994-D2E52B6DFA1D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Heroes.Api", "Heroes.Api\Heroes.Api.csproj", "{6D00836C-60F1-49CC-9621-A0063653BCD2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Heroes.Api", "Heroes.Api\Heroes.Api.csproj", "{6D00836C-60F1-49CC-9621-A0063653BCD2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3. Business Logic", "3. Business Logic", "{27052FED-86FE-4715-8E93-4C09886ED6DF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4. SiloHost", "4. SiloHost", "{65507135-64DE-4BD5-AB2D-A0CC5455FD97}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -58,7 +62,11 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{812E3337-C3B3-4232-B546-22216DFC5D2E} = {27052FED-86FE-4715-8E93-4C09886ED6DF}
+		{663092C6-1939-4E55-AEFA-2CF731DD21D3} = {27052FED-86FE-4715-8E93-4C09886ED6DF}
 		{E41408EF-E16E-48F4-9F82-752DD8F3DD48} = {3C40A18B-D47B-4671-9994-D2E52B6DFA1D}
+		{8FAC33D1-54B1-473F-BE9C-2777F71F1D7A} = {65507135-64DE-4BD5-AB2D-A0CC5455FD97}
+		{886FD2D5-5C53-46CB-A609-7D71A4F191DD} = {27052FED-86FE-4715-8E93-4C09886ED6DF}
 		{6D00836C-60F1-49CC-9621-A0063653BCD2} = {3C40A18B-D47B-4671-9994-D2E52B6DFA1D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
