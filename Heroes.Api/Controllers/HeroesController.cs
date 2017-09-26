@@ -1,6 +1,7 @@
 ﻿using Heroes.Contracts.Grains.Heroes;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
 
 namespace Heroes.Api.Controllers

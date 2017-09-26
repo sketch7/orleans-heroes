@@ -20,6 +20,7 @@ namespace Heroes.Api.GraphQLCore
 
 			services.AddTransient<HeroRoleEnum>();
 			services.AddTransient<HeroType>();
+			services.AddTransient<HeroStatsType>();
 			
 			services.AddScoped<ISchema, HeroesAppSchema>();
 		}

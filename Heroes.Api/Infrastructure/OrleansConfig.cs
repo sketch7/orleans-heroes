@@ -12,7 +12,6 @@ namespace Heroes.Api.Infrastructure
 	{
 		public static IServiceCollection ConfigureClusterClient(this IServiceCollection services, int initializeAttemptsBeforeFailing = 7)
 		{
-			IClusterClient client = null;
 			try
 			{
 				var clientConfig = ClientConfiguration.LocalhostSilo();

@@ -6,9 +6,9 @@ using System.Reflection;
 
 namespace Heroes.SiloHost.ConsoleApp
 {
-	class OrleansHostWrapper
+	internal class OrleansHostWrapper
 	{
-		private readonly Orleans.Runtime.Host.SiloHost siloHost;
+		private readonly Orleans.Runtime.Host.SiloHost _siloHost;
 
 		public OrleansHostWrapper(ClusterConfiguration config, string[] args)
 		{
@@ -23,13 +23,13 @@ namespace Heroes.SiloHost.ConsoleApp
 				config.Globals.DeploymentId = siloArgs.DeploymentId;
 			}
 
-			siloHost = new Orleans.Runtime.Host.SiloHost(siloArgs.SiloName, config);
-			siloHost.LoadOrleansConfig();
+			_siloHost = new Orleans.Runtime.Host.SiloHost(siloArgs.SiloName, config);
+			_siloHost.LoadOrleansConfig();
 		}
 
 		public int Run()
 		{
-			if (siloHost == null)
+			if (_siloHost == null)
 			{
 				SiloArgs.PrintUsage();
 				return 1;
@@ -37,17 +37,17 @@ namespace Heroes.SiloHost.ConsoleApp
 
 			try
 			{
-				siloHost.InitializeOrleansSilo();
+				_siloHost.InitializeOrleansSilo();
 
-				if (!siloHost.StartOrleansSilo())
-					throw new OrleansException($"Failed to start Orleans silo '{siloHost.Name}' as a {siloHost.Type} node.");
+				if (!_siloHost.StartOrleansSilo())
+					throw new OrleansException($"Failed to start Orleans silo '{_siloHost.Name}' as a {_siloHost.Type} node.");
 
-				Console.WriteLine($"Successfully started Orleans silo '{siloHost.Name}' as a {siloHost.Type} node.");
+				Console.WriteLine($"Successfully started Orleans silo '{_siloHost.Name}' as a {_siloHost.Type} node.");
 				return 0;
 			}
 			catch (Exception exc)
 			{
-				siloHost.ReportStartupError(exc);
+				_siloHost.ReportStartupError(exc);
 				Console.Error.WriteLine(exc);
 				return 1;
 			}
@@ -55,16 +55,16 @@ namespace Heroes.SiloHost.ConsoleApp
 
 		public int Stop()
 		{
-			if (siloHost == null) return 0;
+			if (_siloHost == null) return 0;
 			try
 			{
-				siloHost.StopOrleansSilo();
-				siloHost.Dispose();
-				Console.WriteLine($"Orleans silo '{siloHost.Name}' shutdown.");
+				_siloHost.StopOrleansSilo();
+				_siloHost.Dispose();
+				Console.WriteLine($"Orleans silo '{_siloHost.Name}' shutdown.");
 			}
 			catch (Exception exc)
 			{
-				siloHost.ReportStartupError(exc);
+				_siloHost.ReportStartupError(exc);
 				Console.Error.WriteLine(exc);
 				return 1;
 			}

@@ -1,6 +1,8 @@
 ﻿using Heroes.Clients.Heroes;
+using Heroes.Clients.Statistics;
 using Heroes.Contracts.Grains.Core;
 using Heroes.Contracts.Grains.Heroes;
+using Heroes.Contracts.Grains.Stats;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Heroes.Clients
@@ -10,6 +12,7 @@ namespace Heroes.Clients
 		public static void AddHeroesClients(this IServiceCollection services)
 		{
 			services.AddScoped<IHeroClient, HeroClient>();
+			services.AddScoped<IHeroStatsClient, HeroStatsClient>();
 			services.AddScoped<IWarmUpClient, WarmUpClient>();
 		}
 	}
