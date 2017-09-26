@@ -1,15 +1,12 @@
-﻿using System;
-using GraphQL.Types;
+﻿using GraphQL.Types;
 using Heroes.Api.GraphQLCore.Types;
-using Heroes.Contracts.Grains;
 using Heroes.Contracts.Grains.Heroes;
-using Orleans;
 
 namespace Heroes.Api.GraphQLCore.Queries
 {
 	public class HeroesAppGraphQuery : ObjectGraphType
 	{
-		public HeroesAppGraphQuery(IClusterClient clusterClient)
+		public HeroesAppGraphQuery(IHeroClient heroClient)
 		{
 			Name = "HeroQuery";
 			Field<HeroType>(
@@ -20,10 +17,9 @@ namespace Heroes.Api.GraphQLCore.Queries
 					),
 				resolve: context =>
 				{
-					var grain = clusterClient.GetHeroGrain(context.GetArgument<string>("key"));
-					return grain.Get();
+					var result = heroClient.Get(context.GetArgument<string>("key"));
+					return result;
 				}
-				//resolve: context => clusterClient.GetHeroGrain("rengar").Get()
 			);
 
 			Field<ListGraphType<HeroType>>(
@@ -34,11 +30,11 @@ namespace Heroes.Api.GraphQLCore.Queries
 				),
 				resolve: context =>
 				{
-					var grain = clusterClient.GetHeroCollectionGrain();
 					var role = context.GetArgument<int?>("role");
-					var roleType = (HeroRoleType?) role;
-					
-					return grain.GetAll(roleType);
+					var roleType = (HeroRoleType?)role;
+
+					var result = heroClient.GetAll(roleType);
+					return result;
 				}
 			);
 		}

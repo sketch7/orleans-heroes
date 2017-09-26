@@ -1,5 +1,5 @@
-﻿using Heroes.Contracts.Grains.Core;
-using Heroes.Contracts.Grains.Heroes;
+﻿using Heroes.Contracts.Grains;
+using Heroes.Contracts.Grains.Core;
 using Heroes.Contracts.Grains.Mocks;
 using Orleans;
 using System.Threading.Tasks;
@@ -16,7 +16,7 @@ namespace Heroes.Clients
 		}
 		public Task Initialize()
 		{
-			var heroCollectionGrain = _clusterClient.GetGrain<IHeroCollectionGrain>(0);
+			var heroCollectionGrain = _clusterClient.GetHeroCollectionGrain();
 			return heroCollectionGrain.Set(MockDataService.GetHeroes());
 		}
 	}
