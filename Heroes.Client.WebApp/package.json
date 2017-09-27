@@ -2,17 +2,17 @@
   "name": "HeroesWebApp",
   "private": true,
   "version": "0.0.0",
-"scripts": {
-  "start": "dotnet run",
-  "test": "karma start ClientApp/test/karma.conf.js",
-  "build:vendor": "node node_modules/webpack/bin/webpack.js --config webpack.config.vendor.js",
-  "build:app": "node node_modules/webpack/bin/webpack.js",
-  "build": "npm run build:vendor && npm run build:app",
-  "build:vendor:rel": "npm run build:vendor -- --env.prod",
-  "build:app:rel": "npm run build:app -- --env.prod",
-  "build:rel": "npm run build:vendor:rel && npm run build:app:rel",
-  "clean": "rimraf ./ClientApp/dist wwwroot/dist"
-},
+  "scripts": {
+    "start": "dotnet run",
+    "test": "karma start ClientApp/test/karma.conf.js",
+    "build:vendor": "node node_modules/webpack/bin/webpack.js --config webpack.config.vendor.js",
+    "build:app": "node node_modules/webpack/bin/webpack.js",
+    "build": "npm run build:vendor && npm run build:app",
+    "build:vendor:rel": "npm run build:vendor -- --env.prod",
+    "build:app:rel": "npm run build:app -- --env.prod",
+    "build:rel": "npm run build:vendor:rel && npm run build:app:rel",
+    "clean": "rimraf ./ClientApp/dist wwwroot/dist"
+  },
   "dependencies": {
     "@angular/animations": "4.4.3",
     "@angular/common": "4.4.3",

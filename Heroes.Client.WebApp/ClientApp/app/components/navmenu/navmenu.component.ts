@@ -1,10 +1,11 @@
-import { Component, Inject } from '@angular/core';
-import { CoreConfig } from '../../shared/model';
+import { Component, Inject } from "@angular/core";
+
+import { CoreConfig } from "../../shared/model";
 
 @Component({
-    selector: 'nav-menu',
-    templateUrl: './navmenu.component.html',
-    styleUrls: ['./navmenu.component.css']
+    selector: "nav-menu",
+    templateUrl: "./navmenu.component.html",
+    styleUrls: ["./navmenu.component.css"]
 })
 export class NavMenuComponent {
 
