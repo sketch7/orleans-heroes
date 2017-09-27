@@ -6,14 +6,23 @@ import { enableProdMode, ApplicationRef, NgZone, ValueProvider } from '@angular/
 import { platformDynamicServer, PlatformState, INITIAL_CONFIG } from '@angular/platform-server';
 import { createServerRenderer, RenderResult } from 'aspnet-prerendering';
 import { AppModule } from './app/app.module.server';
+import { StartupContext, CoreConfig } from './app/shared/model';
 
 enableProdMode();
 
 export default createServerRenderer(params => {
+    const startupContext = params.data as StartupContext;
+    
+    const coreConfig: CoreConfig = {
+        username: startupContext.username,
+        isDebug: startupContext.isDebug
+    };
+    
     const providers = [
         { provide: INITIAL_CONFIG, useValue: { document: '<app></app>', url: params.url } },
         { provide: APP_BASE_HREF, useValue: params.baseUrl },
         { provide: 'BASE_URL', useValue: params.origin + params.baseUrl },
+        { provide: 'CORE_CONFIG', useValue: coreConfig },
     ];
 
     return platformDynamicServer(providers).bootstrapModule(AppModule).then(moduleRef => {
@@ -28,7 +37,10 @@ export default createServerRenderer(params => {
                 // completing the request in case there's an error to report
                 setImmediate(() => {
                     resolve({
-                        html: state.renderToString()
+                        html: state.renderToString(),
+                        globals: {
+							startupContext: startupContext
+						}
                     });
                     moduleRef.destroy();
                 });

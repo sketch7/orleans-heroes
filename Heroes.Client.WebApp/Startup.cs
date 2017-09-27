@@ -18,6 +18,10 @@ namespace Heroes_Client_WebApp
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
+			//services.AddNodeServices(options => {
+			//	options.LaunchWithDebugging = true;
+			//	options.DebuggingPort = 9229;
+			//});
 			services.AddMvc();
 		}
 

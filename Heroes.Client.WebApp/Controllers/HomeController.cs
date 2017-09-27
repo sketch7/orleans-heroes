@@ -11,7 +11,13 @@ namespace Heroes_Client_WebApp.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+	        ViewData["bootstrapConfig"] = new
+	        {
+				Username = "horhay",
+				IsDebug = true
+			};
+
+			return View();
         }
 
         public IActionResult Error()
