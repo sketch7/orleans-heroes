@@ -14,17 +14,35 @@ export class HeroService {
             role: HeroRoleType.assassin,
             abilities: []
         });
-        // const query = gql`
-        //   query CitiesQuery {
-        //     allCities {
-        //       name
-        //       country
-        //     }
-        //   }
-        // `;
-        // return  this.apollo.watchQuery<any>({
-        //   query: query
-        // }).map(({data}) => data.allCities);
-
     }
+
+    getAll(roleType: HeroRoleType | undefined): Observable<Hero[]> {
+        return Observable.of([
+            {
+                key: "rengar",
+                name: "mighty rengo",
+                role: HeroRoleType.assassin,
+                abilities: []
+            },
+            {
+                key: "singed",
+                name: "singed",
+                role: HeroRoleType.tank,
+                abilities: []
+            }
+        ]);
+    }
+
+    // const query = gql`
+    //   query CitiesQuery {
+    //     allCities {
+    //       name
+    //       country
+    //     }
+    //   }
+    // `;
+    // return  this.apollo.watchQuery<any>({
+    //   query: query
+    // }).map(({data}) => data.allCities);
+
 }

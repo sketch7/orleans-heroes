@@ -1,0 +1,4 @@
+<h1>Heroes</h1>
+<div *ngFor="let hero of (heroes$ | async); trackBy: trackByHero"> 
+	{{hero.name}}
+</div>

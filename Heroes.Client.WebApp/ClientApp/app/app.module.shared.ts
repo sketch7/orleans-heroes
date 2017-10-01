@@ -13,6 +13,7 @@ import { FetchDataComponent } from "./components/fetchdata/fetchdata.component";
 import { CounterComponent } from "./components/counter/counter.component";
 import { StoreModule } from "./core/app.store";
 import { SDK_PROVIDERS } from "./sdk/sdk-exports";
+import { HeroListComponent } from "./components/hero/hero-list.component";
 
 @NgModule({
     declarations: [
@@ -20,7 +21,8 @@ import { SDK_PROVIDERS } from "./sdk/sdk-exports";
         NavMenuComponent,
         CounterComponent,
         FetchDataComponent,
-        HomeComponent
+        HomeComponent,
+        HeroListComponent
     ],
     imports: [
         CommonModule,
@@ -30,6 +32,7 @@ import { SDK_PROVIDERS } from "./sdk/sdk-exports";
             { path: "", redirectTo: "home", pathMatch: "full" },
             { path: "home", component: HomeComponent },
             { path: "counter", component: CounterComponent },
+            { path: "heroes", component: HeroListComponent },
             { path: "fetch-data", component: FetchDataComponent },
             { path: "**", redirectTo: "home" }
         ]),
