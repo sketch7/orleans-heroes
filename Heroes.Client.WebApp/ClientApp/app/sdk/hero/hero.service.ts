@@ -1,5 +1,6 @@
-import { Injectable } from "@angular/core";
 import { Observable } from "rxjs/Observable";
+import { Injectable } from "@angular/core";
+
 import { HeroRoleType, Hero } from "./hero.model";
 
 @Injectable()
@@ -7,7 +8,6 @@ export class HeroService {
     //   constructor(private apollo: Angular2Apollo) {}
 
     getById(id: string): Observable<Hero> {
-        console.log("HeroService - getById");
         return Observable.of({
             key: "rengar",
             name: "mighty rengo",

@@ -4,27 +4,25 @@ import { of } from "rxjs/observable/of";
 
 import { Action, ActionPayload } from "../../shared/redux/action.utils";
 import { HeroService } from "./hero.service";
-import { HeroAction } from "./hero.action";
+import { HeroAction, HERO_ACTION_TYPE } from "./hero.action";
 import { AppState } from "../../core/app.state";
-
-export const heroEpics: Epic<Action, AppState>[] = [];
 
 @Injectable()
 export class HeroEpics {
+  epics: Epic<Action, AppState>[];
 
     constructor(
         private service: HeroService,
         private actions: HeroAction
     ) {
-        heroEpics.push(this.getById);
+        this.epics = [this.getById];
     }
 
     getById = (action$: any) => action$
-        .ofType(this.actions.getById)
+        .ofType(HERO_ACTION_TYPE.get)
         .map((action: ActionPayload<String>) => action.payload)
-        .do((x: string) => console.log("heroEpic :: triggered", x))
         .switchMap((id: string) => this.service.getById(id)
-            .do(x => console.log("heroEpic :: response", x))
             .map(response => this.actions.getSuccess(response))
-            .catch(err => of(this.actions.getFail(err))));
+            .catch(err => of(this.actions.getFail(err)))
+        )
 }

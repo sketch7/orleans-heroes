@@ -10,12 +10,10 @@ export function heroReducer(state: HeroState = INITIAL_STATE, action: Action): H
 
     switch (action.type) {
         case HERO_ACTION_TYPE.get:
-        console.log("heroReducer :: get");
         return state;
         case HERO_ACTION_TYPE.getSuccess:
             const response: ActionPayload<Hero> = action as ActionPayload<Hero>;
-            console.log("heroReducer :: getSuccess", response);
-            return updateMapState<HeroState, Hero>(state, response.payload);
+            return updateMapState<HeroState, Hero>(response.payload.key, state, response.payload);
     }
 
     return state;

@@ -1,3 +1,4 @@
+import "./rxjs-imports";
 import { NgModule } from "@angular/core";
 import { NgReduxModule, NgRedux, DevToolsExtension } from "@angular-redux/store";
 import { NgReduxRouterModule, NgReduxRouter } from "@angular-redux/router";
@@ -5,22 +6,25 @@ import { provideReduxForms } from "@angular-redux/form";
 import { createLogger } from "redux-logger";
 
 import { AppState } from "./app.state";
+import { AppEpics } from "./app.epics";
 import { appReducer } from "./app.reducer";
-import { SDK_EPICS } from "../sdk/sdk-exports";
 
 @NgModule({
-    imports: [NgReduxModule, NgReduxRouterModule]
+    imports: [NgReduxModule, NgReduxRouterModule],
+    providers: [AppEpics]
 })
 export class StoreModule {
     constructor(
-        public store: NgRedux<AppState>,
+        store: NgRedux<AppState>,
         devTools: DevToolsExtension,
-        ngReduxRouter: NgReduxRouter
+        ngReduxRouter: NgReduxRouter,
+        appEpics: AppEpics
     ) {
+        console.log("StoreModule: INIT", appEpics.all);
         store.configureStore(
             appReducer,
             {} as any,
-            [createLogger(), ...SDK_EPICS],
+            [createLogger(), ...appEpics.all],
             devTools.isEnabled() ? [devTools.enhancer()] : []);
 
         if (ngReduxRouter) {

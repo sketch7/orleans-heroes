@@ -33,9 +33,9 @@ export function updateStateItem<TState, TStateItem>(
  * @returns {TState} returns a new state with changes applied.
  */
 export function updateMapState<TState extends Dictionary<TStateItem>, TStateItem>(
-	state: TState, changes: PartialObject<TStateItem>, keySelector: keyof TStateItem | "id" = "id"): TState {
+	key: string | number, state: TState, changes: PartialObject<TStateItem>): TState {
 	return Object.assign({}, state, {
-		[keySelector]: Object.assign({}, state[keySelector], changes)
+		[key]: Object.assign({}, state[key], changes)
 	});
 }
 

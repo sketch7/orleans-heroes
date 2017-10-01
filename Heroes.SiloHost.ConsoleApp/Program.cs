@@ -20,7 +20,6 @@ namespace Heroes.SiloHost.ConsoleApp
 			return exitCode;
 		}
 
-
 		private static int StartSilo(string[] args)
 		{
 			// define the cluster configuration
