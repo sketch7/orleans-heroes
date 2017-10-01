@@ -1,4 +1,6 @@
 <h1>Heroes</h1>
-<div *ngFor="let hero of (heroes$ | async); trackBy: trackByHero"> 
-	{{hero.name}}
+<div>
+	<a *ngFor="let hero of (heroes$ | async); trackBy: trackByHero" [routerLink]="['/heroes', hero.key]">
+		{{hero.name}}
+	</a>
 </div>

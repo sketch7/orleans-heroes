@@ -1,3 +1,4 @@
+import * as _ from "lodash";
 import { Observable } from "rxjs/Observable";
 import { Injectable } from "@angular/core";
 
@@ -7,30 +8,27 @@ import { HeroRoleType, Hero } from "./hero.model";
 export class HeroService {
     //   constructor(private apollo: Angular2Apollo) {}
 
-    getById(id: string): Observable<Hero> {
-        return Observable.of({
+    list = [
+        {
             key: "rengar",
             name: "mighty rengo",
             role: HeroRoleType.assassin,
             abilities: []
-        });
+        },
+        {
+            key: "singed",
+            name: "singed",
+            role: HeroRoleType.tank,
+            abilities: []
+        }
+    ];
+
+    getById(id: string): Observable<Hero> {
+        return Observable.of(_.find(this.list, x => x.key === id)!).delay(3000);
     }
 
     getAll(roleType: HeroRoleType | undefined): Observable<Hero[]> {
-        return Observable.of([
-            {
-                key: "rengar",
-                name: "mighty rengo",
-                role: HeroRoleType.assassin,
-                abilities: []
-            },
-            {
-                key: "singed",
-                name: "singed",
-                role: HeroRoleType.tank,
-                abilities: []
-            }
-        ]);
+        return Observable.of(this.list);
     }
 
     // const query = gql`
