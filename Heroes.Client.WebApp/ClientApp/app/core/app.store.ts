@@ -20,7 +20,6 @@ export class StoreModule {
         ngReduxRouter: NgReduxRouter,
         appEpics: AppEpics
     ) {
-        console.log("StoreModule: INIT", appEpics.all);
         store.configureStore(
             appReducer,
             {} as any,
