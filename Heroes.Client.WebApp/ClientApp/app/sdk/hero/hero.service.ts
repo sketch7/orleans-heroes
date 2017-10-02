@@ -1,14 +1,19 @@
 import * as _ from "lodash";
 import { Observable } from "rxjs/Observable";
 import { Injectable } from "@angular/core";
-import { Apollo } from "apollo-angular";
+import { Apollo, ApolloQueryObservable } from "apollo-angular";
 import gql from "graphql-tag";
+import { Http } from "@angular/http";
 
 import { HeroRoleType, Hero } from "./hero.model";
 
 @Injectable()
 export class HeroService {
-    constructor(private apollo: Apollo) {}
+    constructor(
+        private apollo: Apollo,
+        private http: Http
+    ) {
+    }
 
     list = [
         {
@@ -33,7 +38,14 @@ export class HeroService {
         return Observable.of(this.list);
     }
 
+    getAllHttp(roleType: HeroRoleType | undefined): Observable<Hero[]> {
+        return this.http.get("http://localhost:62552/api/heroes")
+            .map(resp => resp.json())
+            .do(x => console.log("HeroService :: http response", x));
+    }
+
     getAllGraphQL(roleType: HeroRoleType | undefined): Observable<Hero[]> {
+        console.log("HeroService :: graphQL - init");
         const query: any = gql`
         query GetAllHeroes($role: HeroRoleEnum) {
             heroes (role: $role) {
@@ -43,11 +55,12 @@ export class HeroService {
             }
           }
         `;
+
+        // return this.apollo.watchQuery<ApolloQueryObservable<any>>({
         return this.apollo.watchQuery<any>({
             query: query
-        })
-        .do(x => console.log("HeroService :: graphQL - response", x))
-        .map(({ data }) => data);
+        }).do(x => console.log("HeroService :: graphQL - response", x))
+            .map(({ data }) => data.heroes);
     }
 
 }

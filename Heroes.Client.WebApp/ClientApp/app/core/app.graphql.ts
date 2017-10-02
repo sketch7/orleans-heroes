@@ -1,10 +1,23 @@
-import { ApolloClient } from "apollo-client";
+import { ApolloClient, createNetworkInterface } from "apollo-client";
 import { ApolloModule } from "apollo-angular";
 
-const client: ApolloClient = new ApolloClient();
+export const client: ApolloClient = new ApolloClient({
+	networkInterface: createNetworkInterface({
+		uri: "http://localhost:62552/graphql",
+		opts: {
+			credentials: "same-origin",
+			headers: {
+				"Content-Type": "application/json"
+			}
+		}
+	}),
+	// dataIdFromObject: (o: any) => o["id"],
+	// enable Apollo Dev Tools Extension
+	// connectToDevTools: true
+});
 
 export function provideClient(): ApolloClient {
-  return client;
+	return client;
 }
 
 export const APOLLO_MODULE: any[] = [

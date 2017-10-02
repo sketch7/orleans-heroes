@@ -19,8 +19,12 @@ const treeShakableModules = [
     '@angular-redux/form',
     '@angular-redux/router',
     '@angular-redux/store',
+    'redux',
     'redux-logger',
-    'redux-observable'
+    'redux-observable',
+    "graphql-tag",
+	"apollo-angular",
+	"apollo-client",
 ];
 const nonTreeShakableModules = [
     'bootstrap',

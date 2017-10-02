@@ -15,7 +15,8 @@ import { StoreModule } from "./core/app.store";
 import { SDK_PROVIDERS } from "./sdk/sdk-exports";
 import { HeroListComponent } from "./components/hero/hero-list.component";
 import { HeroDetailComponent } from "./components/hero/hero-detail.component";
-import { APOLLO_MODULE } from "./core/app.graphql";
+import { provideClient } from "./core/app.graphql";
+import { ApolloModule } from "apollo-angular";
 
 @NgModule({
     declarations: [
@@ -43,7 +44,7 @@ import { APOLLO_MODULE } from "./core/app.graphql";
         NgReduxModule,
         NgReduxRouterModule,
         StoreModule,
-        APOLLO_MODULE
+        ApolloModule.forRoot(provideClient)
     ],
     providers: [
 		SDK_PROVIDERS

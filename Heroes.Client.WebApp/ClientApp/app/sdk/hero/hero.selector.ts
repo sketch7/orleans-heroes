@@ -30,6 +30,7 @@ export class HeroSelector {
 	}
 
 	getAllGraphQL (roleType: HeroRoleType | undefined = undefined): any {
-		return this.getAllGraphQL(roleType);
+		// return this.service.getAllHttp(roleType);
+		return this.service.getAllGraphQL(roleType);
 	}
 }
