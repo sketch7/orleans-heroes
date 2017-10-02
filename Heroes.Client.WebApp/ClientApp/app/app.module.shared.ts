@@ -15,6 +15,7 @@ import { StoreModule } from "./core/app.store";
 import { SDK_PROVIDERS } from "./sdk/sdk-exports";
 import { HeroListComponent } from "./components/hero/hero-list.component";
 import { HeroDetailComponent } from "./components/hero/hero-detail.component";
+import { APOLLO_MODULE } from "./core/app.graphql";
 
 @NgModule({
     declarations: [
@@ -41,7 +42,8 @@ import { HeroDetailComponent } from "./components/hero/hero-detail.component";
         ]),
         NgReduxModule,
         NgReduxRouterModule,
-        StoreModule
+        StoreModule,
+        APOLLO_MODULE
     ],
     providers: [
 		SDK_PROVIDERS

@@ -14,7 +14,9 @@
     "build:vendor:rel": "npm run build:vendor -- --env.prod",
     "build:app:rel": "npm run build:app -- --env.prod",
     "build:rel": "npm run build:vendor:rel && npm run build:app:rel",
-    "clean": "rimraf ./ClientApp/dist wwwroot/dist"
+    "clean": "rimraf ./ClientApp/dist wwwroot/dist",
+    "schema:download": "apollo-codegen introspect-schema http://localhost:62552/graphql --output ClientApp/app/graphql/schema.json",
+    "schema:generate": "apollo-codegen generate **/*.graphql --schema ClientApp/app/graphql/schema.json --target typescript --output ClientApp/app/graphql/schema.ts"
   },
   "dependencies": {
     "@angular-redux/form": "^6.6.0",
@@ -75,6 +77,7 @@
     "@types/jasmine": "2.6.0",
     "@types/lodash": "^4.14.76",
     "@types/redux-logger": "^3.0.4",
+    "apollo-codegen": "^0.17.0-alpha.11",    
     "chai": "4.1.2",
     "jasmine-core": "2.8.0",
     "karma": "1.7.1",
