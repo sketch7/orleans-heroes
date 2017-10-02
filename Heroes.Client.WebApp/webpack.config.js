@@ -3,6 +3,7 @@ const webpack = require('webpack');
 const merge = require('webpack-merge');
 const AotPlugin = require('@ngtools/webpack').AotPlugin;
 const CheckerPlugin = require('awesome-typescript-loader').CheckerPlugin;
+const purifyPlugin = require("@angular-devkit/build-optimizer").PurifyPlugin;
 
 module.exports = (env) => {
     // Configuration in common to both client-side and server-side bundles
@@ -20,10 +21,14 @@ module.exports = (env) => {
                 { test: /\.ts$/, include: /ClientApp/, use: isDevBuild ? ['awesome-typescript-loader?silent=true', 'angular2-template-loader'] : '@ngtools/webpack' },
                 { test: /\.html$/, use: 'html-loader?minimize=false' },
                 { test: /\.css$/, use: [ 'to-string-loader', isDevBuild ? 'css-loader' : 'css-loader?minimize' ] },
-                { test: /\.(png|jpg|jpeg|gif|svg)$/, use: 'url-loader?limit=25000' }
+                { test: /\.(png|jpg|jpeg|gif|svg)$/, use: 'url-loader?limit=25000' },
+                { test: /\.(js|ts)$/, use: isDevBuild ? [] : ["@angular-devkit/build-optimizer/webpack-loader"] }
             ]
         },
         plugins: [new CheckerPlugin()]
+        .concat(isDevBuild ? [] : [
+            new purifyPlugin()
+        ])
     };
 
     // Configuration for client-side bundle suitable for running in browsers

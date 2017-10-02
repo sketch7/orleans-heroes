@@ -4,6 +4,9 @@
   "version": "0.0.0",
   "scripts": {
     "start": "dotnet run",
+    "start-clean-dev": "npm run clean && npm run build && npm start",
+    "start-prod": "dotnet run -p Heroes.Client.WebApp.csproj --launch-profile \"App-Prod\"",
+    "start-clean-prod": "npm run clean && npm run build:rel && npm run start-prod",
     "test": "karma start ClientApp/test/karma.conf.js",
     "build:vendor": "node node_modules/webpack/bin/webpack.js --config webpack.config.vendor.js",
     "build:app": "node node_modules/webpack/bin/webpack.js",
@@ -31,6 +34,8 @@
     "@ngtools/webpack": "1.7.2",
     "@types/webpack-env": "1.13.1",
     "angular2-template-loader": "0.6.2",
+    "apollo-angular": "^0.13.1",
+    "apollo-client": "^1.9.3",
     "aspnet-prerendering": "^3.0.1",
     "aspnet-webpack": "^2.0.1",
     "awesome-typescript-loader": "3.2.3",
@@ -42,6 +47,7 @@
     "expose-loader": "0.7.3",
     "extract-text-webpack-plugin": "3.0.0",
     "file-loader": "1.1.4",
+    "graphql-tag": "^2.4.2",
     "html-loader": "0.5.1",
     "isomorphic-fetch": "2.2.1",
     "jquery": "3.2.1",
@@ -64,6 +70,7 @@
     "zone.js": "0.8.18"
   },
   "devDependencies": {
+    "@angular-devkit/build-optimizer": "^0.0.23",
     "@types/chai": "4.0.4",
     "@types/jasmine": "2.6.0",
     "@types/lodash": "^4.14.76",

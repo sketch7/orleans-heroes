@@ -2,6 +2,8 @@ const path = require('path');
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const merge = require('webpack-merge');
+const purifyPlugin = require("@angular-devkit/build-optimizer").PurifyPlugin;
+
 const treeShakableModules = [
     '@angular/animations',
     '@angular/common',
@@ -38,7 +40,8 @@ module.exports = (env) => {
         resolve: { extensions: [ '.js' ] },
         module: {
             rules: [
-                { test: /\.(png|woff|woff2|eot|ttf|svg)(\?|$)/, use: 'url-loader?limit=100000' }
+                { test: /\.(png|woff|woff2|eot|ttf|svg)(\?|$)/, use: 'url-loader?limit=100000' },
+                { test: /\.(js|ts)$/, use: isDevBuild ? [] : ["@angular-devkit/build-optimizer/webpack-loader"] }
             ]
         },
         output: {
@@ -51,7 +54,9 @@ module.exports = (env) => {
             new webpack.ContextReplacementPlugin(/\@angular\b.*\b(bundles|linker)/, path.join(__dirname, './ClientApp')), // Workaround for https://github.com/angular/angular/issues/11580
             new webpack.ContextReplacementPlugin(/angular(\\|\/)core(\\|\/)@angular/, path.join(__dirname, './ClientApp')), // Workaround for https://github.com/angular/angular/issues/14898
             new webpack.IgnorePlugin(/^vertx$/) // Workaround for https://github.com/stefanpenner/es6-promise/issues/100
-        ]
+        ].concat(isDevBuild ? [] : [
+            new purifyPlugin()
+        ])
     };
 
     const clientBundleConfig = merge(sharedConfig, {
