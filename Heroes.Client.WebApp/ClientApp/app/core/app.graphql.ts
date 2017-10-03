@@ -11,6 +11,7 @@ export const client: ApolloClient = new ApolloClient({
 			}
 		}
 	}),
+	ssrMode: true
 	// dataIdFromObject: (o: any) => o["id"],
 	// enable Apollo Dev Tools Extension
 	// connectToDevTools: true
