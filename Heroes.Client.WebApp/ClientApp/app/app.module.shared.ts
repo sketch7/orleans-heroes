@@ -15,9 +15,12 @@ import { StoreModule } from "./core/app.store";
 import { SDK_PROVIDERS } from "./sdk/sdk-exports";
 import { HeroListComponent } from "./components/hero/hero-list.component";
 import { HeroDetailComponent } from "./components/hero/hero-detail.component";
-import { provideClient } from "./core/app.graphql";
+import { getCommonClient, ApolloClientMap, AppApolloClient } from "./core/app.graphql";
 import { ApolloModule } from "apollo-angular";
 
+export function provideClients(): ApolloClientMap {
+	return { ...getCommonClient() };
+}
 @NgModule({
     declarations: [
         AppComponent,
@@ -44,10 +47,11 @@ import { ApolloModule } from "apollo-angular";
         NgReduxModule,
         NgReduxRouterModule,
         StoreModule,
-        ApolloModule.forRoot(provideClient)
+        ApolloModule.forRoot(provideClients)
     ],
     providers: [
-		SDK_PROVIDERS
+        SDK_PROVIDERS,
+        AppApolloClient
 	]
 })
 export class AppModuleShared {

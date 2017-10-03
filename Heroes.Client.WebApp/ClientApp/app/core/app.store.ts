@@ -10,22 +10,23 @@ import { applyMiddleware } from "redux";
 import { AppState } from "./app.state";
 import { AppEpics } from "./app.epics";
 import { appReducer } from "./app.reducer";
-import { client, provideClient } from "./app.graphql";
+import { client, AppApolloClient } from "./app.graphql";
 import { ApolloModule } from "apollo-angular";
 
 @NgModule({
     imports: [NgReduxModule, NgReduxRouterModule],
-    providers: [AppEpics]
+    providers: [AppEpics, AppApolloClient]
 })
 export class StoreModule {
     constructor(
         store: NgRedux<AppState>,
         devTools: DevToolsExtension,
         ngReduxRouter: NgReduxRouter,
-        appEpics: AppEpics
+        appEpics: AppEpics,
+        apollo: AppApolloClient
     ) {
         const enhancers: any[] = [
-            applyMiddleware(client.middleware()),
+            apollo.getMiddleware()
         ];
 
         if (devTools.isEnabled()) {

@@ -1,5 +1,9 @@
 import { ApolloClient, createNetworkInterface } from "apollo-client";
-import { ApolloModule } from "apollo-angular";
+import { ApolloModule, Apollo, ApolloBase } from "apollo-angular";
+import { Injectable } from "@angular/core";
+import { Dictionary } from "../shared/utils";
+import { HTTPNetworkInterface } from "apollo-client/transport/networkInterface";
+import { applyMiddleware } from "redux";
 
 export const client: ApolloClient = new ApolloClient({
 	networkInterface: createNetworkInterface({
@@ -17,10 +21,55 @@ export const client: ApolloClient = new ApolloClient({
 	// connectToDevTools: true
 });
 
-export function provideClient(): ApolloClient {
-	return client;
+export function getCommonClient(): ApolloClientMap {
+	return { shared: client };
 }
 
-export const APOLLO_MODULE: any[] = [
-	ApolloModule.forRoot(provideClient)
-];
+@Injectable()
+export class AppApolloClient {
+
+	private apollo: ApolloBase;
+	private networkInterface: HTTPNetworkInterface;
+
+	constructor(apollo: Apollo) {
+		this.apollo = apollo.use("shared");
+		this.networkInterface = this.buildNetworkInterface("baseUri");
+		this.configure(this.networkInterface);
+	}
+
+	get(): ApolloBase {
+		return this.apollo;
+	}
+
+	getClient(): ApolloClient {
+		return this.apollo.getClient();
+	}
+
+	getMiddleware(): any {
+		return applyMiddleware(this.getClient().middleware());
+	}
+
+	configure(network: HTTPNetworkInterface): void {
+		this.getClient().networkInterface = network;
+	}
+
+	private buildNetworkInterface(apiBaseUri: string): HTTPNetworkInterface {
+		return createNetworkInterface({
+			uri: "http://localhost:62552/graphql",
+			opts: {
+				credentials: "same-origin",
+				headers: {
+					"Content-Type": "application/json"
+				}
+			}
+		});
+	}
+
+
+	// aPOLLO_MODULE: any[] = [
+	// 	apolloModule.forRoot(provideClient)
+	// ];
+}
+
+export interface ApolloClientMap extends Dictionary<ApolloClient> {
+}
