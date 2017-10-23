@@ -19,7 +19,7 @@ namespace Heroes.Api.Controllers
 		[HttpGet]
 		public async Task<List<Hero>> Get()
 		{
-			var result = await _client.GetAll();
+			var result = await _client.GetAll().ConfigureAwait(false);
 			return result;
 		}
 
