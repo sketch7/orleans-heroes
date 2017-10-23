@@ -1,18 +1,23 @@
 import * as _ from "lodash";
 import { Observable } from "rxjs/Observable";
 import { Injectable } from "@angular/core";
-import { Apollo, ApolloQueryObservable } from "apollo-angular";
+import { Apollo, ApolloQueryObservable, ApolloBase } from "apollo-angular";
 import gql from "graphql-tag";
 import { Http } from "@angular/http";
 
+import { AppApolloClient } from "../../core/app.graphql";
 import { HeroRoleType, Hero } from "./hero.model";
 
 @Injectable()
 export class HeroService {
+
+    private apollo: ApolloBase;
+
     constructor(
-        private apollo: Apollo,
-        private http: Http
+        private http: Http,
+        apollo: AppApolloClient,
     ) {
+        this.apollo = apollo.get();
     }
 
     list = [
@@ -39,7 +44,7 @@ export class HeroService {
     }
 
     getAllHttp(roleType: HeroRoleType | undefined): Observable<Hero[]> {
-        return this.http.get("http://localhost:62552/api/heroes")
+        return this.http.get("http://localhost:62551/api/heroes")
             .map(resp => resp.json())
             .do(x => console.log("HeroService :: http response", x));
     }

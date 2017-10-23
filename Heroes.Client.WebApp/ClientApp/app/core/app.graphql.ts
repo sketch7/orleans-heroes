@@ -7,7 +7,7 @@ import { applyMiddleware } from "redux";
 
 export const client: ApolloClient = new ApolloClient({
 	networkInterface: createNetworkInterface({
-		uri: "http://localhost:62552/graphql",
+		uri: "http://localhost:62551/graphql",
 		opts: {
 			credentials: "same-origin",
 			headers: {
@@ -55,7 +55,7 @@ export class AppApolloClient {
 
 	private buildNetworkInterface(apiBaseUri: string): HTTPNetworkInterface {
 		return createNetworkInterface({
-			uri: "http://localhost:62552/graphql",
+			uri: "http://localhost:62551/graphql",
 			opts: {
 				credentials: "same-origin",
 				headers: {
