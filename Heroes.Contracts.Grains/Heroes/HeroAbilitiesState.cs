@@ -5,11 +5,9 @@ using System.Threading.Tasks;
 
 namespace Heroes.Contracts.Grains.Heroes
 {
-	public class HeroAbilitiesState : IGrainState
+	public class HeroAbilitiesState 
 	{
 		public List<HeroAbility> HeroAbilities { get; set; }
-		public object State { get; set; }
-		public string ETag { get; set; }
 	}
 
 	public interface IHeroAbilitiesGrain : IGrainWithStringKey

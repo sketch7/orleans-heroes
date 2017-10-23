@@ -1,45 +1,51 @@
-﻿using Orleans.Runtime.Configuration;
+﻿using Heroes.Grains;
+using Microsoft.Extensions.Logging;
+using Orleans.Hosting;
+using Orleans.Runtime.Configuration;
 using System;
+using System.Threading.Tasks;
 
 namespace Heroes.SiloHost.ConsoleApp
 {
 	public class Program
 	{
-		private static OrleansHostWrapper hostWrapper;
-
 		public static int Main(string[] args)
 		{
-			int exitCode = StartSilo(args);
-
-			Console.WriteLine("Press Enter to terminate...");
-			Console.ReadLine();
-
-			exitCode += ShutdownSilo();
-
-			//either StartSilo or ShutdownSilo failed would result on a non-zero exit code. 
-			return exitCode;
+			return RunMainAsync().Result;
 		}
 
-		private static int StartSilo(string[] args)
+		private static async Task<int> RunMainAsync()
 		{
-			// define the cluster configuration
+			try
+			{
+				var host = await StartSilo();
+				Console.WriteLine("Press Enter to terminate...");
+				Console.ReadLine();
+
+				await host.StopAsync();
+
+				return 0;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex);
+				return 1;
+			}
+		}
+
+		private static async Task<ISiloHost> StartSilo()
+		{
 			var config = ClusterConfiguration.LocalhostPrimarySilo();
 			config.AddMemoryStorageProvider();
-			//config.AddMemoryStorageProvider("Default");
 
-			// config.Defaults.DefaultTraceLevel = Orleans.Runtime.Severity.Verbose3;
+			var builder = new SiloHostBuilder()
+				.UseConfiguration(config)
+				.AddApplicationPartsFromReferences(typeof(HeroGrain).Assembly)
+				.ConfigureLogging(logging => logging.AddConsole());
 
-			hostWrapper = new OrleansHostWrapper(config, args);
-			return hostWrapper.Run();
-		}
-
-		private static int ShutdownSilo()
-		{
-			if (hostWrapper != null)
-			{
-				return hostWrapper.Stop();
-			}
-			return 0;
+			var host = builder.Build();
+			await host.StartAsync();
+			return host;
 		}
 	}
 }
