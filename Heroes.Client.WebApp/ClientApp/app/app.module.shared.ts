@@ -1,8 +1,8 @@
 import "isomorphic-fetch";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
+import { HttpClientModule } from "@angular/common/http";
 import { FormsModule } from "@angular/forms";
-import { HttpModule } from "@angular/http";
 import { RouterModule } from "@angular/router";
 import { NgReduxModule } from "@angular-redux/store";
 import { NgReduxRouterModule } from "@angular-redux/router";
@@ -16,12 +16,10 @@ import { StoreModule } from "./core/app.store";
 import { SDK_PROVIDERS } from "./sdk/sdk-exports";
 import { HeroListComponent } from "./components/hero/hero-list.component";
 import { HeroDetailComponent } from "./components/hero/hero-detail.component";
-import { getCommonClient, ApolloClientMap, AppApolloClient } from "./core/app.graphql";
+import {  AppApolloClient } from "./core/app.graphql";
 import { ApolloModule } from "apollo-angular";
+import { HttpLinkModule } from "apollo-angular-link-http";
 
-export function provideClients(): ApolloClientMap {
-	return { ...getCommonClient() };
-}
 @NgModule({
     declarations: [
         AppComponent,
@@ -34,7 +32,7 @@ export function provideClients(): ApolloClientMap {
     ],
     imports: [
         CommonModule,
-        HttpModule,
+        HttpClientModule,
         FormsModule,
         RouterModule.forRoot([
             { path: "", redirectTo: "home", pathMatch: "full" },
@@ -48,7 +46,8 @@ export function provideClients(): ApolloClientMap {
         NgReduxModule,
         NgReduxRouterModule,
         StoreModule,
-        ApolloModule.forRoot(provideClients)
+        HttpLinkModule,
+        ApolloModule
     ],
     providers: [
         SDK_PROVIDERS,

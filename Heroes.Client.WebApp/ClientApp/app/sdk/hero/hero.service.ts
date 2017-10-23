@@ -1,9 +1,9 @@
 import * as _ from "lodash";
+import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs/Observable";
 import { Injectable } from "@angular/core";
-import { Apollo, ApolloQueryObservable, ApolloBase } from "apollo-angular";
+import { Apollo } from "apollo-angular";
 import gql from "graphql-tag";
-import { Http } from "@angular/http";
 
 import { AppApolloClient } from "../../core/app.graphql";
 import { HeroRoleType, Hero } from "./hero.model";
@@ -11,13 +11,10 @@ import { HeroRoleType, Hero } from "./hero.model";
 @Injectable()
 export class HeroService {
 
-    private apollo: ApolloBase;
-
     constructor(
-        private http: Http,
-        apollo: AppApolloClient,
+        private http: HttpClient,
+        private apollo: Apollo,
     ) {
-        this.apollo = apollo.get();
     }
 
     list = [
@@ -44,8 +41,7 @@ export class HeroService {
     }
 
     getAllHttp(roleType: HeroRoleType | undefined): Observable<Hero[]> {
-        return this.http.get("http://localhost:62551/api/heroes")
-            .map(resp => resp.json())
+        return this.http.get<Hero[]>("http://localhost:62551/api/heroes")
             .do(x => console.log("HeroService :: http response", x));
     }
 
@@ -61,10 +57,10 @@ export class HeroService {
           }
         `;
 
-        // return this.apollo.watchQuery<ApolloQueryObservable<any>>({
-        return this.apollo.watchQuery<any>({
+        return this.apollo.query<any>({
             query: query
-        }).do(x => console.log("HeroService :: graphQL - response", x))
+        })
+        .do(x => console.log("HeroService :: graphQL - response", x))
             .map(({ data }) => data.heroes);
     }
 

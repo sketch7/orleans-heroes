@@ -5,13 +5,13 @@ import { ApolloClient } from "apollo-client";
 
 import { heroReducer } from "../sdk/hero/hero.reducer";
 import { AppState } from "./app.state";
-import { client } from "./app.graphql";
+// import { client } from "./app.graphql";
 
 export const appReducer: Reducer<AppState> = composeReducers<AppState>(
     defaultFormReducer(),
     combineReducers({
         heroes: heroReducer,
-        apollo: client.reducer()
+       // apollo: client.reducer()
 }));
 
 // export const appReducer: Reducer<AppState> = combineReducers<AppState>(

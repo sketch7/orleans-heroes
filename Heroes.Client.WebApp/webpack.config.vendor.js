@@ -24,7 +24,13 @@ const treeShakableModules = [
     'redux-observable',
     "graphql-tag",
 	"apollo-angular",
-	"apollo-client",
+    "apollo-client",
+    "apollo-angular-link-http",
+    "apollo-cache-inmemory",
+    "apollo-link",
+    "apollo-link-http",
+    "apollo-link-ws",
+	"subscriptions-transport-ws",
 ];
 const nonTreeShakableModules = [
     'bootstrap',
