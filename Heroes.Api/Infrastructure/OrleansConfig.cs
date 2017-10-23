@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Heroes.Contracts.Grains.Heroes;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Runtime;
 using Orleans.Runtime.Configuration;
@@ -14,11 +16,11 @@ namespace Heroes.Api.Infrastructure
 		{
 			try
 			{
-				var clientConfig = ClientConfiguration.LocalhostSilo();
-				var clientAsync = InitializeWithRetries(clientConfig, initializeAttemptsBeforeFailing);
-				clientAsync.Wait();
-				services.AddSingleton(clientAsync.Result);
-
+				using (var client = StartClientWithRetries())
+				{
+					client.Wait();
+					services.AddSingleton(client.Result);
+				}
 			}
 			catch (Exception ex)
 			{
@@ -29,15 +31,18 @@ namespace Heroes.Api.Infrastructure
 			return services;
 		}
 
-		private static async Task<IClusterClient> InitializeWithRetries(ClientConfiguration clientConfig, int initializeAttemptsBeforeFailing)
+		private static async Task<IClusterClient> StartClientWithRetries(int initializeAttemptsBeforeFailing = 7)
 		{
 			int attempt = 0;
 			while (true)
 			{
 				try
 				{
+					var config = ClientConfiguration.LocalhostSilo();
 					var client = new ClientBuilder()
-						.UseConfiguration(clientConfig)
+						.UseConfiguration(config)
+						.AddApplicationPartsFromReferences(typeof(IHeroGrain).Assembly)
+						.ConfigureLogging(logging => logging.AddConsole())
 						.Build();
 
 					await client.Connect();
@@ -54,7 +59,7 @@ namespace Heroes.Api.Infrastructure
 					}
 					var delay = 2 * attempt;
 					Console.WriteLine(
-						"Cluster client failed to connect. Attempt {attempt} of {initializeAttemptsBeforeFailing}. Retrying in {delay}s.",
+						$"Cluster client failed to connect. Attempt {attempt} of {initializeAttemptsBeforeFailing}. Retrying in {delay}s.",
 						attempt, initializeAttemptsBeforeFailing, delay);
 					Thread.Sleep(TimeSpan.FromSeconds(delay));
 				}
