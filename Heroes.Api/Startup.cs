@@ -26,6 +26,13 @@ namespace Heroes.Api
 			services.AddHeroesClients();
 			services.AddHeroesAppGraphQL();
 			services.AddMvc();
+			services.AddCors(o => o.AddPolicy("TempCorsPolicy", builder =>
+			{
+				builder.AllowAnyOrigin()
+					.AllowAnyMethod()
+					.AllowAnyHeader()
+					.AllowCredentials();
+			}));
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -40,6 +47,7 @@ namespace Heroes.Api
 
 			warmUpClient.Initialize();
 
+			app.UseCors("TempCorsPolicy");
 			app.SetGraphQLMiddleWare();
 
 			if (env.IsDevelopment())

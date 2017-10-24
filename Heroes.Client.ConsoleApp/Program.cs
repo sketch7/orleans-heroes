@@ -1,13 +1,12 @@
-﻿using Heroes.Contracts.Grains.Mocks;
+﻿using Heroes.Contracts.Grains.Heroes;
+using Heroes.Contracts.Grains.Mocks;
+using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Runtime;
 using Orleans.Runtime.Configuration;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Heroes.Contracts.Grains;
-using Heroes.Contracts.Grains.Heroes;
 
 namespace Heroes.Client.ConsoleApp
 {
@@ -15,34 +14,31 @@ namespace Heroes.Client.ConsoleApp
 	{
 		static int Main(string[] args)
 		{
-			var config = ClientConfiguration.LocalhostSilo();
-			StartClient(config).Wait();
-
-			Console.WriteLine("Press Enter to terminate...");
-			Console.ReadLine();
-			return 0;
+			return RunMainAsync().Result;
 		}
 
-		static async Task StartClient(ClientConfiguration config)
+		private static async Task<int> RunMainAsync()
 		{
-			IClusterClient client = null;
 			try
 			{
-				client = await InitializeWithRetriesAsync(config, 7);
+				using (var client = await StartClientWithRetries())
+				{
+					await AddHeroes(client);
+					GetHero(client);
+					GetAll(client);
+					Console.ReadKey();
+				}
+
+				return 0;
 			}
-			catch (Exception ex)
+			catch (Exception e)
 			{
-				Console.WriteLine($"Orleans client initialization failed failed due to {ex}");
-
-				Console.ReadLine();
+				Console.WriteLine(e);
+				return 1;
 			}
-
-			await AddHeroes(client);
-			GetHero(client);
-			GetAll(client);
 		}
 
-		private static async Task<IClusterClient> InitializeWithRetriesAsync(ClientConfiguration config, int initializeAttemptsBeforeFailing)
+		private static async Task<IClusterClient> StartClientWithRetries(int initializeAttemptsBeforeFailing = 7)
 		{
 			int attempt = 0;
 			IClusterClient client;
@@ -50,9 +46,11 @@ namespace Heroes.Client.ConsoleApp
 			{
 				try
 				{
-					//GrainClient.Initialize(config);
+					var config = ClientConfiguration.LocalhostSilo();
 					client = new ClientBuilder()
 						.UseConfiguration(config)
+						.AddApplicationPartsFromReferences(typeof(IHeroGrain).Assembly)
+						.ConfigureLogging(logging => logging.AddConsole())
 						.Build();
 
 					await client.Connect();
@@ -67,7 +65,7 @@ namespace Heroes.Client.ConsoleApp
 					{
 						throw;
 					}
-					Thread.Sleep(TimeSpan.FromSeconds(2));
+					Thread.Sleep(TimeSpan.FromSeconds(3));
 				}
 			}
 

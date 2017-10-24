@@ -22,8 +22,9 @@ export class HeroListComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
-		this.store.dispatch(this.action.getAll());
-		this.heroes$ = this.store.select(this.selector.getAll());
+		// this.store.dispatch(this.action.getAll());
+		// this.heroes$ = this.store.select(this.selector.getAll());
+		this.heroes$ = this.selector.getAllGraphQL();
 	}
 
 	trackByHero(_index: number, hero: Hero): string {

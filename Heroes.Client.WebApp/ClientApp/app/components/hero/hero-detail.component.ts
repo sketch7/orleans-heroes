@@ -32,7 +32,6 @@ export class HeroDetailComponent implements OnInit, OnDestroy {
 			.map(params => params.get("id")!)
 			.do(id => this.store.dispatch(this.action.get(id)))
 			.switchMap(id => this.store.select(this.selector.getById(id)))
-			.do(x => console.log("hero", x))
 			.do(x => this.hero = x)
 			.subscribe();
 	}
