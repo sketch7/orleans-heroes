@@ -1,14 +1,18 @@
+import { HttpHeaders } from "@angular/common/http";
+import { isPlatformServer } from "@angular/common";
 import { ApolloClient } from "apollo-client";
 import { ApolloModule, Apollo } from "apollo-angular";
 import { ApolloLink } from "apollo-link";
 // import { HttpLink } from "apollo-link-http";
-import { HttpLink } from "apollo-angular-link-http";
-import { Injectable } from "@angular/core";
+import { HttpLink, HttpLinkHandler } from "apollo-angular-link-http";
+import { Injectable, PLATFORM_ID, Inject } from "@angular/core";
 import { applyMiddleware } from "redux";
 import { InMemoryCache } from "apollo-cache-inmemory";
+import { SubscriptionClient } from "subscriptions-transport-ws";
+import { WebSocketLink } from "apollo-link-ws";
+
 
 import { Dictionary } from "../shared/utils";
-import { HttpHeaders } from "@angular/common/http";
 
 // const httpLink: HttpLink = new HttpLink({
 // 	uri: "http://localhost:62551/graphql",
@@ -39,17 +43,34 @@ export class AppApolloClient {
 	// private apollo: ApolloBase;
 	// private networkInterface: ApolloLink;
 
+	uri = "http://localhost:62551/graphql";
+	subscriptionsUri = "ws://localhost:62551/graphql";
+
 	constructor(
 		apollo: Apollo,
-		httpLink: HttpLink
+		httpLink: HttpLink,
+		@Inject(PLATFORM_ID) platformId: Object
 	) {
 
+		const httpLk: HttpLinkHandler = httpLink.create({
+			uri: this.uri,
+			headers: new HttpHeaders({ "Content-Type": "application/json" }),
+			withCredentials: true
+		});
+
+		let apolloLinks: ApolloLink[] = [httpLk];
+		if (!isPlatformServer(platformId)) {
+			const wsLink: WebSocketLink = new WebSocketLink(new SubscriptionClient(this.subscriptionsUri, {
+				reconnect: true,
+				// connectionParams: {
+				//   authToken: localStorage.getItem(GC_AUTH_TOKEN)
+				// }
+			}));
+			apolloLinks.push(wsLink);
+		}
+
 		apollo.create({
-			link: httpLink.create({
-				uri: "http://localhost:62551/graphql",
-				headers: new HttpHeaders({ "Content-Type": "application/json" }),
-				withCredentials: true
-			}),
+			link: ApolloLink.from(apolloLinks),
 			cache: new InMemoryCache()
 		});
 		// apollo.getClient()
