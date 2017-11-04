@@ -1,5 +1,6 @@
 ﻿using GraphQL.Types;
 using Heroes.Api.GraphQLCore.Types;
+using Heroes.Api.Sample;
 using Heroes.Contracts.Grains.Heroes;
 using Heroes.Contracts.Grains.Stats;
 
@@ -9,7 +10,8 @@ namespace Heroes.Api.GraphQLCore.Queries
 	{
 		public HeroesAppGraphQuery(
 			IHeroClient heroClient,
-			IHeroStatsClient heroStatsClient
+			IHeroStatsClient heroStatsClient,
+			IHeroService mockHeroService
 			)
 		{
 			Name = "AppQueries";
@@ -52,7 +54,17 @@ namespace Heroes.Api.GraphQLCore.Queries
 					var result = heroStatsClient.Get(context.GetArgument<string>("key"));
 					return result;
 				}
+			);
 
+
+			Field<ListGraphType<HeroType>>(
+				name: "heroesMock",
+				description: "heroes list",
+				resolve: context =>
+				{
+					var result = mockHeroService.Heroes();
+					return result;
+				}
 			);
 		}
 	}

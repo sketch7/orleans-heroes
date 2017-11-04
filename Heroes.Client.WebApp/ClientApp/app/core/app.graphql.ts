@@ -59,15 +59,16 @@ export class AppApolloClient {
 		});
 
 		let apolloLinks: ApolloLink[] = [httpLk];
-		if (!isPlatformServer(platformId)) {
-			const wsLink: WebSocketLink = new WebSocketLink(new SubscriptionClient(this.subscriptionsUri, {
-				reconnect: true,
-				// connectionParams: {
-				//   authToken: localStorage.getItem(GC_AUTH_TOKEN)
-				// }
-			}));
-			apolloLinks.push(wsLink);
-		}
+		// todo cla: enable this for WebSockets
+		// if (!isPlatformServer(platformId)) {
+		// 	const wsLink: WebSocketLink = new WebSocketLink(new SubscriptionClient(this.subscriptionsUri, {
+		// 		reconnect: true,
+		// 		// connectionParams: {
+		// 		//   authToken: localStorage.getItem(GC_AUTH_TOKEN)
+		// 		// }
+		// 	}));
+		// 	apolloLinks.push(wsLink);
+		// }
 
 		apollo.create({
 			link: ApolloLink.from(apolloLinks),

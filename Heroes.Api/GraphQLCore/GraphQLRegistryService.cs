@@ -17,6 +17,7 @@ namespace Heroes.Api.GraphQLCore
 			services.AddSingleton<IDocumentWriter>(new DocumentWriter(true));
 
 			services.AddScoped<HeroesAppGraphQuery>();
+			services.AddScoped<HeroesAppGraphSubscription>();
 
 			services.AddTransient<HeroRoleEnum>();
 			services.AddTransient<HeroType>();

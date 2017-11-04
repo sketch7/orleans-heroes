@@ -1,5 +1,6 @@
 ﻿using Heroes.Api.GraphQLCore;
 using Heroes.Api.Infrastructure;
+using Heroes.Api.Sample;
 using Heroes.Clients;
 using Heroes.Contracts.Grains.Core;
 using Microsoft.AspNetCore.Builder;
@@ -22,6 +23,8 @@ namespace Heroes.Api
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.AddSingleton<IHeroService, HeroService>();
+
 			services.ConfigureClusterClient();
 			services.AddHeroesClients();
 			services.AddHeroesAppGraphQL();
