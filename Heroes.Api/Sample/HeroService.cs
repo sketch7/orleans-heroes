@@ -2,7 +2,6 @@
 using Heroes.Contracts.Grains.Mocks;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
@@ -47,15 +46,6 @@ namespace Heroes.Api.Sample
 		}
 	}
 
-	public static class ListExtensions
-	{
-		public static IEnumerable<T> Randomize<T>(this IEnumerable<T> source)
-		{
-			Random rnd = new Random();
-			return source.OrderBy(item => rnd.Next());
-		}
-	}
-
 	public static class ColectionExtension
 	{
 		private static readonly Random Rng = new Random();
@@ -70,6 +60,4 @@ namespace Heroes.Api.Sample
 			return array[Rng.Next(array.Length)];
 		}
 	}
-
-
 }
