@@ -7,7 +7,7 @@ using System.Reactive.Subjects;
 
 namespace Heroes.Api.Sample
 {
-    public interface IHeroService
+	public interface IHeroService
 	{
 		Hero AddHero();
 		IObservable<Hero> AddedHero();
@@ -46,18 +46,18 @@ namespace Heroes.Api.Sample
 		}
 	}
 
-	public static class ColectionExtension
+	public static class CollectionExtension
 	{
-		private static readonly Random Rng = new Random();
+		private static readonly Random Random = new Random();
 
 		public static T RandomElement<T>(this IList<T> list)
 		{
-			return list[Rng.Next(list.Count)];
+			return list[Random.Next(list.Count)];
 		}
 
 		public static T RandomElement<T>(this T[] array)
 		{
-			return array[Rng.Next(array.Length)];
+			return array[Random.Next(array.Length)];
 		}
 	}
 }

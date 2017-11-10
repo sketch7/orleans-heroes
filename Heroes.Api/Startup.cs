@@ -52,6 +52,8 @@ namespace Heroes.Api
 
 			app.UseCors("TempCorsPolicy");
 			app.SetGraphQLMiddleWare();
+			//app.UseWebSockets();
+			//app.UseGraphQLEndPoint<HeroesAppSchema>("/graphql");
 
 			if (env.IsDevelopment())
 			{
