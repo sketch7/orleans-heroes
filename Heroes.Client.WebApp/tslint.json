@@ -1,0 +1,176 @@
+{
+	"rules": {
+		"effects-selector-suffix": true,
+		"filename-suffix": [
+			true,
+			"spec",
+			"mock"
+		],
+		"import-vendors-first": [
+			true,
+			"@odin"
+		],
+		"multiline-constructor-params": true,
+		"linebreak-after-classname": true,
+		"linebreak-after-method": true,
+		"no-duplicate-imports": true,
+		"no-linebreak-after-decorators": true,
+		"no-linebreak-between-vendors": [
+			true,
+			"@odin"
+		],
+		"seperator-between-imports": false,
+		// tslint
+		"array-type": [
+			true,
+			"array"
+		],
+		"arrow-parens": [
+			true,
+			"ban-single-arg-parens"
+		],
+		"arrow-return-shorthand": [
+			true,
+			"multiline"
+		],
+		"class-name": true,
+		"comment-format": [
+			true,
+			"check-space"
+		],
+		"curly": true,
+		"eofline": false,
+		"forin": true,
+		"import-spacing": true,
+		"indent": [
+			true,
+			"tabs"
+		],
+		"interface-over-type-literal": true,
+		"label-position": true,
+		"max-line-length": [
+			true,
+			140
+		],
+		"member-access": [
+			true,
+			"no-public"
+		],
+		"member-ordering": [
+			true,
+			{
+				"order": [
+					"public-static-field",
+					"protected-static-field",
+					"private-static-field",
+					"public-instance-field",
+					"protected-instance-field",
+					"private-instance-field",
+					"constructor",
+					"public-static-method",
+					"protected-static-method",
+					"private-static-method",
+					"public-instance-method",
+					"protected-instance-method",
+					"private-instance-method"
+				]
+			}
+		],
+		"no-angle-bracket-type-assertion": true,
+		"no-arg": true,
+		"no-bitwise": true,
+		"no-consecutive-blank-lines": [
+			true,
+			2
+		],
+		"no-console": [
+			true,
+			"time",
+			"timeEnd",
+			"trace"
+		],
+		"no-construct": true,
+		"no-debugger": true,
+		"no-duplicate-variable": true,
+		"no-empty": true,
+		"no-eval": true,
+		"no-inferrable-types": [
+			true
+		],
+		"no-invalid-this": true,
+		"no-shadowed-variable": true,
+		"no-string-literal": true,
+		"no-string-throw": true,
+		"no-switch-case-fall-through": false,
+		"no-trailing-whitespace": true,
+		"no-unnecessary-callback-wrapper": true,
+		"no-unnecessary-initializer": true,
+		"no-unused-expression": true,
+		"no-var-keyword": true,
+		"object-literal-key-quotes": [
+			true,
+			"as-needed"
+		],
+		"object-literal-shorthand": true,
+		"object-literal-sort-keys": false,
+		"one-line": [
+			true,
+			"check-catch",
+			"check-else",
+			"check-open-brace",
+			"check-whitespace"
+		],
+		"only-arrow-functions": [
+			"allow-declarations",
+			"allow-named-functions",
+			true
+		],
+		"prefer-const": true,
+		"prefer-for-of": true,
+		"prefer-template": [
+			true,
+			"allow-single-concat"
+		],
+		"quotemark": [
+			true,
+			"double"
+		],
+		"radix": true,
+		"semicolon": [
+			true,
+			"always"
+		],
+		"space-before-function-paren": [
+			false,
+			"never"
+		],
+		"switch-default": false,
+		"trailing-comma": [
+			false,
+			{
+				"multiline": "never",
+				"singleline": "never"
+			}
+		],
+		"triple-equals": [
+			true,
+			"allow-null-check"
+		],
+		"use-isnan": true,
+		"variable-name": [
+			true,
+			"allow-leading-underscore",
+			"allow-trailing-underscore",
+			"check-format"
+		],
+		"whitespace": [
+			true,
+			"check-branch",
+			"check-decl",
+			"check-module",
+			"check-operator",
+			"check-separator",
+			"check-type"
+		]
+	}
+}

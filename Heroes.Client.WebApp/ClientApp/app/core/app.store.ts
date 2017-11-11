@@ -14,35 +14,35 @@ import { AppApolloClient } from "./app.graphql";
 import { ApolloModule } from "apollo-angular";
 
 @NgModule({
-    imports: [NgReduxModule, NgReduxRouterModule],
-    providers: [AppEpics, AppApolloClient]
+	imports: [NgReduxModule, NgReduxRouterModule],
+	providers: [AppEpics, AppApolloClient]
 })
 export class StoreModule {
-    constructor(
-        store: NgRedux<AppState>,
-        devTools: DevToolsExtension,
-        ngReduxRouter: NgReduxRouter,
-        appEpics: AppEpics,
-        apollo: AppApolloClient
-    ) {
-        const enhancers: any[] = [
-          //  apollo.getMiddleware()
-        ];
+	constructor(
+		store: NgRedux<AppState>,
+		devTools: DevToolsExtension,
+		ngReduxRouter: NgReduxRouter,
+		appEpics: AppEpics,
+		apollo: AppApolloClient
+	) {
+		const enhancers: any[] = [
+			//  apollo.getMiddleware()
+		];
 
-        if (devTools.isEnabled()) {
-            enhancers.push(devTools.enhancer());
-        }
+		if (devTools.isEnabled()) {
+			enhancers.push(devTools.enhancer());
+		}
 
-        store.configureStore(
-            appReducer,
-            {} as any,
-            [createLogger(), ...appEpics.all],
-            enhancers);
+		store.configureStore(
+			appReducer,
+			{} as any,
+			[createLogger(), ...appEpics.all],
+			enhancers);
 
-        if (ngReduxRouter) {
-            ngReduxRouter.initialize();
-        }
+		if (ngReduxRouter) {
+			ngReduxRouter.initialize();
+		}
 
-        provideReduxForms(store);
-    }
+		provideReduxForms(store);
+	}
 }

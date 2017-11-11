@@ -8,17 +8,17 @@ const INITIAL_STATE: HeroState = {};
 
 export function heroReducer(state: HeroState = INITIAL_STATE, action: Action): HeroState {
 
-    switch (action.type) {
+	switch (action.type) {
 
-        case HERO_ACTION_TYPE.getSuccess: {
-            const response: ActionPayload<Hero> = action as ActionPayload<Hero>;
-            return updateMapState<HeroState, Hero>(response.payload.key, state, response.payload);
-        }
-        case HERO_ACTION_TYPE.getAllSuccess: {
-            const response: ActionPayload<Hero[]> = action as ActionPayload<Hero[]>;
-            return updateAllMapState<HeroState, Hero>(state, response.payload, "key");
-        }
-    }
+		case HERO_ACTION_TYPE.getSuccess: {
+			const response: ActionPayload<Hero> = action as ActionPayload<Hero>;
+			return updateMapState<HeroState, Hero>(response.payload.key, state, response.payload);
+		}
+		case HERO_ACTION_TYPE.getAllSuccess: {
+			const response: ActionPayload<Hero[]> = action as ActionPayload<Hero[]>;
+			return updateAllMapState<HeroState, Hero>(state, response.payload, "key");
+		}
+	}
 
-    return state;
+	return state;
 }

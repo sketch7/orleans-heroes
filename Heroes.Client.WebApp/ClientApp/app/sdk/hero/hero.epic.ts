@@ -10,28 +10,28 @@ import { HeroRoleType } from "./hero.model";
 
 @Injectable()
 export class HeroEpics {
-    epics: Epic<Action, AppState>[];
+	epics: Epic<Action, AppState>[];
 
-    constructor(
-        private service: HeroService,
-        private actions: HeroAction
-    ) {
-        this.epics = [this.getById, this.getAll];
-    }
+	constructor(
+		private service: HeroService,
+		private actions: HeroAction
+	) {
+		this.epics = [this.getById, this.getAll];
+	}
 
-    getById = (action$: any) => action$
-        .ofType(HERO_ACTION_TYPE.get)
-        .map((action: ActionPayload<String>) => action.payload)
-        .switchMap((id: string) => this.service.getById(id)
-            .map(response => this.actions.getSuccess(response))
-            .catch(err => of(this.actions.getFail(err)))
-        )
+	getById = (action$: any) => action$
+		.ofType(HERO_ACTION_TYPE.get)
+		.map((action: ActionPayload<String>) => action.payload)
+		.switchMap((id: string) => this.service.getById(id)
+			.map(response => this.actions.getSuccess(response))
+			.catch(err => of(this.actions.getFail(err)))
+		)
 
-    getAll = (action$: any) => action$
-        .ofType(HERO_ACTION_TYPE.getAll)
-        .map((action: ActionPayload<HeroRoleType | undefined>) => action.payload)
-        .switchMap((roleType: HeroRoleType | undefined) => this.service.getAll(roleType)
-            .map(response => this.actions.getAllSuccess(response))
-            .catch(err => of(this.actions.getAllFail(err)))
-        )
+	getAll = (action$: any) => action$
+		.ofType(HERO_ACTION_TYPE.getAll)
+		.map((action: ActionPayload<HeroRoleType | undefined>) => action.payload)
+		.switchMap((roleType: HeroRoleType | undefined) => this.service.getAll(roleType)
+			.map(response => this.actions.getAllSuccess(response))
+			.catch(err => of(this.actions.getAllFail(err)))
+		)
 }

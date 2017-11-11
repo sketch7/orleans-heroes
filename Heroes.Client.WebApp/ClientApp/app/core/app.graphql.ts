@@ -58,7 +58,7 @@ export class AppApolloClient {
 			withCredentials: true
 		});
 
-		let apolloLinks: ApolloLink[] = [httpLk];
+		const apolloLinks: ApolloLink[] = [httpLk];
 		// todo cla: enable this for WebSockets
 		// if (!isPlatformServer(platformId)) {
 		// 	const wsLink: WebSocketLink = new WebSocketLink(new SubscriptionClient(this.subscriptionsUri, {

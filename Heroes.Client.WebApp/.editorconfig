@@ -1,0 +1,12 @@
+root = true
+
+[*]
+indent_style = tab
+
+[*.{js,ts}]
+charset = utf-8
+trim_trailing_whitespace = true
+
+[*.{json,yml,csproj,md}]
+indent_size = 2
+indent_style = space

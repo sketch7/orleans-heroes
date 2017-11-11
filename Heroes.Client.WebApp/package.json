@@ -6,7 +6,7 @@
     "start": "dotnet run",
     "start:dev-clean": "npm run clean && npm run build && npm start",
     "start:prod": "dotnet run -p Heroes.Client.WebApp.csproj --launch-profile \"App-Prod\"",
-    "start:prod-clean": "npm run clean && npm run build:rel && npm run start-prod",
+    "start:prod-clean": "npm run clean && npm run build:rel && npm run start:prod",
     "test": "karma start ClientApp/test/karma.conf.js",
     "build:vendor": "node node_modules/webpack/bin/webpack.js --config webpack.config.vendor.js",
     "build:app": "node node_modules/webpack/bin/webpack.js",

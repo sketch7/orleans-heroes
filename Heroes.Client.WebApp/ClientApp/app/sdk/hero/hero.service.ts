@@ -11,43 +11,49 @@ import { HeroRoleType, Hero } from "./hero.model";
 @Injectable()
 export class HeroService {
 
-    constructor(
-        private http: HttpClient,
-        private apollo: Apollo,
-    ) {
-    }
+		list = [
+		{
+			key: "rengar",
+			name: "mock data - mighty rengo",
+			role: HeroRoleType.assassin,
+			abilities: []
+		},
+		{
+			key: "kha-zix",
+			name: "mock data - kha zix",
+			role: HeroRoleType.assassin,
+			abilities: []
+		},
+		{
+			key: "singed",
+			name: "mock data - singed",
+			role: HeroRoleType.tank,
+			abilities: []
+		}
+	];
 
-    list = [
-        {
-            key: "rengar",
-            name: "mighty rengo",
-            role: HeroRoleType.assassin,
-            abilities: []
-        },
-        {
-            key: "singed",
-            name: "singed",
-            role: HeroRoleType.tank,
-            abilities: []
-        }
-    ];
+	constructor(
+		private http: HttpClient,
+		private apollo: Apollo,
+	) {
+	}
 
-    getById(id: string): Observable<Hero> {
-        return Observable.of(_.find(this.list, x => x.key === id)!).delay(3000);
-    }
+	getById(id: string): Observable<Hero> {
+		return Observable.of(_.find(this.list, x => x.key === id)!);
+	}
 
-    getAll(roleType: HeroRoleType | undefined): Observable<Hero[]> {
-        return Observable.of(this.list);
-    }
+	getAll(): Observable<Hero[]> {
+		return Observable.of(this.list);
+	}
 
-    getAllHttp(roleType: HeroRoleType | undefined): Observable<Hero[]> {
-        return this.http.get<Hero[]>("http://localhost:62551/api/heroes")
-            .do(x => console.log("HeroService :: http response", x));
-    }
+	getAllHttp(): Observable<Hero[]> {
+		return this.http.get<Hero[]>("http://localhost:62551/api/heroes")
+			.do(x => console.log("HeroService :: http response", x));
+	}
 
-    getAllGraphQL(roleType: HeroRoleType | undefined): Observable<Hero[]> {
-        console.log("HeroService :: graphQL - init");
-        const query: any = gql`
+	getAllGraphQL(roleType?: HeroRoleType): Observable<Hero[]> {
+		console.log("HeroService :: graphQL - init");
+		const query: any = gql`
         query GetAllHeroes($role: HeroRoleEnum) {
             heroes (role: $role) {
               key
@@ -57,11 +63,11 @@ export class HeroService {
           }
         `;
 
-        return this.apollo.query<any>({
-            query: query
-        })
-        .do(x => console.log("HeroService :: graphQL - response", x))
-            .map(({ data }) => data.heroes);
-    }
+		return this.apollo.query<any>({
+			query
+		})
+			.do(x => console.log("HeroService :: graphQL - response", x))
+			.map(({ data }) => data.heroes);
+	}
 
 }

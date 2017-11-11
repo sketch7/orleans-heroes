@@ -9,7 +9,7 @@ import { CoreConfig } from "../../shared/model";
 })
 export class NavMenuComponent {
 
-	username: string = "ho";
+	username = "ho";
 	constructor(
 		@Inject("CORE_CONFIG") config: CoreConfig
 	) {

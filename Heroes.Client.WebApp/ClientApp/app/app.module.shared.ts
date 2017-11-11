@@ -16,42 +16,42 @@ import { StoreModule } from "./core/app.store";
 import { SDK_PROVIDERS } from "./sdk/sdk-exports";
 import { HeroListComponent } from "./components/hero/hero-list.component";
 import { HeroDetailComponent } from "./components/hero/hero-detail.component";
-import {  AppApolloClient } from "./core/app.graphql";
+import { AppApolloClient } from "./core/app.graphql";
 import { ApolloModule } from "apollo-angular";
 import { HttpLinkModule } from "apollo-angular-link-http";
 
 @NgModule({
-    declarations: [
-        AppComponent,
-        NavMenuComponent,
-        CounterComponent,
-        FetchDataComponent,
-        HomeComponent,
-        HeroListComponent,
-        HeroDetailComponent
-    ],
-    imports: [
-        CommonModule,
-        HttpClientModule,
-        FormsModule,
-        RouterModule.forRoot([
-            { path: "", redirectTo: "home", pathMatch: "full" },
-            { path: "home", component: HomeComponent },
-            { path: "counter", component: CounterComponent },
-            { path: "heroes", component: HeroListComponent },
-            { path: "heroes/:id", component: HeroDetailComponent },
-            { path: "fetch-data", component: FetchDataComponent },
-            { path: "**", redirectTo: "home" }
-        ]),
-        NgReduxModule,
-        NgReduxRouterModule,
-        StoreModule,
-        HttpLinkModule,
-        ApolloModule
-    ],
-    providers: [
-        SDK_PROVIDERS,
-        AppApolloClient
+	declarations: [
+		AppComponent,
+		NavMenuComponent,
+		CounterComponent,
+		FetchDataComponent,
+		HomeComponent,
+		HeroListComponent,
+		HeroDetailComponent
+	],
+	imports: [
+		CommonModule,
+		HttpClientModule,
+		FormsModule,
+		RouterModule.forRoot([
+			{ path: "", redirectTo: "home", pathMatch: "full" },
+			{ path: "home", component: HomeComponent },
+			{ path: "counter", component: CounterComponent },
+			{ path: "heroes", component: HeroListComponent },
+			{ path: "heroes/:id", component: HeroDetailComponent },
+			{ path: "fetch-data", component: FetchDataComponent },
+			{ path: "**", redirectTo: "home" }
+		]),
+		NgReduxModule,
+		NgReduxRouterModule,
+		StoreModule,
+		HttpLinkModule,
+		ApolloModule
+	],
+	providers: [
+		SDK_PROVIDERS,
+		AppApolloClient
 	]
 })
 export class AppModuleShared {

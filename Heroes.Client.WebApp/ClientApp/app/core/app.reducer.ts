@@ -8,11 +8,11 @@ import { AppState } from "./app.state";
 // import { client } from "./app.graphql";
 
 export const appReducer: Reducer<AppState> = composeReducers<AppState>(
-    defaultFormReducer(),
-    combineReducers({
-        heroes: heroReducer,
-       // apollo: client.reducer()
-}));
+	defaultFormReducer(),
+	combineReducers({
+		heroes: heroReducer,
+		// apollo: client.reducer()
+	}));
 
 // export const appReducer: Reducer<AppState> = combineReducers<AppState>(
 // {

@@ -1,5 +1,6 @@
 import * as _ from "lodash";
 import { Injectable } from "@angular/core";
+import { Observable } from "rxjs/Observable";
 
 import { AppState } from "../../core/app.state";
 import { Hero, HeroRoleType } from "./hero.model";
@@ -12,12 +13,11 @@ export class HeroSelector {
 	}
 
 	getById(id: string): (state: AppState) => Hero {
-		return (state: AppState): Hero => {
-			return state.heroes[id];
-		};
+		return (state: AppState): Hero =>
+			state.heroes[id];
 	}
 
-	getAll(roleType: HeroRoleType | undefined = undefined): (state: AppState) => Hero[] {
+	getAll(roleType?: HeroRoleType): (state: AppState) => Hero[] {
 		return (state: AppState): Hero[] => {
 			let result: Hero[] = _.values(state.heroes);
 
@@ -29,7 +29,7 @@ export class HeroSelector {
 		};
 	}
 
-	getAllGraphQL (roleType: HeroRoleType | undefined = undefined): any {
+	getAllGraphQL(roleType?: HeroRoleType): Observable<Hero[]> {
 		// return this.service.getAllHttp(roleType);
 		return this.service.getAllGraphQL(roleType);
 	}

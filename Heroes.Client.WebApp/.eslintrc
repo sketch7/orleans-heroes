@@ -1,0 +1,20 @@
+{
+	"parserOptions": {
+		"ecmaVersion": 6
+	},
+	"env": {
+		"browser": false
+	},
+	"rules": {
+		"no-trailing-spaces": "warn",
+		"comma-dangle": "off",
+		"quotes": [
+			"warn",
+			"double"
+		],
+		"no-mixed-spaces-and-tabs": [
+			"warn",
+			"smart-tabs"
+		]
+	}
+}

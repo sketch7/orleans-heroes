@@ -8,26 +8,26 @@ import { StartupContext, CoreConfig } from "./shared/model";
 declare var startupContext: StartupContext;
 
 export function getBaseUrl(): string {
-    return document.getElementsByTagName("base")[0].href;
+	return document.getElementsByTagName("base")[0].href;
 }
 
 export function getConfig(): CoreConfig {
-    return {
-        username: startupContext.username,
-        isDebug: startupContext.isDebug
-    };
+	return {
+		username: startupContext.username,
+		isDebug: startupContext.isDebug
+	};
 }
 
 @NgModule({
-    bootstrap: [ AppComponent ],
-    imports: [
-        BrowserModule,
-        AppModuleShared
-    ],
-    providers: [
-        { provide: "BASE_URL", useFactory: getBaseUrl },
-        { provide: "CORE_CONFIG", useFactory: getConfig }
-    ]
+	bootstrap: [AppComponent],
+	imports: [
+		BrowserModule,
+		AppModuleShared
+	],
+	providers: [
+		{ provide: "BASE_URL", useFactory: getBaseUrl },
+		{ provide: "CORE_CONFIG", useFactory: getConfig }
+	]
 })
 export class AppModule {
 }
