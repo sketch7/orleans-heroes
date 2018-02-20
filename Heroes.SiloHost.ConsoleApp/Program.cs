@@ -1,4 +1,10 @@
-﻿using Heroes.Core;
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Runtime.Loader;
+using System.Threading;
+using System.Threading.Tasks;
+using Heroes.Core;
 using Heroes.Grains;
 using Heroes.SiloHost.ConsoleApp.Infrastructure;
 using Microsoft.Extensions.Configuration;
@@ -6,12 +12,6 @@ using Orleans;
 using Orleans.Hosting;
 using Orleans.Runtime.Configuration;
 using Serilog;
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Runtime.Loader;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Heroes.SiloHost.ConsoleApp
 {
