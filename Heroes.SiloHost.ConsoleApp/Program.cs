@@ -1,9 +1,11 @@
 ﻿using Heroes.Grains;
 using Microsoft.Extensions.Logging;
+using Orleans;
 using Orleans.Hosting;
 using Orleans.Runtime.Configuration;
 using System;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace Heroes.SiloHost.ConsoleApp
 {
@@ -40,8 +42,10 @@ namespace Heroes.SiloHost.ConsoleApp
 
 			var builder = new SiloHostBuilder()
 				.UseConfiguration(config)
-				.AddApplicationPartsFromReferences(typeof(HeroGrain).Assembly)
-				.ConfigureLogging(logging => logging.AddConsole());
+				.ConfigureApplicationParts(parts => parts
+					.AddApplicationPart(typeof(HeroGrain).Assembly).WithReferences()
+				)
+				.ConfigureLogging(logging => logging.AddSerilog());
 
 			var host = builder.Build();
 			await host.StartAsync();

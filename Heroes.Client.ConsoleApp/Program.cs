@@ -49,7 +49,9 @@ namespace Heroes.Client.ConsoleApp
 					var config = ClientConfiguration.LocalhostSilo();
 					client = new ClientBuilder()
 						.UseConfiguration(config)
-						.AddApplicationPartsFromReferences(typeof(IHeroGrain).Assembly)
+						.ConfigureApplicationParts(parts => parts
+							.AddApplicationPart(typeof(IHeroGrain).Assembly).WithReferences()
+						)
 						.ConfigureLogging(logging => logging.AddConsole())
 						.Build();
 

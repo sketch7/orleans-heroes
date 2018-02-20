@@ -9,19 +9,26 @@
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Orleans.Server" Version="2.0.0-beta3" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="2.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Heroes.Contracts.Grains\Heroes.Contracts.Grains.csproj" />
+    <ProjectReference Include="..\Heroes.Grains\Heroes.Grains.csproj" />
+  </ItemGroup>
+
   <PropertyGroup>
     <ServerGarbageCollection>true</ServerGarbageCollection>
     <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Orleans.Server" Version="2.0.0-beta1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Heroes.Contracts.Grains\Heroes.Contracts.Grains.csproj" />
-    <ProjectReference Include="..\Heroes.Grains\Heroes.Grains.csproj" />
+    <None Update=".dockerignore">
+      <DependentUpon>Dockerfile</DependentUpon>
+    </None>
   </ItemGroup>
 
 </Project>
