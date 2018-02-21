@@ -10,7 +10,6 @@ using Heroes.SiloHost.ConsoleApp.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Orleans;
 using Orleans.Hosting;
-using Orleans.Runtime.Configuration;
 using Serilog;
 
 namespace Heroes.SiloHost.ConsoleApp
@@ -19,9 +18,9 @@ namespace Heroes.SiloHost.ConsoleApp
 	{
 		private static ILogger _log;
 		private static ISiloHost _siloHost;
-		private static HostingEnvironment _hostingEnvironment;
-		private static readonly ManualResetEvent SiloStopped = new ManualResetEvent(false);
+		private static HostingEnvironment _hostingEnv;
 		private static Stopwatch _startupStopwatch;
+		private static readonly ManualResetEvent SiloStopped = new ManualResetEvent(false);
 
 		public static void Main(string[] args)
 		{
@@ -38,8 +37,8 @@ namespace Heroes.SiloHost.ConsoleApp
 			try
 			{
 				_startupStopwatch = Stopwatch.StartNew();
-				_hostingEnvironment = new HostingEnvironment();
-				var shortEnvName = AppInfo.MapEnvironmentName(_hostingEnvironment.Environment);
+				_hostingEnv = new HostingEnvironment();
+				var shortEnvName = AppInfo.MapEnvironmentName(_hostingEnv.Environment);
 				var configBuilder = new ConfigurationBuilder()
 					.SetBasePath(Directory.GetCurrentDirectory())
 					.AddCommandLine(args)
@@ -48,7 +47,7 @@ namespace Heroes.SiloHost.ConsoleApp
 					.AddJsonFile("app-info.json")
 					.AddEnvironmentVariables();
 
-				if (_hostingEnvironment.IsDockerDev)
+				if (_hostingEnv.IsDockerDev)
 					configBuilder.AddJsonFile("config.dev-docker.json", optional: true);
 
 				var config = configBuilder.Build();
@@ -61,17 +60,18 @@ namespace Heroes.SiloHost.ConsoleApp
 
 				Log.Logger = logger;
 				_log = logger.ForContext<Program>();
-				_log.Information("Initializing Silo {appName} ({version}) [{env}]...", appInfo.Name, appInfo.Version, _hostingEnvironment.Environment);
+				_log.Information("Initializing Silo {appName} ({version}) [{env}]...", appInfo.Name, appInfo.Version, _hostingEnv.Environment);
 
-				_siloHost = BuildSilo(logger);
+				_siloHost = BuildSilo(config, appInfo, logger);
 				AssemblyLoadContext.Default.Unloading += context =>
 				{
 					_log.Information("Assembly unloading...");
 
-					Task.Run(() => StopSilo(appInfo));
+					Task.Run(StopSilo);
 					SiloStopped.WaitOne();
 
 					_log.Information("Assembly unloaded complete.");
+					Log.CloseAndFlush();
 				};
 
 				await StartSilo();
@@ -79,16 +79,16 @@ namespace Heroes.SiloHost.ConsoleApp
 			catch (Exception ex)
 			{
 				_log.Error(ex, "An error has occurred while initializing or starting silo.");
+				Log.CloseAndFlush();
 			}
 		}
 
-		private static ISiloHost BuildSilo(ILogger logger)
+		private static ISiloHost BuildSilo(IConfiguration config, IAppInfo appInfo, ILogger logger)
 		{
-			var config = ClusterConfiguration.LocalhostPrimarySilo();
-			config.AddMemoryStorageProvider();
+			var clusterConfig = ClusterConfig.Get(config, appInfo, _hostingEnv);
 
 			var builder = new SiloHostBuilder()
-				.UseConfiguration(config)
+				.UseConfiguration(clusterConfig)
 				.ConfigureLogging(logging => logging.AddSerilog(logger, dispose: true))
 				.ConfigureApplicationParts(parts => parts
 					.AddApplicationPart(typeof(HeroGrain).Assembly).WithReferences()
@@ -112,9 +112,9 @@ namespace Heroes.SiloHost.ConsoleApp
 			_log.Information("Successfully started Silo in {timeTaken:#.##}s (total).", _startupStopwatch.Elapsed.TotalSeconds);
 		}
 
-		private static async Task StopSilo(IAppInfo appInfo)
+		private static async Task StopSilo()
 		{
-			_log.Information("Stopping Silo '{siloName}'...", appInfo.Name);
+			_log.Information("Stopping Silo...");
 
 			try
 			{
@@ -122,10 +122,10 @@ namespace Heroes.SiloHost.ConsoleApp
 			}
 			catch (Exception ex)
 			{
-				_log.Error(ex, "Stopping Silo failed '{siloName}'...", appInfo.Name);
+				_log.Error(ex, "Stopping Silo failed...");
 			}
 
-			_log.Information("Silo '{siloName}' shutdown.", appInfo.Name);
+			_log.Information("Silo shutdown.");
 
 			SiloStopped.Set();
 		}
