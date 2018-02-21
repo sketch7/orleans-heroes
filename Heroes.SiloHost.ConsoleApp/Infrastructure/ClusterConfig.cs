@@ -9,7 +9,7 @@ namespace Heroes.SiloHost.ConsoleApp.Infrastructure
 {
 	public static class ClusterConfig
 	{
-		public static ClusterConfiguration Get(IConfiguration config, IAppInfo appInfo, HostingEnvironment hostingEnv)
+		public static ClusterConfiguration Configure(IConfiguration config, IAppInfo appInfo, HostingEnvironment hostingEnv)
 		{
 			var clusterConfig = appInfo.IsDockerized
 				? new ClusterConfiguration()

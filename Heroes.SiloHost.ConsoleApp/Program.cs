@@ -85,7 +85,7 @@ namespace Heroes.SiloHost.ConsoleApp
 
 		private static ISiloHost BuildSilo(IConfiguration config, IAppInfo appInfo, ILogger logger)
 		{
-			var clusterConfig = ClusterConfig.Get(config, appInfo, _hostingEnv);
+			var clusterConfig = ClusterConfig.Configure(config, appInfo, _hostingEnv);
 
 			var builder = new SiloHostBuilder()
 				.UseConfiguration(clusterConfig)
