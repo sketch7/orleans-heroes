@@ -1,0 +1,12 @@
+{
+  "serilog": {
+    "minimumLevel": {
+      "default": "Debug",
+      "override": {
+        "System": "Information",
+        "Microsoft": "Information",
+        "Heroes": "Debug"
+      }
+    }
+  }
+}
