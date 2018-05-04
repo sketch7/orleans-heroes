@@ -17,6 +17,8 @@ namespace Heroes.Core
 		/// </summary>
 		string ShortName { get; }
 
+		string ClusterId { get; set; }
+
 		/// <summary>
 		/// Get environment. e.g. 'Development'. (based on ASPNET_ENVIRONMENT, which can be mapped).
 		/// </summary>
@@ -47,6 +49,7 @@ namespace Heroes.Core
 	{
 		public string Name { get; set; }
 		public string ShortName { get; }
+		public string ClusterId { get; set; }
 		public string Environment { get; set; }
 		public string GitCommit { get; set; }
 		public string Version { get; set; }
@@ -80,6 +83,8 @@ namespace Heroes.Core
 
 			if (string.IsNullOrEmpty(Environment))
 				throw new InvalidOperationException("Environment is not set. Please specify the environment via 'ASPNETCORE_ENVIRONMENT'");
+
+			ClusterId = $"{Name}-{Version}";
 
 			Environment = MapEnvironmentName(Environment);
 		}

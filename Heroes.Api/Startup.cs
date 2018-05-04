@@ -3,6 +3,7 @@ using Heroes.Api.Infrastructure;
 using Heroes.Api.Sample;
 using Heroes.Clients;
 using Heroes.Contracts.Grains.Core;
+using Heroes.Core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -24,8 +25,20 @@ namespace Heroes.Api
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddSingleton<IHeroService, HeroService>();
+			var appInfo = new AppInfo(Configuration);
+			services.AddSingleton<IAppInfo>(appInfo);
+			var clientBuilderContext = new ClientBuilderContext
+			{
+				Configuration = Configuration,
+				AppInfo = appInfo,
+				//ConfigureClientBuilder = clientbuilder =>
+				//	clientbuilder.ConfigureApplicationParts(x => x.AddApplicationPart(typeof(IHeroCollectionGrain).Assembly).WithReferences())
+				//.UseSignalR()
+			};
+			//services.AddSignalR()
+			//	.AddOrleans();
 
-			services.ConfigureClusterClient();
+			services.UseOrleansClient(clientBuilderContext);
 			services.AddHeroesClients();
 			services.AddHeroesAppGraphQL();
 			services.AddMvc();

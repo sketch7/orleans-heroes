@@ -24,8 +24,8 @@ namespace Heroes.Client.ConsoleApp
 				using (var client = await StartClientWithRetries())
 				{
 					await AddHeroes(client);
-					GetHero(client);
-					GetAll(client);
+					await GetHero(client);
+					await GetAll(client);
 					Console.ReadKey();
 				}
 
@@ -46,9 +46,8 @@ namespace Heroes.Client.ConsoleApp
 			{
 				try
 				{
-					var config = ClientConfiguration.LocalhostSilo();
 					client = new ClientBuilder()
-						.UseConfiguration(config)
+						.UseLocalhostClustering()
 						.ConfigureApplicationParts(parts => parts
 							.AddApplicationPart(typeof(IHeroGrain).Assembly).WithReferences()
 						)

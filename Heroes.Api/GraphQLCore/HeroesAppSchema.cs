@@ -6,7 +6,7 @@ namespace Heroes.Api.GraphQLCore
 	public class HeroesAppSchema : Schema
 	{
 		public HeroesAppSchema(
-			HeroesAppGraphQuery query, 
+			HeroesAppGraphQuery query,
 			HeroesAppGraphSubscription subscription
 		)
 		{

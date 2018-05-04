@@ -62,7 +62,7 @@ namespace Heroes.SiloHost.ConsoleApp
 				_log = logger.ForContext<Program>();
 				_log.Information("Initializing Silo {appName} ({version}) [{env}]...", appInfo.Name, appInfo.Version, _hostingEnv.Environment);
 
-				_siloHost = BuildSilo(config, appInfo, logger);
+				_siloHost = BuildSilo(appInfo, logger);
 				AssemblyLoadContext.Default.Unloading += context =>
 				{
 					_log.Information("Assembly unloading...");
@@ -83,12 +83,10 @@ namespace Heroes.SiloHost.ConsoleApp
 			}
 		}
 
-		private static ISiloHost BuildSilo(IConfiguration config, IAppInfo appInfo, ILogger logger)
+		private static ISiloHost BuildSilo(IAppInfo appInfo, ILogger logger)
 		{
-			var clusterConfig = ClusterConfig.Configure(config, appInfo, _hostingEnv);
-
 			var builder = new SiloHostBuilder()
-				.UseConfiguration(clusterConfig)
+				.UseHeroConfiguration(appInfo, _hostingEnv)
 				.ConfigureLogging(logging => logging.AddSerilog(logger, dispose: true))
 				.ConfigureApplicationParts(parts => parts
 					.AddApplicationPart(typeof(HeroGrain).Assembly).WithReferences()
