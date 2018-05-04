@@ -43,12 +43,7 @@ namespace Heroes.Api.Infrastructure
 			await Task.Delay(TimeSpan.FromSeconds(clientClusterConfig.DelayInitialConnectSeconds));
 
 			var clientConfig = new ClientBuilder()
-				.UseConfiguration(context)
-				.ConfigureApplicationParts(x =>
-				{
-					x.AddApplicationPart(typeof(IHeroClient).Assembly).WithReferences();
-					x.AddApplicationPart(typeof(HeroClient).Assembly).WithReferences();
-				});
+				.UseConfiguration(context);
 
 			context.ConfigureClientBuilder?.Invoke(clientConfig);
 

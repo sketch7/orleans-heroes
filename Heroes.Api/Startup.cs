@@ -3,12 +3,14 @@ using Heroes.Api.Infrastructure;
 using Heroes.Api.Sample;
 using Heroes.Clients;
 using Heroes.Contracts.Grains.Core;
+using Heroes.Contracts.Grains.Heroes;
 using Heroes.Core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Orleans;
 
 namespace Heroes.Api
 {
@@ -31,10 +33,11 @@ namespace Heroes.Api
 			{
 				Configuration = Configuration,
 				AppInfo = appInfo,
-				//ConfigureClientBuilder = clientbuilder =>
-				//	clientbuilder.ConfigureApplicationParts(x => x.AddApplicationPart(typeof(IHeroCollectionGrain).Assembly).WithReferences())
+				ConfigureClientBuilder = clientbuilder =>
+					clientbuilder.ConfigureApplicationParts(x => x.AddApplicationPart(typeof(IHeroCollectionGrain).Assembly).WithReferences())
 				//.UseSignalR()
 			};
+
 			//services.AddSignalR()
 			//	.AddOrleans();
 
