@@ -1,15 +1,15 @@
-﻿using Heroes.Contracts.Grains;
-using Heroes.Contracts.Grains.Heroes;
-using Orleans;
-using Orleans.Providers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Heroes.Contracts.Grains;
+using Heroes.Contracts.Grains.Heroes;
+using Orleans;
+using Orleans.Providers;
 
 namespace Heroes.Grains
 {
-	[StorageProvider(ProviderName = "MemoryStore")]
+	[StorageProvider(ProviderName = OrleansConstants.GrainMemoryStorage)]
 	public class HeroCollectionGrain : Grain<HeroCollectionState>, IHeroCollectionGrain
 	{
 		private const string Source = nameof(HeroCollectionGrain);

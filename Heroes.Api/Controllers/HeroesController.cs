@@ -1,8 +1,7 @@
-﻿using Heroes.Contracts.Grains.Heroes;
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Heroes.Contracts.Grains.Heroes;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Heroes.Api.Controllers
 {
@@ -15,7 +14,7 @@ namespace Heroes.Api.Controllers
 		{
 			_client = client;
 		}
-		// GET api/values
+		// GET api/heroes
 		[HttpGet]
 		public async Task<List<Hero>> Get()
 		{
@@ -23,7 +22,7 @@ namespace Heroes.Api.Controllers
 			return result;
 		}
 
-		// GET api/values/5
+		// GET api/heroes/5
 		[HttpGet("{id}")]
 		public Task<Hero> Get(string id)
 		{

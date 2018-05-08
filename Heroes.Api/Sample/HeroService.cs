@@ -1,9 +1,9 @@
-﻿using Heroes.Contracts.Grains.Heroes;
-using Heroes.Contracts.Grains.Mocks;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using Heroes.Contracts.Grains.Heroes;
+using Heroes.Contracts.Grains.Mocks;
 
 namespace Heroes.Api.Sample
 {

@@ -1,12 +1,13 @@
-﻿using Heroes.Contracts.Grains.Heroes;
+﻿using System;
+using System.Threading.Tasks;
+using Heroes.Contracts.Grains;
+using Heroes.Contracts.Grains.Heroes;
 using Orleans;
 using Orleans.Providers;
-using System;
-using System.Threading.Tasks;
 
 namespace Heroes.Grains
 {
-	[StorageProvider(ProviderName = "MemoryStore")]
+	[StorageProvider(ProviderName = OrleansConstants.GrainMemoryStorage)]
 	public class HeroGrain : Grain<HeroState>, IHeroGrain
 	{
 		private const string Source = nameof(HeroGrain);
