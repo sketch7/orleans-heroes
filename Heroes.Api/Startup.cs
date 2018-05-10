@@ -81,8 +81,8 @@ namespace Heroes.Api
 
 			app.UseSignalR(routes =>
 			{
-				routes.MapHub<HeroHub>("real-time/hero");
-				routes.MapHub<UserNotificationHub>("userNotifications");
+				routes.MapHub<HeroHub>("/real-time/hero");
+				routes.MapHub<UserNotificationHub>("/userNotifications");
 			});
 
 			app.UseMvc();

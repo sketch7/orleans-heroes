@@ -27,6 +27,7 @@ export class NavComponent implements OnInit, OnDestroy {
 	links = [
 		// { path: ["/"], title: "Home", activeOptions: { exact: true } },
 		{ path: ["/projects"], title: "Projects" },
+		{ path: ["/signalr"], title: "Signal R" },
 	];
 
 	appTitle = this.appInfo.title;

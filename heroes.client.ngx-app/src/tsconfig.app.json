@@ -9,7 +9,7 @@
       "rxjs/*": [
         "../node_modules/rxjs/*"
       ],
-      "@ssv/*":  ["../../signalr-client/src/index.ts"]
+      "@ssv/signalr-client":  ["../../../signalr-client/src/index.ts"]
       // "@ssv/ngx.command": ["../../@ssv.ngx.command/src/index.ts"]
     },
     "outDir": "../out-tsc/app",
@@ -23,7 +23,7 @@
   ],
   "include": [
     "./**/*.ts",
-    "../../signalr-client/src/index.ts"
+    "../../../signalr-client/src/index.ts"
     // "../../@ssv.ngx.command/src/index.ts"
   ]
 }
