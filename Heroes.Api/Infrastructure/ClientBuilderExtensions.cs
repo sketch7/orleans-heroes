@@ -2,8 +2,6 @@
 using System.Diagnostics;
 using System.Net;
 using System.Threading.Tasks;
-using Heroes.Clients.Heroes;
-using Heroes.Contracts.Grains.Heroes;
 using Heroes.Core.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Orleans;
@@ -22,6 +20,8 @@ namespace Heroes.Api.Infrastructure
 
 			try
 			{
+				Console.WriteLine("Client cluster connecting to silo {0}", context.ClusterId);
+
 				var client = InitializeWithRetries(context).Result;
 				services.AddSingleton(client);
 			}
@@ -64,7 +64,6 @@ namespace Heroes.Api.Infrastructure
 				return true;
 			});
 
-			//context.Logger.LogInformation("Client cluster connected successfully to silo {clusterId} in {timeTaken:#.##}s.",
 			Console.WriteLine("Client cluster connected successfully to silo {0} in {1:#.##}s.",
 				context.ClusterId, stopwatch.Elapsed.TotalSeconds);
 			return client;

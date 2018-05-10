@@ -1,0 +1,23 @@
+@import "vars";
+
+p {
+	color: $text-semi-diffuse-color;
+}
+
+.projects-container {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-evenly;
+	margin: 2.5em 0;
+	list-style: none;
+	padding: 0;
+
+	a {
+		display: block;
+		margin: 1em 0.5em;
+
+		&:hover {
+			text-decoration: none;
+		}
+	}
+}

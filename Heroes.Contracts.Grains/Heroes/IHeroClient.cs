@@ -7,8 +7,5 @@ namespace Heroes.Contracts.Grains.Heroes
 	{
 		Task<Hero> Get(string key);
 		Task<List<Hero>> GetAll(HeroRoleType? role = null);
-
-		Task Set(Hero hero);
-		Task Set(List<Hero> heroes);
 	}
 }

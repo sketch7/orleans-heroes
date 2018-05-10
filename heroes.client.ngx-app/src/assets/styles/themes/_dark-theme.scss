@@ -1,0 +1,11 @@
+@import "../colors";
+@import "../vars-def";
+
+// $primary-color: $darkred;
+// $primary-color: $haiti;
+$heading-color: $concrete;
+
+$navbar-text-color: $white;
+
+$navbar-active-text-color: $white;
+$navbar-active-bg-color: lighten($primary-color, 20%);

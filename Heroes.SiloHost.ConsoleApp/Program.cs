@@ -8,6 +8,7 @@ using Heroes.Core;
 using Heroes.Grains;
 using Heroes.SiloHost.ConsoleApp.Infrastructure;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Orleans;
 using Orleans.Hosting;
 using Serilog;
@@ -91,11 +92,9 @@ namespace Heroes.SiloHost.ConsoleApp
 				.ConfigureApplicationParts(parts => parts
 					.AddApplicationPart(typeof(HeroGrain).Assembly).WithReferences()
 				)
-				//.UseServiceProviderFactory(services =>
-				//{
-				//	return services.AddSingleton(...);
-				//})
-				;
+				.AddStartupTask<WarmupStartupTask>()
+				.UseServiceProviderFactory(ConfigureServices)
+				.UseSignalR();
 
 			return builder.Build();
 		}
@@ -126,6 +125,13 @@ namespace Heroes.SiloHost.ConsoleApp
 			_log.Information("Silo shutdown.");
 
 			SiloStopped.Set();
+		}
+
+		private static IServiceProvider ConfigureServices(IServiceCollection services)
+		{
+			services.AddHeroesGrains();
+
+			return services.BuildServiceProvider();
 		}
 	}
 }

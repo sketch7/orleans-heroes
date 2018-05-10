@@ -1,0 +1,53 @@
+/* define variables with defaults */
+@import "colors";
+
+// colors
+// --------
+
+// primary
+$primary-color: $electric-violet !default;
+$primary-highlight-color: lighten($primary-color, 0%) !default;
+$primary-text-color: $electric-violet !default;
+$primary-light-color: lighten($primary-color, 10%) !default;
+$primary-lighter-color: lighten($primary-color, 20%) !default;
+
+// accent
+$accent-color: $cyprus !default;
+$accent-highlight-color: lighten($accent-color, 5%) !default;
+$accent-light-color: lighten($accent-color, 10%) !default;
+$accent-lighter-color: lighten($accent-color, 20%) !default;
+
+// states
+$error-color: $darkred !default;
+
+// backgrounds
+$primary-bg-color: $mine-shaft-dark !default;
+// $accent-bg-color: $mine-shaft !default;
+$bg-overlay-color: $concrete !default;
+
+// splash
+// $splash-bg-color: #efecca;
+$splash-bg-color: lighten($primary-color, 85%) !default;
+$splash-loader-color: $primary-light-color !default;
+
+// fonts
+// -----------
+
+$link-color: null !default;
+$link-hover-color: null !default;
+$heading-color: $primary-color !default;
+$body-text-color: $concrete !default;
+$base-font-family: "Open Sans", "Helvetica Neue", "Arial", sans-serif;
+$heading-font-family: "Montserrat", "Helvetica Neue", "Arial", sans-serif;
+$base-font-size: 16px !default;
+$font-size-xxs: 0.65em !default;
+$font-size-xs: 0.75em !default;
+$font-size-s: 0.8em !default;
+$font-size-m: 1em !default;
+$font-size-l: 2.25em !default;
+$font-size-xl: 3em !default;
+$font-size-xxl: 3.5em !default;
+
+$text-accent-color: $accent-color !default;
+$text-diffuse-color: $dusty-gray !default;
+$text-semi-diffuse-color: $alto !default;

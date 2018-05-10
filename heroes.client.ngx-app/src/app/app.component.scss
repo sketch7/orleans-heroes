@@ -1,0 +1,43 @@
+@import "vars";
+
+$footer-text-color: $text-diffuse-color !default;
+$footer-bg-color: rgba($cod-gray, 0.8) !default;
+$footer-icon-color: $crimson !default;
+
+:host {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}
+
+main {
+	display: flex;
+	flex: 1;
+	flex-flow: column;
+	min-height: 100%;
+	margin-top: 5em;
+}
+
+// sidenav-menu {
+// 	width: $layout-navbar-width-size;
+// 	min-width: $layout-navbar-width-size;
+// }
+footer {
+	width: 100%;
+	min-height: 64px;
+	color: $footer-text-color;
+	background: $footer-bg-color;
+
+	.fa-heart {
+		color: $footer-icon-color;
+	}
+
+	> .container {
+		padding: 0 15px;
+
+		p {
+			text-align: center;
+			margin: 20px 0;
+		}
+	}
+}
