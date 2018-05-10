@@ -1,0 +1,45 @@
+<nav #menu class="navbar navbar-expand-md navbar-dark fixed-top">
+	<a class="navbar-brand"
+	 routerLink="/">
+		{{appTitle}}
+		<span *ngIf="isDebug"
+		 class="app-version">
+			{{appVersion}}
+		</span>
+	</a>
+	<button #collapser
+	 class="navbar-toggler"
+	 type="button"
+	 aria-controls="mainNavBar"
+	 [attr.aria-expanded]="isMenuOpened"
+	 aria-label="Toggle navigation"
+	 (click)="isMenuOpened = !isMenuOpened">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div 
+	 class="collapse navbar-collapse"
+	 [ngClass]="{'show': isMenuOpened}"
+	 id="mainNavBar">
+		<ul class="navbar-nav mr-auto">
+			<li *ngFor="let link of links"
+			 class="nav-item"
+			 routerLinkActive="active"
+			 [routerLinkActiveOptions]="link.activeOptions || {exact: false}">
+				<a class="nav-link"
+				 [routerLink]="link.path">
+					{{link.title}}
+					<!-- <span class="sr-only">(current)</span> -->
+				</a>
+			</li>
+		</ul>
+		<!-- <form class="form-inline my-2 my-lg-0">
+			<input class="form-control mr-sm-2"
+			 type="text"
+			 placeholder="Search"
+			 aria-label="Search">
+			<button class="btn btn-outline-success my-2 my-sm-0"
+			 type="submit">Search</button>
+		</form> -->
+	</div>
+</nav>

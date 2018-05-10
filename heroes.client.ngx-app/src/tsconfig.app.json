@@ -1,0 +1,29 @@
+
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@angular/*": [
+        "../node_modules/@angular/*"
+      ],
+      "rxjs/*": [
+        "../node_modules/rxjs/*"
+      ],
+      "@ssv/*":  ["../../signalr-client/src/index.ts"]
+      // "@ssv/ngx.command": ["../../@ssv.ngx.command/src/index.ts"]
+    },
+    "outDir": "../out-tsc/app",
+    "baseUrl": "./",
+    "module": "es2015",
+    "types": []
+  },
+  "exclude": [
+    "test.ts",
+    "**/*.spec.ts"
+  ],
+  "include": [
+    "./**/*.ts",
+    "../../signalr-client/src/index.ts"
+    // "../../@ssv.ngx.command/src/index.ts"
+  ]
+}

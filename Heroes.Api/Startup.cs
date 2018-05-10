@@ -1,5 +1,6 @@
 ﻿using Heroes.Api.GraphQLCore;
 using Heroes.Api.Infrastructure;
+using Heroes.Api.Realtime;
 using Heroes.Api.Sample;
 using Heroes.Clients;
 using Heroes.Contracts.Grains.Core;
@@ -35,13 +36,14 @@ namespace Heroes.Api
 				AppInfo = appInfo,
 				ConfigureClientBuilder = clientbuilder =>
 					clientbuilder.ConfigureApplicationParts(x => x.AddApplicationPart(typeof(IHeroCollectionGrain).Assembly).WithReferences())
-				//.UseSignalR()
+					.UseSignalR()
 			};
 
-			//services.AddSignalR()
-			//	.AddOrleans();
+			services.AddSignalR()
+				.AddOrleans();
 
 			services.UseOrleansClient(clientBuilderContext);
+			services.AddCustomAuthentication();
 			services.AddHeroesClients();
 			services.AddHeroesAppGraphQL();
 			services.AddMvc();
@@ -76,6 +78,12 @@ namespace Heroes.Api
 				app.UseDeveloperExceptionPage();
 				app.UseGraphiQl();
 			}
+
+			app.UseSignalR(routes =>
+			{
+				routes.MapHub<HeroHub>("real-time/hero");
+				routes.MapHub<UserNotificationHub>("userNotifications");
+			});
 
 			app.UseMvc();
 		}

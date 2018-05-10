@@ -32,6 +32,6 @@
   <PropertyGroup>
     <!-- vendors -->
     <OrleansVersion>2.0.0</OrleansVersion>
-    <SignalRVersion>1.0.0-preview2-final</SignalRVersion>
+    <SignalROrleansVersion>1.0.0-preview-63</SignalROrleansVersion>
   </PropertyGroup>
 </Project>
