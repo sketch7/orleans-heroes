@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { HubConnection, ConnectionState } from "@ssv/signalr-client";
 import { Subscription } from "rxjs";
 
@@ -10,36 +10,37 @@ import { HeroRealtimeClient } from "../../shared/real-time/real-time.hero.client
 	templateUrl: "./signalr.component.html",
 	styleUrls: ["./signalr.component.scss"],
 })
-export class SignalrComponent implements OnInit { // , OnDestroy
+export class SignalrComponent implements OnInit, OnDestroy {
 
 	heroMessages: Hero[] = [];
 	currentUser = "Anonymous";
 	isConnected = false;
 	connectionState: ConnectionState | undefined;
 
-	private hubConnection: HubConnection<HeroHub> | undefined;
+	private hubConnection!: HubConnection<HeroHub>;
 
 	private source = "HeroListComponent ::";
 
 	private hubConnection$$: Subscription | undefined;
 	private onSend$$: Subscription | undefined;
 
-	// private kha$$: Subscription | undefined;
-	// private singed$$: Subscription | undefined;
-	// private connectionState$$: Subscription | undefined;
+	private kha$$: Subscription | undefined;
+	private singed$$: Subscription | undefined;
+	private connectionState$$: Subscription | undefined;
 
 	constructor(
 		private client: HeroRealtimeClient
 	) {
+		this.hubConnection = this.client.get();
 	}
 
 	ngOnInit(): void {
-		// this.connectionState$$ = this.hubConnection.connectionState$.subscribe(x => {
-		// 	console.log(`${this.source} :: Status Changed :: ${JSON.stringify(x)}`);
-		// 	this.connectionState = x;
-		// });
+		this.connectionState$$ = this.hubConnection.connectionState$.subscribe(x => {
+			console.log(`${this.source} :: Status Changed :: ${JSON.stringify(x)}`);
+			this.connectionState = x;
+		});
 
-		// this.subscribe();
+		this.subscribe();
 		this.connect();
 	}
 
@@ -55,68 +56,63 @@ export class SignalrComponent implements OnInit { // , OnDestroy
 	}
 
 	connect() {
-		this.hubConnection = this.client.get();
-		this.hubConnection$$ = this.hubConnection.connect({ token: "gunit-x", test: "v2" })
+		// this.hubConnection$$ = this.hubConnection.connect({ token: "gunit-x", test: "v2" })
+		this.hubConnection$$ = this.hubConnection.connect()
 			.subscribe(() => {
 				console.log(`${this.source} connected!!`);
 			});
-
-		// tslint:disable-next-line:no-empty
-		if (this.hubConnection$$ || this.onSend$$) {
-
-		}
 	}
 
-	// send() {
-	// 	this.hubConnection.send("StreamUnsubscribe", "fakeMethod", "sad");
-	// }
+	send() {
+		this.hubConnection.send("StreamUnsubscribe", "fakeMethod", "sad");
+	}
 
-	// invoke() {
-	// 	this.hubConnection.invoke("Echo", "fucking builds")
-	// 		.subscribe(x => console.log(`${this.source} invoke :: result`, x));
-	// }
+	invoke() {
+		this.hubConnection.invoke("Echo", "fucking builds")
+			.subscribe(x => console.log(`${this.source} invoke :: result`, x));
+	}
 
-	// setData() {
-	// 	this.hubConnection.setData({ token: "gunit-x", test: "v2" });
-	// 	this.hubConnection.setData({ token: "cla-key", test: "hello1" });
-	// }
+	setData() {
+		this.hubConnection.setData({ token: "gunit-x", test: "v2" });
+		this.hubConnection.setData({ token: "cla-key", test: "hello1" });
+	}
 
-	// clearData() {
-	// 	this.hubConnection.clearData();
-	// }
+	clearData() {
+		this.hubConnection.clearData();
+	}
 
-	// trackByHero(_index: number, hero: Hero): string {
-	// 	return `${hero.id}-${hero.health}`;
-	// }
+	trackByHero(_index: number, hero: Hero): string {
+		return `${hero.id}-${hero.health}`;
+	}
 
-	// disconnect() {
-	// 	this.hubConnection.disconnect().subscribe();
-	// }
+	disconnect() {
+		this.hubConnection.disconnect().subscribe();
+	}
 
-	// ngOnDestroy(): void {
-	// 	if (this.connectionState$$) {
-	// 		this.connectionState$$.unsubscribe();
-	// 	}
-	// 	if (this.hubConnection$$) {
-	// 		this.hubConnection$$.unsubscribe();
-	// 	}
-	// 	this.dispose();
-	// }
+	ngOnDestroy(): void {
+		if (this.connectionState$$) {
+			this.connectionState$$.unsubscribe();
+		}
+		if (this.hubConnection$$) {
+			this.hubConnection$$.unsubscribe();
+		}
+		this.dispose();
+	}
 
-	// dispose() {
-	// 	console.log(`${this.source} disposing...`);
-	// 	if (this.kha$$) {
-	// 		this.kha$$.unsubscribe();
-	// 	}
-	// 	if (this.onSend$$) {
-	// 		console.log(`${this.source} disposing onSend...`);
-	// 		this.onSend$$.unsubscribe();
-	// 	}
-	// 	if (this.singed$$) {
-	// 		console.log(`${this.source} disposing singed...`);
-	// 		this.singed$$.unsubscribe();
-	// 	}
-	// }
+	dispose() {
+		console.log(`${this.source} disposing...`);
+		if (this.kha$$) {
+			this.kha$$.unsubscribe();
+		}
+		if (this.onSend$$) {
+			console.log(`${this.source} disposing onSend...`);
+			this.onSend$$.unsubscribe();
+		}
+		if (this.singed$$) {
+			console.log(`${this.source} disposing singed...`);
+			this.singed$$.unsubscribe();
+		}
+	}
 
 }
 

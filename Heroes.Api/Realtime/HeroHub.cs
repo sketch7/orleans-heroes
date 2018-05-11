@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Heroes.Api.Realtime.Core;
 using Heroes.Contracts.Grains.Heroes;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
@@ -42,6 +43,24 @@ namespace Heroes.Api.Realtime
 		{
 			_logger.Info("{hubName} User disconnected {connectionId}", _source, Context.ConnectionId);
 			await Clients.All.Send($"{_source} {Context.ConnectionId} left");
+		}
+
+		public Task StreamUnsubscribe(string methodName, string id)
+		{
+			var key = $"{methodName}:{id}";
+			return Task.CompletedTask;
+			//if (Context.Connection.Metadata.TryGetValue(key, out object subscriptionObj))
+			//{
+			//	var subscription = (Subscription<Hero>)subscriptionObj;
+			//	await subscription.Stream.UnsubscribeAsync();
+			//	subscription.Subject.Dispose();
+			//	Context.Connection.Metadata.Remove(key);
+			//}
+		}
+
+		public Task<string> Echo(string message)
+		{
+			return Task.FromResult($"hello {message}");
 		}
 	}
 }

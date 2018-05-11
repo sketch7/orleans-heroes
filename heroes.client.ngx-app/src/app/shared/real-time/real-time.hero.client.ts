@@ -14,10 +14,7 @@ export class HeroRealtimeClient {
 		this.hubFactory.create(
 			{
 				key: connectionKey,
-				endpointUri: "real-time/hero",
-				options: {
-
-				}
+				endpointUri: "http://localhost:62551/real-time/hero"
 			}
 		);
 	}

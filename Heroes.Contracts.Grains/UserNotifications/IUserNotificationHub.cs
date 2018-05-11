@@ -4,7 +4,7 @@ namespace Heroes.Contracts.Grains.UserNotifications
 {
 	public interface IUserNotificationHub
 	{
-		//Task Broadcast(UserNotification item);
+		Task Broadcast(UserNotification item);
 		Task MessageCount(int count);
 	}
 }
