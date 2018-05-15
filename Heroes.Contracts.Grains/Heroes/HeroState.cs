@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Heroes.Core.Orleans;
 using Orleans;
 
 namespace Heroes.Contracts.Grains.Heroes
@@ -10,7 +11,7 @@ namespace Heroes.Contracts.Grains.Heroes
 		public Hero Hero { get; set; }
 	}
 
-	public interface IHeroGrain : IGrainWithStringKey
+	public interface IHeroGrain : IGrainWithStringKey, IAppGrainContract
 	{
 		Task Set(Hero hero);
 		Task<Hero> Get();

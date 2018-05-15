@@ -92,6 +92,8 @@ namespace Heroes.SiloHost.ConsoleApp
 				.ConfigureApplicationParts(parts => parts
 					.AddApplicationPart(typeof(HeroGrain).Assembly).WithReferences()
 				)
+				.AddStartupTask<WarmupStartupTask>()
+				.UseServiceProviderFactory(ConfigureServices)
 				.UseSignalR();
 
 			return builder.Build();
@@ -123,6 +125,13 @@ namespace Heroes.SiloHost.ConsoleApp
 			_log.Information("Silo shutdown.");
 
 			SiloStopped.Set();
+		}
+
+		private static IServiceProvider ConfigureServices(IServiceCollection services)
+		{
+			services.AddHeroesGrains();
+
+			return services.BuildServiceProvider();
 		}
 	}
 }

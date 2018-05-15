@@ -26,16 +26,5 @@ namespace Heroes.Clients.Heroes
 			var grain = _clusterClient.GetHeroCollectionGrain();
 			return grain.GetAll(role);
 		}
-
-		public Task Set(Hero hero)
-		{
-			return Set(new List<Hero> { hero });
-		}
-
-		public Task Set(List<Hero> heroes)
-		{
-			var grain = _clusterClient.GetHeroCollectionGrain();
-			return grain.Set(heroes);
-		}
 	}
 }

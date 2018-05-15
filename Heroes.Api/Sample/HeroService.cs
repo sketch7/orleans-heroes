@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Heroes.Contracts.Grains.Heroes;
 using Heroes.Contracts.Grains.Mocks;
+using Heroes.Core;
 
 namespace Heroes.Api.Sample
 {
@@ -43,21 +44,6 @@ namespace Heroes.Api.Sample
 		public List<Hero> Heroes()
 		{
 			return _heroes;
-		}
-	}
-
-	public static class CollectionExtension
-	{
-		private static readonly Random Random = new Random();
-
-		public static T RandomElement<T>(this IList<T> list)
-		{
-			return list[Random.Next(list.Count)];
-		}
-
-		public static T RandomElement<T>(this T[] array)
-		{
-			return array[Random.Next(array.Length)];
 		}
 	}
 }

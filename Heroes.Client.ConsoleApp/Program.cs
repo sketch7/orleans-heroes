@@ -1,12 +1,11 @@
-﻿using Heroes.Contracts.Grains.Heroes;
-using Heroes.Contracts.Grains.Mocks;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Heroes.Contracts.Grains;
+using Heroes.Contracts.Grains.Heroes;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Runtime;
-using Orleans.Runtime.Configuration;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Heroes.Client.ConsoleApp
 {
@@ -23,7 +22,6 @@ namespace Heroes.Client.ConsoleApp
 			{
 				using (var client = await StartClientWithRetries())
 				{
-					await AddHeroes(client);
 					await GetHero(client);
 					await GetAll(client);
 					Console.ReadKey();
@@ -75,20 +73,14 @@ namespace Heroes.Client.ConsoleApp
 
 		private static async Task GetHero(IClusterClient client)
 		{
-			var grain = client.GetGrain<IHeroGrain>("rengar");
+			var grain = client.GetHeroGrain("rengar");
 			var hero = await grain.Get();
 			Console.WriteLine($"{hero.Name} is awaken!");
 		}
 
-		private static Task AddHeroes(IClusterClient client)
-		{
-			var list = client.GetGrain<IHeroCollectionGrain>(0);
-			return list.Set(MockDataService.GetHeroes());
-		}
-
 		private static async Task GetAll(IClusterClient client)
 		{
-			var grain = client.GetGrain<IHeroCollectionGrain>(0);
+			var grain = client.GetHeroCollectionGrain();
 			var heroes = await grain.GetAll();
 
 			foreach (var hero in heroes)

@@ -3,7 +3,6 @@ using Heroes.Api.Infrastructure;
 using Heroes.Api.Realtime;
 using Heroes.Api.Sample;
 using Heroes.Clients;
-using Heroes.Contracts.Grains.Core;
 using Heroes.Contracts.Grains.Heroes;
 using Heroes.Core;
 using Microsoft.AspNetCore.Builder;
@@ -60,13 +59,11 @@ namespace Heroes.Api
 		public void Configure(
 			IApplicationBuilder app,
 			IHostingEnvironment env,
-			IWarmUpClient warmUpClient,
-			ILoggerFactory loggerFactory)
+			ILoggerFactory loggerFactory
+		)
 		{
 			loggerFactory.AddConsole(Configuration.GetSection("Logging"));
 			loggerFactory.AddDebug();
-
-			warmUpClient.Initialize();
 
 			app.UseCors("TempCorsPolicy");
 			app.SetGraphQLMiddleWare();

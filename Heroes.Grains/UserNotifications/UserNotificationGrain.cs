@@ -2,31 +2,30 @@
 using System.Threading.Tasks;
 using Heroes.Contracts.Grains;
 using Heroes.Contracts.Grains.UserNotifications;
+using Heroes.Core.Orleans;
+using Heroes.Core.Utils;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Providers;
+using Orleans.Runtime;
 using SignalR.Orleans.Core;
 
 namespace Heroes.Grains.UserNotifications
 {
 	[StorageProvider(ProviderName = OrleansConstants.GrainMemoryStorage)]
-	public class UserNotificationGrain : Grain<UserNotificationState>, IUserNotificationGrain
+	public class UserNotificationGrain : AppGrain<UserNotificationState>, IUserNotificationGrain
 	{
-		private const string Source = nameof(UserNotificationGrain);
-		private readonly ILogger<HeroGrain> _logger;
-		private readonly Random _random = new Random();
 		private HubContext<IUserNotificationHub> _hubContext;
 
 		public UserNotificationGrain(
 			ILogger<HeroGrain> logger
-		)
+		) : base(logger)
 		{
-			_logger = logger;
 		}
 
 		public async Task Set(UserNotification item)
 		{
-			_logger.LogInformation("updating grain state - {item}", item);
+			Logger.Info("updating grain state - {item}", item);
 			State.UserNotification = item;
 			await WriteStateAsync();
 		}
@@ -36,9 +35,9 @@ namespace Heroes.Grains.UserNotifications
 
 		public override async Task OnActivateAsync()
 		{
+			await base.OnActivateAsync();
 			_hubContext = GrainFactory.GetHub<IUserNotificationHub>();
-
-			_logger.LogInformation("{Source} :: OnActivateAsync PK {PK}", Source, this.GetPrimaryKeyString());
+			
 			var item = new UserNotification
 			{
 				MessageCount = 0
@@ -47,7 +46,7 @@ namespace Heroes.Grains.UserNotifications
 
 			RegisterTimer(async x =>
 			{
-				State.UserNotification.MessageCount = _random.Next(100);
+				State.UserNotification.MessageCount = RandomUtils.GenerateNumber(1, 100);
 				await Set(State.UserNotification);
 
 				var userNotification = new UserNotification
@@ -55,14 +54,8 @@ namespace Heroes.Grains.UserNotifications
 					MessageCount = item.MessageCount
 				};
 
-				await _hubContext.User(this.GetPrimaryKeyString()).SendSignalRMessage("Broadcast", userNotification);
+				await _hubContext.User(PrimaryKey).SendSignalRMessage("Broadcast", userNotification);
 			}, State, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(3));
-		}
-
-		public override Task OnDeactivateAsync()
-		{
-			_logger.LogInformation("{Source} :: OnDeactivateAsync PK {PK}", Source, this.GetPrimaryKeyString());
-			return Task.CompletedTask;
 		}
 	}
 }
