@@ -1,17 +1,23 @@
 ﻿using System;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using Heroes.Api.Realtime.Core;
+using Heroes.Contracts.Grains;
 using Heroes.Contracts.Grains.Heroes;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Runtime;
+using Orleans.Streams;
+using SignalR.Orleans;
 
 namespace Heroes.Api.Realtime
 {
 	public class HeroHub : Hub<IHeroHub>
 	{
 		private readonly string _source = $"{nameof(HeroHub)} ::";
+		private const string HeroStreamProviderKey = "hero-StreamProvider";
 
 		private readonly IClusterClient _clusterClient;
 		private readonly ILogger<HeroHub> _logger;
@@ -37,6 +43,9 @@ namespace Heroes.Api.Realtime
 				await loggedInUser.Send(
 					$"{_source} logged in user => {Context.User.Identity.Name} -> ConnectionId: {Context.ConnectionId}");
 			}
+
+			var streamProvider = _clusterClient.GetStreamProvider(Constants.STREAM_PROVIDER);
+			Context.Items.Add(HeroStreamProviderKey, streamProvider);
 		}
 
 		public override async Task OnDisconnectedAsync(Exception ex)
@@ -45,17 +54,46 @@ namespace Heroes.Api.Realtime
 			await Clients.All.Send($"{_source} {Context.ConnectionId} left");
 		}
 
-		public Task StreamUnsubscribe(string methodName, string id)
+		public IObservable<Hero> GetUpdates(string id)
+		{
+			//HACK: initialize timer grain
+			var grain = _clusterClient.GetGrain<IHeroGrain>(id);
+			grain.Get();
+
+			Context.Items.TryGetValue(HeroStreamProviderKey, out object streamProviderObj);
+			var streamProvider = (IStreamProvider)streamProviderObj;
+			var stream = streamProvider.GetStream<Hero>(StreamConstants.HeroStream, $"hero:{id}");
+			var heroSubject = new Subject<Hero>();
+
+			Task.Run(async () =>
+			{
+				var heroStream = await stream.SubscribeAsync(
+					async (action, st) =>
+					{
+						_logger.Info("{hubName} Stream [hero.health] triggered {action}", _source, action);
+						await Clients.All.Send("msg ->");
+						heroSubject.OnNext(action);
+					});
+				Context.Items.Add($"{nameof(GetUpdates)}:{id}", new Subscription<Hero>
+				{
+					Stream = heroStream,
+					Subject = heroSubject
+				});
+			});
+
+			return heroSubject.AsObservable();
+		}
+
+		public async Task StreamUnsubscribe(string methodName, string id)
 		{
 			var key = $"{methodName}:{id}";
-			return Task.CompletedTask;
-			//if (Context.Connection.Metadata.TryGetValue(key, out object subscriptionObj))
-			//{
-			//	var subscription = (Subscription<Hero>)subscriptionObj;
-			//	await subscription.Stream.UnsubscribeAsync();
-			//	subscription.Subject.Dispose();
-			//	Context.Connection.Metadata.Remove(key);
-			//}
+			if (Context.Items.TryGetValue(key, out object subscriptionObj))
+			{
+				var subscription = (Subscription<Hero>)subscriptionObj;
+				await subscription.Stream.UnsubscribeAsync();
+				subscription.Subject.Dispose();
+				Context.Items.Remove(key);
+			}
 		}
 
 		public Task<string> Echo(string message)

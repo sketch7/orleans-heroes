@@ -1,7 +1,7 @@
-﻿using Orleans;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Orleans;
 
 namespace Heroes.Contracts.Grains.Heroes
 {
@@ -19,9 +19,10 @@ namespace Heroes.Contracts.Grains.Heroes
 	[DebuggerDisplay("{DebuggerDisplay,nq}")]
 	public class Hero
 	{
-		protected string DebuggerDisplay => $"Key: '{Key}', Name: '{Name}', Role: {Role}";
+		protected string DebuggerDisplay => $"Key: '{Key}', Name: '{Name}', Role: {Role}, Health: {Health}";
 		public string Key { get; set; }
 		public string Name { get; set; }
+		public int Health { get; set; }
 		public HeroRoleType Role { get; set; }
 		public HashSet<string> Abilities { get; set; }
 
