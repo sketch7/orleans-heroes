@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Heroes.Contracts.Grains;
 using Heroes.Contracts.Grains.Heroes;
+using Heroes.Contracts.Grains.Mocks;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Providers;
@@ -38,7 +39,7 @@ namespace Heroes.Grains
 		{
 			Console.WriteLine($"{Source} :: OnActivateAsync PK {this.GetPrimaryKeyString()}");
 			_logger.LogInformation("{Source} :: OnActivateAsync PK {PK}", Source, this.GetPrimaryKeyString());
-			var item = _service.GetById(this.GetPrimaryKeyString());
+			var item = MockDataService.GetById(this.GetPrimaryKeyString());
 			await Set(item);
 
 			var streamProvider = GetStreamProvider(Constants.STREAM_PROVIDER);
