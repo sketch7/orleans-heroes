@@ -73,14 +73,14 @@ namespace Heroes.Client.ConsoleApp
 
 		private static async Task GetHero(IClusterClient client)
 		{
-			var grain = client.GetHeroGrain("rengar");
+			var grain = client.GetHeroGrain("lol", "rengar");
 			var hero = await grain.Get();
 			Console.WriteLine($"{hero.Name} is awaken!");
 		}
 
 		private static async Task GetAll(IClusterClient client)
 		{
-			var grain = client.GetHeroCollectionGrain();
+			var grain = client.GetHeroCollectionGrain("lol");
 			var heroes = await grain.GetAll();
 
 			foreach (var hero in heroes)

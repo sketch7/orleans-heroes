@@ -14,11 +14,11 @@ namespace Heroes.Grains
 		Task<List<Hero>> GetAll();
 	}
 
-	public class MockHeroDataClient : IHeroDataClient
+	public class MockLoLHeroDataClient : IHeroDataClient
 	{
-		private readonly ILogger<MockHeroDataClient> _logger;
+		private readonly ILogger<MockLoLHeroDataClient> _logger;
 
-		public MockHeroDataClient(ILogger<MockHeroDataClient> logger)
+		public MockLoLHeroDataClient(ILogger<MockLoLHeroDataClient> logger)
 		{
 			_logger = logger;
 		}
@@ -33,6 +33,36 @@ namespace Heroes.Grains
 		{
 			_logger.Debug($"[{nameof(GetByKey)}] Fetching key: {key} from mock service", key);
 			return Task.FromResult(MockDataService.GetById(key));
+		}
+	}
+
+	public class MockHotsHeroDataClient : IHeroDataClient
+	{
+		private readonly ILogger<MockHotsHeroDataClient> _logger;
+		private readonly List<Hero> _data = new List<Hero>
+		{
+			new Hero {Name = "Maiev", Key = "maiev", Role = HeroRoleType.Assassin, Abilities = new HashSet<string> { "savagery", "battle-roar", "bola-strike", "thrill-of-the-hunt"}},
+			new Hero {Name = "Alexstrasza", Key = "alexstrasza", Role = HeroRoleType.Support, Abilities = new HashSet<string> { "taste-their-fear", "void-spike", "leap", "void-assault"}},
+			new Hero {Name = "Malthael", Key = "malthael", Role = HeroRoleType.Assassin, Abilities = new HashSet<string> { "poison-trail", "mega-adhesive", "fling", "insanity-potion"}},
+			new Hero {Name = "Johanna", Key = "johanna", Role = HeroRoleType.Tank, Abilities = new HashSet<string> { "poison-trail", "mega-adhesive", "fling", "insanity-potion"}},
+			new Hero {Name = "Kael'Thas", Key = "keal-thas", Role = HeroRoleType.Assassin, Abilities = new HashSet<string> { "poison-trail", "mega-adhesive", "fling", "insanity-potion"}},
+		};
+
+		public MockHotsHeroDataClient(ILogger<MockHotsHeroDataClient> logger)
+		{
+			_logger = logger;
+		}
+
+		public Task<List<Hero>> GetAll()
+		{
+			_logger.Debug($"[{nameof(GetAll)}] Fetch from mock service");
+			return Task.FromResult(_data);
+		}
+
+		public Task<Hero> GetByKey(string key)
+		{
+			_logger.Debug($"[{nameof(GetByKey)}] Fetching key: {key} from mock service", key);
+			return Task.FromResult(_data.FirstOrDefault(x => x.Key == key));
 		}
 	}
 }

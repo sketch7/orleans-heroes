@@ -4,6 +4,9 @@ using System.IO;
 using System.Runtime.Loader;
 using System.Threading;
 using System.Threading.Tasks;
+using Grace.DependencyInjection;
+using Grace.DependencyInjection.Extensions;
+using Heroes.Contracts.Grains;
 using Heroes.Core;
 using Heroes.Grains;
 using Heroes.SiloHost.ConsoleApp.Infrastructure;
@@ -11,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Orleans;
 using Orleans.Hosting;
+using Orleans.Runtime;
 using Serilog;
 
 namespace Heroes.SiloHost.ConsoleApp
@@ -92,6 +96,8 @@ namespace Heroes.SiloHost.ConsoleApp
 				.ConfigureApplicationParts(parts => parts
 					.AddApplicationPart(typeof(HeroGrain).Assembly).WithReferences()
 				)
+				//.AddIncomingGrainCallFilter<LoggingIncomingCallFilter>()
+				//.AddOutgoingGrainCallFilter<LoggingOutgoingCallFilter>()
 				.AddStartupTask<WarmupStartupTask>()
 				.UseServiceProviderFactory(ConfigureServices)
 				.UseSignalR();
@@ -129,9 +135,46 @@ namespace Heroes.SiloHost.ConsoleApp
 
 		private static IServiceProvider ConfigureServices(IServiceCollection services)
 		{
-			services.AddHeroesGrains();
+			services.AddSingleton<IGrainActivator, TenantGrainActivator>();
+			var container = new DependencyInjectionContainer(c => c.Behaviors.AllowInstanceAndFactoryToReturnNull = true);
+			container.Configure(c =>
+			{
+	//c.Export<TenantGrainActivator>().As<IGrainActivator>().Lifestyle.Singleton();
+	c
+				//.Export<MockLoLHeroDataClient>()
+				.Export<MockHotsHeroDataClient>()
+				.As<IHeroDataClient>()
+				;
 
-			return services.BuildServiceProvider();
+				c.ExportFactory<IExportLocatorScope, IRequestInfo>(
+					scope =>
+					{
+						return (IRequestInfo)scope.GetExtraData("RequestInfo");
+					});
+				c.Export<MockHotsHeroDataClient>().AsKeyed<IHeroDataClient>("hots");
+				c.Export<MockLoLHeroDataClient>().AsKeyed<IHeroDataClient>("lol");
+				c.ExportFactory<IExportLocatorScope, IRequestInfo, IHeroDataClient>((scope, info) =>
+				{
+					var tenant = RequestContext.Get("tenant") ?? info?.Tenant;
+
+					if (tenant == null) throw new ArgumentNullException("tenant", "Tenant must be defined");
+		//return scope.Locate<IHeroDataClient>(withKey: info?.Tenant ?? "hots");
+		return scope.Locate<IHeroDataClient>(withKey: tenant);
+				});
+			});
+			var providers = container.Populate(services);
+
+			var ac = providers.GetService<IGrainActivator>();
+
+			return providers;
 		}
+
+		//public static void ExportTenantService<TServiceA, TServiceB, TExport>(this IExportRegistrationBlock c, object keyA, object keyB)
+		//{
+		//	c.Export<TServiceA>().AsKeyed<TExport>(keyA);
+		//	c.Export<TServiceB>().AsKeyed<TExport>(keyB);
+		//	c.ExportFactory<IExportLocatorScope, IRequestContext, TExport>((scope, info) =>
+		//		scope.Locate<TExport>(withKey: info.Tenant));
+		//}
 	}
 }

@@ -8,7 +8,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
 		public static IServiceCollection AddHeroesGrains(this IServiceCollection services)
 		{
-			services.AddSingleton<IHeroDataClient, MockHeroDataClient>();
+			services.AddSingleton<IHeroDataClient, MockLoLHeroDataClient>();
 			return services;
 		}
 	}

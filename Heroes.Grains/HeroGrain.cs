@@ -10,10 +10,17 @@ using SignalR.Orleans;
 
 namespace Heroes.Grains
 {
+	public struct HeroKeyData
+	{
+		public string Tenant { get; set; }
+		public string HeroKey { get; set; }
+	}
+
 	[StorageProvider(ProviderName = OrleansConstants.GrainMemoryStorage)]
 	public class HeroGrain : AppGrain<HeroState>, IHeroGrain
 	{
 		private readonly IHeroDataClient _heroDataClient;
+		private HeroKeyData _keyData;
 
 		public HeroGrain(
 			ILogger<HeroGrain> logger,
@@ -28,7 +35,10 @@ namespace Heroes.Grains
 			await base.OnActivateAsync();
 			if (State.Hero == null)
 			{
-				var hero = await _heroDataClient.GetByKey(PrimaryKey);
+				var keySplit = PrimaryKey.Split('\\');
+				_keyData.Tenant = keySplit[1];
+				_keyData.HeroKey = keySplit[2];
+				var hero = await _heroDataClient.GetByKey(_keyData.HeroKey);
 				await Set(hero);
 			}
 
