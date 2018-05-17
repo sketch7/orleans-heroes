@@ -57,7 +57,7 @@ export class SignalrComponent implements OnInit, OnDestroy {
 
 	connect() {
 		// this.hubConnection$$ = this.hubConnection.connect({ token: "gunit-x", test: "v2" })
-		this.hubConnection$$ = this.hubConnection.connect()
+		this.hubConnection$$ = this.hubConnection.connect({ token: "cla-key" })
 			.subscribe(() => {
 				console.log(`${this.source} connected!!`);
 			});
@@ -101,12 +101,13 @@ export class SignalrComponent implements OnInit, OnDestroy {
 
 	dispose() {
 		console.log(`${this.source} disposing...`);
-		if (this.kha$$) {
-			this.kha$$.unsubscribe();
-		}
 		if (this.onSend$$) {
 			console.log(`${this.source} disposing onSend...`);
 			this.onSend$$.unsubscribe();
+		}
+		if (this.kha$$) {
+			console.log(`${this.source} disposing kha...`);
+			this.kha$$.unsubscribe();
 		}
 		if (this.singed$$) {
 			console.log(`${this.source} disposing singed...`);

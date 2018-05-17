@@ -39,7 +39,8 @@ namespace Heroes.Api.Infrastructure
 
 			var claims = new List<Claim>
 			{
-				new Claim(ClaimTypes.Name, provider.Name)
+				new Claim(ClaimTypes.Name, provider.Name),
+				new Claim(ClaimTypes.NameIdentifier, provider.Name)
 			};
 			var claimsIdentity = new ClaimsIdentity(claims, SecretKey);
 			var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);

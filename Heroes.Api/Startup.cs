@@ -29,6 +29,8 @@ namespace Heroes.Api
 			services.AddSingleton<IHeroService, HeroService>();
 			var appInfo = new AppInfo(Configuration);
 			services.AddSingleton<IAppInfo>(appInfo);
+			services.AddCustomAuthentication();
+
 			var clientBuilderContext = new ClientBuilderContext
 			{
 				Configuration = Configuration,
@@ -42,7 +44,6 @@ namespace Heroes.Api
 				.AddOrleans();
 
 			services.UseOrleansClient(clientBuilderContext);
-			services.AddCustomAuthentication();
 			services.AddHeroesClients();
 			services.AddHeroesAppGraphQL();
 			services.AddMvc();
