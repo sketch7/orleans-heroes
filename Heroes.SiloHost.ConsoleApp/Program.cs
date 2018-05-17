@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Runtime.Loader;
 using System.Threading;
 using System.Threading.Tasks;
@@ -172,7 +173,7 @@ namespace Heroes.SiloHost.ConsoleApp
 				//c.ForTenant(Tenants.LeageOfLegends.Key).PopulateFrom(x => x.AddHeroesLoLGrains());
 				//c.ForTenant(Tenants.HeroesOfTheStorm.Key).PopulateFrom(x => x.AddHeroesHotsGrains());
 
-				c.ExportPerTenantFactory<IHeroDataClient>();
+				//c.ExportPerTenantFactory<IHeroDataClient>();
 
 
 				//// todo: wrap in method?
@@ -234,15 +235,18 @@ namespace Heroes.SiloHost.ConsoleApp
 			return config;
 		}
 
-		public static IExportRegistrationBlock ExportPerTenantFactory(this IExportRegistrationBlock config, Type interfaceType)
+		public static IExportRegistrationBlock ExportPerTenantFactoryWeak(this IExportRegistrationBlock config, Type interfaceType)
 		{
-			config.ExportFactory<IExportLocatorScope, ITenantContext, object>((scope, tenantContext) =>
-			{
-				var tenant = tenantContext?.Key;
+			MethodInfo openMethod = typeof(GraceExtensions).GetMethod(nameof(ExportPerTenantFactory));
+			MethodInfo typedMethod = openMethod.MakeGenericMethod(interfaceType);
+			typedMethod.Invoke(null, new object[] { config });
+			//config.ExportFactory<IExportLocatorScope, ITenantContext, object>((scope, tenantContext) =>
+			//{
+			//	var tenant = tenantContext?.Key;
 
-				if (tenant == null) throw new ArgumentNullException("tenant", "Tenant must be defined");
-				return scope.Locate(withKey: tenant, type: interfaceType);
-			});
+			//	if (tenant == null) throw new ArgumentNullException("tenant", "Tenant must be defined");
+			//	return scope.Locate(withKey: tenant, type: interfaceType);
+			//});
 			return config;
 		}
 
@@ -273,7 +277,7 @@ namespace Heroes.SiloHost.ConsoleApp
 				configure?.Invoke(exportConfig);
 			}
 
-			config.ExportPerTenantFactory(interfaceType);
+			config.ExportPerTenantFactoryWeak(interfaceType);
 
 			return config;
 		}
