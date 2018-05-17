@@ -6,7 +6,6 @@ namespace Heroes.Contracts.Grains
 	{
 		string TraceId { get; set; }
 		string UserAgent { get; set; }
-		string Tenant { get; set; }
 	}
 
 	[DebuggerDisplay("{DebuggerDisplay,nq}")]
@@ -16,6 +15,5 @@ namespace Heroes.Contracts.Grains
 
 		public string TraceId { get; set; }
 		public string UserAgent { get; set; }
-		public string Tenant { get; set; }
 	}
 }

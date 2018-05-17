@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Heroes.Contracts.Grains.Heroes;
@@ -17,6 +18,8 @@ namespace Heroes.Grains
 	public class MockLoLHeroDataClient : IHeroDataClient
 	{
 		private readonly ILogger<MockLoLHeroDataClient> _logger;
+
+		public Guid InstanceId { get; } = Guid.NewGuid();
 
 		public MockLoLHeroDataClient(ILogger<MockLoLHeroDataClient> logger)
 		{
@@ -47,6 +50,8 @@ namespace Heroes.Grains
 			new Hero {Name = "Johanna", Key = "johanna", Role = HeroRoleType.Tank, Abilities = new HashSet<string> { "poison-trail", "mega-adhesive", "fling", "insanity-potion"}},
 			new Hero {Name = "Kael'Thas", Key = "keal-thas", Role = HeroRoleType.Assassin, Abilities = new HashSet<string> { "poison-trail", "mega-adhesive", "fling", "insanity-potion"}},
 		};
+
+		public Guid InstanceId { get; } = Guid.NewGuid();
 
 		public MockHotsHeroDataClient(ILogger<MockHotsHeroDataClient> logger)
 		{

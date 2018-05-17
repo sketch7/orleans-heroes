@@ -11,5 +11,17 @@ namespace Microsoft.Extensions.DependencyInjection
 			services.AddSingleton<IHeroDataClient, MockLoLHeroDataClient>();
 			return services;
 		}
+
+		public static IServiceCollection AddHeroesHotsGrains(this IServiceCollection services)
+		{
+			services.AddSingleton<IHeroDataClient, MockHotsHeroDataClient>();
+			return services;
+		}
+
+		public static IServiceCollection AddHeroesLoLGrains(this IServiceCollection services)
+		{
+			services.AddSingleton<IHeroDataClient, MockLoLHeroDataClient>();
+			return services;
+		}
 	}
 }

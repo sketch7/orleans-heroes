@@ -25,6 +25,7 @@ namespace Heroes.Grains
 		public HeroGrain(
 			ILogger<HeroGrain> logger,
 			IHeroDataClient heroDataClient
+			
 		) : base(logger)
 		{
 			_heroDataClient = heroDataClient;
