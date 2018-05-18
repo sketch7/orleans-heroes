@@ -168,118 +168,18 @@ namespace Heroes.SiloHost.ConsoleApp
 				//});
 
 
-				c.ExportForAllTenants<IHeroDataClient, MockLoLHeroDataClient>(Tenants.All, x => x.Lifestyle.Singleton());
+				//c.ExportForAllTenants<IHeroDataClient, MockLoLHeroDataClient>(Tenants.All, x => x.Lifestyle.Singleton());
 
-				//c.ForTenant(Tenants.LeageOfLegends.Key).PopulateFrom(x => x.AddHeroesLoLGrains());
-				//c.ForTenant(Tenants.HeroesOfTheStorm.Key).PopulateFrom(x => x.AddHeroesHotsGrains());
+				c.ForTenant(Tenants.LeageOfLegends).PopulateFrom(x => x.AddHeroesLoLGrains());
+				c.ForTenant(Tenants.HeroesOfTheStorm).PopulateFrom(x => x.AddHeroesHotsGrains());
 
 				//c.ExportPerTenantFactory<IHeroDataClient>();
-
-
-				//// todo: wrap in method?
-				//foreach (var tenant in Tenants.All)
-				//{
-
-				//	PerTenant(c, (t, cfg) =>
-				//	{
-				//		if (t.Key == "sketch7")
-				//			cfg.Export<SampleHeroService>().As<IHeroService>();
-				//	});
-				//}
 			});
 
 
 			var ac = providers.GetService<IGrainActivator>();
 
 			return providers;
-		}
-	}
-
-	public class TenantContainerBuilder
-	{
-		private IExportRegistrationBlock _exportConfig;
-		private string _tenant;
-
-		public TenantContainerBuilder(IExportRegistrationBlock exportConfig, string tenant)
-		{
-			_exportConfig = exportConfig;
-			_tenant = tenant;
-		}
-
-		public void PopulateFrom(Action<IServiceCollection> configure, IServiceCollection services = null)
-		{
-			services = services ?? new ServiceCollection();
-			configure(services);
-
-			// handle registrations
-
-			// loop services and register
-		}
-
-	}
-
-	public static class GraceExtensions
-	{
-		public static TenantContainerBuilder ForTenant(this IExportRegistrationBlock config, string tenant)
-			=> new TenantContainerBuilder(config, tenant);
-
-		public static IExportRegistrationBlock ExportPerTenantFactory<T>(this IExportRegistrationBlock config)
-		{
-			config.ExportFactory<IExportLocatorScope, ITenantContext, T>((scope, tenantContext) =>
-			{
-				var tenant = tenantContext?.Key;
-
-				if (tenant == null) throw new ArgumentNullException("tenant", "Tenant must be defined");
-				return scope.Locate<T>(withKey: tenant);
-			});
-			return config;
-		}
-
-		public static IExportRegistrationBlock ExportPerTenantFactoryWeak(this IExportRegistrationBlock config, Type interfaceType)
-		{
-			MethodInfo openMethod = typeof(GraceExtensions).GetMethod(nameof(ExportPerTenantFactory));
-			MethodInfo typedMethod = openMethod.MakeGenericMethod(interfaceType);
-			typedMethod.Invoke(null, new object[] { config });
-			//config.ExportFactory<IExportLocatorScope, ITenantContext, object>((scope, tenantContext) =>
-			//{
-			//	var tenant = tenantContext?.Key;
-
-			//	if (tenant == null) throw new ArgumentNullException("tenant", "Tenant must be defined");
-			//	return scope.Locate(withKey: tenant, type: interfaceType);
-			//});
-			return config;
-		}
-
-		public static IExportRegistrationBlock ExportForAllTenants<TInterface, TImplementation>(
-			this IExportRegistrationBlock config, IEnumerable<ITenantContext> tenants,
-			Action<IFluentExportStrategyConfiguration> configure = null)
-			=> config.ExportForAllTenants(tenants, typeof(TInterface), typeof(TImplementation), configure);
-		//public static IExportRegistrationBlock ExportForAllTenants<TInterface, TImplementation>(
-		//	this IExportRegistrationBlock config, IEnumerable<ITenantContext> tenants,
-		//	Action<IFluentExportStrategyConfiguration> configure = null)
-		//{
-		//	foreach (var tenant in tenants)
-		//	{
-		//		var exportConfig = config.Export<TImplementation>().AsKeyed<TInterface>(tenant.Key);
-		//		//configure?.Invoke(exportConfig);
-		//	}
-
-		//	config.ExportPerTenantFactory<TInterface>();
-
-		//	return config;
-		//}
-
-		public static IExportRegistrationBlock ExportForAllTenants(this IExportRegistrationBlock config, IEnumerable<ITenantContext> tenants, Type interfaceType, Type implementationType, Action<IFluentExportStrategyConfiguration> configure = null)
-		{
-			foreach (var tenant in tenants)
-			{
-				var exportConfig = config.Export(implementationType).AsKeyed(interfaceType, tenant.Key);
-				configure?.Invoke(exportConfig);
-			}
-
-			config.ExportPerTenantFactoryWeak(interfaceType);
-
-			return config;
 		}
 	}
 }
