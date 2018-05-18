@@ -18,26 +18,26 @@ namespace Heroes.Grains
 	public class HeroCollectionGrain : AppGrain<HeroCollectionState>, IHeroCollectionGrain
 	{
 		private readonly IHeroDataClient _heroDataClient;
-		private readonly ITenantContext _tenantContext;
+		private readonly ITenant _tenant;
 		private HeroCollectionKeyData _keyData;
 
 		public HeroCollectionGrain(
 			ILogger<HeroCollectionGrain> logger,
 			IHeroDataClient heroDataClient,
-			ITenantContext tenantContext
+			ITenant tenant
 
 		) : base(logger)
 		{
 			_heroDataClient = heroDataClient;
-			_tenantContext = tenantContext;
+			_tenant = tenant;
 		}
 
 		public override async Task OnActivateAsync()
 		{
 			await base.OnActivateAsync();
 
-			_keyData.Tenant = _tenantContext.Key;
-			//_keyData.Tenant = PrimaryKey.Split('\\')[1];
+			_keyData.Tenant = _tenant.Key;
+			//_keyData.AppTenant = PrimaryKey.Split('/')[1];
 
 			if (State.HeroKeys == null)
 				await FetchFromRemote();

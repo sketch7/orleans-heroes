@@ -3,14 +3,8 @@ using System.Diagnostics;
 
 namespace Heroes.Contracts.Grains
 {
-	public interface ITenantContext
-	{
-		string Key { get; set; }
-		string Name { get; set; }
-	}
-
 	[DebuggerDisplay("{DebuggerDisplay,nq}")]
-	public class TenantContext : ITenantContext
+	public class AppTenant : ITenant
 	{
 		private string DebuggerDisplay => $"Key: '{Key}', Name: '{Name}'";
 
@@ -20,19 +14,19 @@ namespace Heroes.Contracts.Grains
 
 	public static class Tenants
 	{
-		public static TenantContext LeageOfLegends = new TenantContext
+		public static AppTenant LeageOfLegends = new AppTenant
 		{
 			Key = "lol",
 			Name = "League of Legends"
 		};
 
-		public static TenantContext HeroesOfTheStorm = new TenantContext
+		public static AppTenant HeroesOfTheStorm = new AppTenant
 		{
 			Key = "hots",
 			Name = "Heroes of the Storm"
 		};
 
-		public static HashSet<TenantContext> All = new HashSet<TenantContext>
+		public static HashSet<AppTenant> All = new HashSet<AppTenant>
 		{
 			LeageOfLegends,
 			HeroesOfTheStorm

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
+using System.Linq;
 using System.Runtime.Loader;
 using System.Threading;
 using System.Threading.Tasks;
@@ -150,30 +150,52 @@ namespace Heroes.SiloHost.ConsoleApp
 				//	.As<IHeroDataClient>()
 				//	;
 				//c.
-				c.ExportFactory<IExportLocatorScope, ITenantContext>(
+				c.ExportFactory<IExportLocatorScope, ITenant>(
 					scope =>
 					{
-						return (ITenantContext)scope.GetExtraData("TenantContext");
+						return (ITenant)scope.GetExtraData("TenantContext");
 					});
 
 				//c.Export<MockHotsHeroDataClient>().AsKeyed<IHeroDataClient>("hots").Lifestyle.Singleton();
 				//c.Export<MockLoLHeroDataClient>().AsKeyed<IHeroDataClient>("lol").Lifestyle.Singleton();
-
-				//c.ExportFactory<IExportLocatorScope, ITenantContext, IHeroDataClient>((scope, tenantContext) =>
+				//c.ExportFactory<IExportLocatorScope, ITenant, IHeroDataClient>((scope, tenant) =>
 				//{
-				//	var tenant = RequestContext.Get("tenant") ?? tenantContext?.Key;
+				//	var tenant = RequestContext.Get("tenant") ?? tenant?.Key;
 
-				//	if (tenant == null) throw new ArgumentNullException("tenant", "Tenant must be defined");
+				//	if (tenant == null) throw new ArgumentNullException("tenant", "AppTenant must be defined");
 				//	return scope.Locate<IHeroDataClient>(withKey: tenant);
 				//});
 
 
 				//c.ExportForAllTenants<IHeroDataClient, MockLoLHeroDataClient>(Tenants.All, x => x.Lifestyle.Singleton());
 
-				c.ForTenant(Tenants.LeageOfLegends).PopulateFrom(x => x.AddHeroesLoLGrains());
-				c.ForTenant(Tenants.HeroesOfTheStorm).PopulateFrom(x => x.AddHeroesHotsGrains());
+				//c.ForTenant(Tenants.LeageOfLegends).PopulateFrom(x => x.AddHeroesLoLGrains());
+				//c.ForTenant(Tenants.HeroesOfTheStorm).PopulateFrom(x => x.AddHeroesHotsGrains());
 
-				//c.ExportPerTenantFactory<IHeroDataClient>();
+				c.ForTenants(Tenants.All, tb =>
+				{
+					tb
+					.ForTenant(Tenants.LeageOfLegends.Key, tc => tc.PopulateFrom(x => x.AddHeroesLoLGrains()))
+					.ForTenant(x => x.Key == Tenants.HeroesOfTheStorm.Key, tc => tc.PopulateFrom(x => x.AddHeroesHotsGrains()))
+						;
+				});
+
+				/*
+				 *
+				 * // register with filter tenant
+				 * c.ForTenants(tenants, tb =>
+				 * {
+				 *		tb.ForTenant(x => x.Platform == "horizon").PopulateFrom(x => x.AddHeroesHotsGrains());
+				 * });
+				 *
+				 * // register one per type
+				 * c.For<IHeroDataClient>(tb =>
+				 * {
+				 *		tb.For(x => x.Key == "lol").Use<MockLoLHeroDataClient>();
+				 * });
+				 *
+				 */
+
 			});
 
 

@@ -9,14 +9,12 @@ namespace Heroes.Contracts.Grains
 	{
 		public static IHeroGrain GetHeroGrain(this IGrainFactory factory, string tenant, string key)
 		{
-			RequestContext.Set("tenant", tenant);
-			return factory.GetGrain<IHeroGrain>($"tenant\\{tenant}\\{key}");
+			return factory.GetGrain<IHeroGrain>($"tenant/{tenant}/{key}");
 		}
 
 		public static IHeroCollectionGrain GetHeroCollectionGrain(this IGrainFactory factory, string tenant)
 		{
-			RequestContext.Set("tenant", tenant);
-			return factory.GetGrain<IHeroCollectionGrain>($"tenant\\{tenant}");
+			return factory.GetGrain<IHeroCollectionGrain>($"tenant/{tenant}");
 		}
 
 		public static IHeroAbilitiesGrain GetHeroAbilitiesGrain(this IGrainFactory factory, string key)

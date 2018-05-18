@@ -19,15 +19,15 @@ namespace Heroes.SiloHost.ConsoleApp.Infrastructure
 		{
 			var scope = context.ActivationServices.GetRequiredService<IExportLocatorScope>();
 
-			var tenantContext = new TenantContext
+			var tenantContext = new AppTenant
 			{
 
 			};
 			//var t = RequestContext.Get("tenant");
 			//vasr teecontext.Items["tenant"];
-			if (context.GrainIdentity.PrimaryKeyString != null && context.GrainIdentity.PrimaryKeyString.Contains("tenant\\"))
+			if (context.GrainIdentity.PrimaryKeyString != null && context.GrainIdentity.PrimaryKeyString.Contains("/"))
 			{
-				var keySplit = context.GrainIdentity.PrimaryKeyString.Split('\\');
+				var keySplit = context.GrainIdentity.PrimaryKeyString.Split('/');
 				tenantContext.Key = keySplit[1];
 			}
 

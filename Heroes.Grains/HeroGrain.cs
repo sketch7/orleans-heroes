@@ -25,7 +25,7 @@ namespace Heroes.Grains
 		public HeroGrain(
 			ILogger<HeroGrain> logger,
 			IHeroDataClient heroDataClient
-			
+
 		) : base(logger)
 		{
 			_heroDataClient = heroDataClient;
@@ -36,7 +36,7 @@ namespace Heroes.Grains
 			await base.OnActivateAsync();
 			if (State.Hero == null)
 			{
-				var keySplit = PrimaryKey.Split('\\');
+				var keySplit = PrimaryKey.Split('/');
 				_keyData.Tenant = keySplit[1];
 				_keyData.HeroKey = keySplit[2];
 				var hero = await _heroDataClient.GetByKey(_keyData.HeroKey);
@@ -57,7 +57,7 @@ namespace Heroes.Grains
 
 			}, State, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(3));
 		}
-		
+
 		public Task Set(Hero hero)
 		{
 			State.Hero = hero;
