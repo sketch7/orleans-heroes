@@ -123,7 +123,7 @@ namespace Heroes.SiloHost.ConsoleApp
 			{
 				var tenant = tenantContext?.Key;
 
-				if (tenant == null) throw new ArgumentNullException("tenant", "AppTenant must be defined");
+				if (tenant == null) throw new ArgumentNullException("tenant", "Tenant must be defined");
 				return scope.Locate(withKey: tenant, type: interfaceType);
 			}).As(interfaceType);
 			return config;

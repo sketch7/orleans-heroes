@@ -37,7 +37,7 @@ namespace Heroes.Grains
 			await base.OnActivateAsync();
 
 			_keyData.Tenant = _tenant.Key;
-			//_keyData.AppTenant = PrimaryKey.Split('/')[1];
+			//_keyData.Tenant = PrimaryKey.Split('/')[1];
 
 			if (State.HeroKeys == null)
 				await FetchFromRemote();

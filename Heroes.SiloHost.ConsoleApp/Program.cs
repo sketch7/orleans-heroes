@@ -162,7 +162,7 @@ namespace Heroes.SiloHost.ConsoleApp
 				//{
 				//	var tenant = RequestContext.Get("tenant") ?? tenant?.Key;
 
-				//	if (tenant == null) throw new ArgumentNullException("tenant", "AppTenant must be defined");
+				//	if (tenant == null) throw new ArgumentNullException("tenant", "Tenant must be defined");
 				//	return scope.Locate<IHeroDataClient>(withKey: tenant);
 				//});
 
