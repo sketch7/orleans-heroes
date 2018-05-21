@@ -25,7 +25,7 @@ namespace Heroes.SiloHost.ConsoleApp.Infrastructure
 			};
 			//var t = RequestContext.Get("tenant");
 			//vasr teecontext.Items["tenant"];
-			if (context.GrainIdentity.PrimaryKeyString != null && context.GrainIdentity.PrimaryKeyString.Contains("/"))
+			if (context.GrainIdentity.PrimaryKeyString != null && context.GrainIdentity.PrimaryKeyString.Contains("tenant/"))
 			{
 				var keySplit = context.GrainIdentity.PrimaryKeyString.Split('/');
 				tenantContext.Key = keySplit[1];
