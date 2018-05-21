@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 using Grace.DependencyInjection;
 using Heroes.Contracts.Grains;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +12,8 @@ namespace Heroes.SiloHost.ConsoleApp.Infrastructure
 	/// </summary>
 	public class TenantGrainActivator : DefaultGrainActivator
 	{
+		private readonly Regex _regex = new Regex(@"tenant\/(.*)", RegexOptions.Compiled);
+
 		public TenantGrainActivator(IServiceProvider serviceProvider) : base(serviceProvider)
 		{
 		}
@@ -19,21 +22,19 @@ namespace Heroes.SiloHost.ConsoleApp.Infrastructure
 		{
 			var scope = context.ActivationServices.GetRequiredService<IExportLocatorScope>();
 
-			var tenantContext = new AppTenant
-			{
 
-			};
 			//var t = RequestContext.Get("tenant");
-			//vasr teecontext.Items["tenant"];
-			if (context.GrainIdentity.PrimaryKeyString != null && context.GrainIdentity.PrimaryKeyString.Contains("tenant/"))
+
+			var matches = _regex.Match(context.GrainIdentity.PrimaryKeyString ?? string.Empty);
+			if (context.GrainIdentity.PrimaryKeyString != null && matches.Success)
 			{
-				var keySplit = context.GrainIdentity.PrimaryKeyString.Split('/');
-				tenantContext.Key = keySplit[1];
+				var tenantContext = new AppTenant
+				{
+					Key = matches.Groups[1].Value
+				};
+
+				scope.SetExtraData("TenantContext", tenantContext);
 			}
-
-
-			scope.SetExtraData("TenantContext", tenantContext);
-
 
 			return base.Create(context);
 		}
