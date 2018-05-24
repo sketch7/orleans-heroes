@@ -1,0 +1,7 @@
+@import "../colors";
+@import "../vars-def";
+
+$navbar-text-color: $mine-shaft;
+$navbar-bg-color: $concrete;
+
+$navbar-active-bg-color: darken($navbar-bg-color, 20%);

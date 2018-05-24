@@ -1,0 +1,20 @@
+@import "vars";
+
+$nav-bg-color: rgba($cod-gray, 0.75) !default;
+
+.navbar {
+	background: $nav-bg-color;
+}
+
+.navbar-brand {
+	position: relative;
+}
+
+.app-version {
+	position: absolute;
+	cursor: default;
+	right: -15px;
+	top: -6px;
+	color: $text-diffuse-color;
+	font-size: $font-size-xxs;
+}

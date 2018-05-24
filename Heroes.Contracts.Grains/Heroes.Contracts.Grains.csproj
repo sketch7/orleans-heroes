@@ -9,4 +9,8 @@
     <PackageReference Include="Microsoft.Orleans.OrleansCodeGenerator.Build" Version="$(OrleansVersion)" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Heroes.Core\Heroes.Core.csproj" />
+  </ItemGroup>
+
 </Project>

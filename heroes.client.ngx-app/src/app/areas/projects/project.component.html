@@ -1,0 +1,11 @@
+<ng-container *ngIf="project">
+	<div class="project-container project-tag--{{project.tag}}">
+		<span class="project-tag badge">{{project.tag}}</span>
+		<i class="project-icon fa fa-th-large fa-5x"
+		 aria-hidden="true"></i>️
+
+		<h4 class="project-title">{{project.title}}</h4>
+
+	</div>
+	<span class="project-description">{{project.description}}</span>
+</ng-container>

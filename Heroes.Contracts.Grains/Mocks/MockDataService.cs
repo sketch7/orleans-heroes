@@ -1,19 +1,27 @@
-﻿using Heroes.Contracts.Grains.Heroes;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Heroes.Contracts.Grains.Heroes;
 using Heroes.Contracts.Grains.Stats;
-using System.Collections.Generic;
 
 namespace Heroes.Contracts.Grains.Mocks
 {
 	public static class MockDataService
 	{
+		private static readonly List<Hero> MockData = new List<Hero>
+		{
+			new Hero {Name = "Rengar", Key = "rengar", Role = HeroRoleType.Assassin, Abilities = new HashSet<string> { "savagery", "battle-roar", "bola-strike", "thrill-of-the-hunt"}},
+			new Hero {Name = "Kha'zix", Key = "kha-zix", Role = HeroRoleType.Assassin, Abilities = new HashSet<string> { "taste-their-fear", "void-spike", "leap", "void-assault"}},
+			new Hero {Name = "Singed", Key = "singed", Role = HeroRoleType.Tank, Abilities = new HashSet<string> { "poison-trail", "mega-adhesive", "fling", "insanity-potion"}}
+		};
+
 		public static List<Hero> GetHeroes()
 		{
-			return new List<Hero>
-			{
-				new Hero {Name = "Rengar", Key = "rengar", Role = HeroRoleType.Assassin, Abilities = new HashSet<string> { "savagery", "battle-roar", "bola-strike", "thrill-of-the-hunt"}},
-				new Hero {Name = "Kha 'Zix", Key = "kha-zix", Role = HeroRoleType.Assassin, Abilities = new HashSet<string> { "taste-their-fear", "void-spike", "leap", "void-assault"}},
-				new Hero {Name = "Singed", Key = "singed", Role = HeroRoleType.Tank, Abilities = new HashSet<string> { "poison-trail", "mega-adhesive", "fling", "insanity-potion"}}
-			};
+			return MockData;
+		}
+
+		public static Hero GetById(string key)
+		{
+			return MockData.FirstOrDefault(x => x.Key == key);
 		}
 
 		public static List<HeroAbility> GetHeroesAbilities()

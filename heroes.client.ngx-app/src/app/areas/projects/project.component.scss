@@ -1,0 +1,119 @@
+@import "mixins";
+@import "vars";
+
+$project-bg-color: rgba($black, 0.4) !default;
+$project-text-color: $concrete !default;
+$project-text-hover-color: $white !default;
+$project-icon-hover-color: $primary-highlight-color !default;
+$project-description-color: $text-semi-diffuse-color !default;
+
+:host {
+	display: block;
+	position: relative;
+	width: 230px;
+	color: $project-text-color;
+	transition: 0.2s ease-in-out;
+
+	&:hover {
+		.project {
+			&-container {
+				transition: 0.2s ease-in-out;
+				@include shadow-6dp;
+			}
+
+			&-title {
+				color: $project-text-hover-color;
+			}
+
+			&-icon {
+				transition: 0.3s ease-in-out;
+			}
+
+			&-tag {
+				&--csharp {
+					.project-icon {
+						color: $electric-violet;
+					}
+				}
+
+				&--angular {
+					.project-icon {
+						color: $crimson;
+					}
+				}
+
+				&--aurelia {
+					.project-icon {
+						color: $cerise;
+					}
+				}
+
+				&--javascript {
+					.project-icon {
+						color: $amber;
+					}
+				}
+			}
+		}
+	}
+}
+
+.project {
+	&-container {
+		padding-top: 1.5em;
+		display: flex;
+		flex-flow: column;
+		text-align: center;
+		border-radius: 5px;
+
+		min-height: 160px;
+		background-color: $project-bg-color;
+		@include shadow-4dp;
+	}
+
+	&-title {
+		margin: 0;
+		font-size: $font-size-m;
+	}
+
+	&-description {
+		display: block;
+		color: $project-description-color;
+		font-size: $font-size-s;
+		text-align: center;
+
+		margin: 0.5em 0.25em 0;
+		line-height: 18px;
+	}
+
+	&-tag {
+		position: absolute;
+		right: 0.25em;
+		top: 0.25em;
+
+		&--csharp {
+			.project-tag {
+				background: $electric-violet;
+			}
+		}
+
+		&--angular {
+			.project-tag {
+				background: $crimson;
+			}
+		}
+
+		&--aurelia {
+			.project-tag {
+				background: $cerise;
+			}
+		}
+
+		&--javascript {
+			.project-tag {
+				color: $black;
+				background: $amber;
+			}
+		}
+	}
+}

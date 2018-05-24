@@ -1,0 +1,14 @@
+html {
+	background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2)), no-repeat center center url("/assets/imgs/app-bg.min.jpg");
+	background-size: cover;
+}
+
+body {
+	background: none;
+}
+
+@media (min-width: 2560px) {
+	.container {
+		max-width: 1840px;
+	}
+}

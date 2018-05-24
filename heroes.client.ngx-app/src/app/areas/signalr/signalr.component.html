@@ -1,0 +1,41 @@
+<h1>Hero</h1>
+<p>Current user
+	<strong>{{currentUser}}</strong>.</p>
+<p>connection status: {{connectionState | json}} </p>
+<div class="btn-group"
+ role="group">
+	<button class="btn btn-success"
+	 (click)="connect()">connect</button>
+	<button class="btn btn-danger"
+	 (click)="disconnect()">disconnect</button>
+</div>
+<br />
+<div class="btn-group"
+ role="group">
+	<button class="btn btn-secondary"
+	 (click)="send()">send</button>
+	<button class="btn btn-secondary"
+	 (click)="invoke()">invoke</button>
+</div>
+<br />
+
+<div class="btn-group"
+ role="group">
+	<button class="btn btn-secondary"
+	 (click)="setData()">setData</button>
+	<button class="btn btn-warning"
+	 (click)="clearData()">clearData</button>
+</div>
+<br />
+<div class="btn-group"
+ role="group">
+	<button class="btn btn-warning"
+	 (click)="subscribe()">subscribe</button>
+	<button class="btn btn-danger"
+	 (click)="dispose()">dispose</button>
+</div>
+<div>
+	<ul>
+		<li *ngFor="let hero of heroMessages; trackBy: trackByHero">{{hero.name}} - {{hero.health}}</li>
+	</ul>
+</div>
