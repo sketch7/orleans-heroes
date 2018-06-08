@@ -56,8 +56,10 @@ export class SignalrComponent implements OnInit, OnDestroy {
 	}
 
 	connect() {
-		// this.hubConnection$$ = this.hubConnection.connect({ token: "gunit-x", test: "v2" })
-		this.hubConnection$$ = this.hubConnection.connect({ token: "cla-key" })
+		this.hubConnection$$ = this.hubConnection.connect(() => {
+			console.log("setting data..");
+			return { token: "cla-key" };
+		})
 			.subscribe(() => {
 				console.log(`${this.source} connected!!`);
 			});
@@ -73,12 +75,8 @@ export class SignalrComponent implements OnInit, OnDestroy {
 	}
 
 	setData() {
-		this.hubConnection.setData({ token: "gunit-x", test: "v2" });
-		this.hubConnection.setData({ token: "cla-key", test: "hello1" });
-	}
-
-	clearData() {
-		this.hubConnection.clearData();
+		this.hubConnection.setData(() => ({ token: "gunit-x", test: "v2" }));
+		this.hubConnection.setData(() => ({ token: "cla-key", test: "hello1" }));
 	}
 
 	trackByHero(_index: number, hero: Hero): string {

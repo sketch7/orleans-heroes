@@ -28,7 +28,7 @@
 		"@angular/platform-server": "^6.0.3",
 		"@angular/router": "^6.0.3",
 		"@angular/service-worker": "^6.0.3",
-		"@ssv/signalr-client": "^0.6.0",
+		"@ssv/signalr-client": "^0.8.0",
 		"@ssv/tools": "^0.6.12",
 		"bootstrap": "^4.1.1",
 		"core-js": "^2.5.6",
