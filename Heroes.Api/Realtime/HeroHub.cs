@@ -59,7 +59,7 @@ namespace Heroes.Api.Realtime
 		public ChannelReader<Hero> GetUpdates(string id)
 		{
 			//TODO: this method need to be fixed.
-			Context.Items.TryGetValue(HeroStreamProviderKey, out object streamProviderObj);
+			Context.Items.TryGetValue(HeroStreamProviderKey, out var streamProviderObj);
 			var streamProvider = (IStreamProvider)streamProviderObj;
 			var stream = streamProvider.GetStream<Hero>(StreamConstants.HeroStream, $"hero:{id}");
 			var heroSubject = new Subject<Hero>();

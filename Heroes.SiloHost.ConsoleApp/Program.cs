@@ -1,10 +1,3 @@
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.Loader;
-using System.Threading;
-using System.Threading.Tasks;
 using Grace.DependencyInjection;
 using Grace.DependencyInjection.Extensions;
 using Heroes.Contracts.Grains;
@@ -18,6 +11,13 @@ using Orleans;
 using Orleans.Hosting;
 using Orleans.Runtime;
 using Serilog;
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Runtime.Loader;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Heroes.SiloHost.ConsoleApp
 {
@@ -187,7 +187,7 @@ namespace Heroes.SiloHost.ConsoleApp
 				 * // register with filter tenant
 				 * c.ForTenants(tenants, tb =>
 				 * {
-				 *		tb.ForTenant(x => x.Platform == "horizon").PopulateFrom(x => x.AddHeroesHotsGrains());
+				 *		tb.ForTenant(x => x.Platform == "x").PopulateFrom(x => x.AddHeroesHotsGrains());
 				 * });
 				 *
 				 * // register one per type
