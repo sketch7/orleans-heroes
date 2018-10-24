@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.Loader;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using Grace.DependencyInjection;
 using Grace.DependencyInjection.Extensions;
 using Heroes.Contracts.Grains;
 using Heroes.Core;
+using Heroes.Core.Tenancy;
 using Heroes.Grains;
 using Heroes.SiloHost.ConsoleApp.Infrastructure;
 using Microsoft.Extensions.Configuration;
@@ -138,9 +140,15 @@ namespace Heroes.SiloHost.ConsoleApp
 			//services.AddSingleton<IGrainActivator, TenantGrainActivator>();
 			var container = new DependencyInjectionContainer(c => c.Behaviors.AllowInstanceAndFactoryToReturnNull = true);
 
+			services.AddSingleton<IAppTenantRegistry, AppTenantRegistry>();
+
 			var providers = container.Populate(services);
+			var tenantRegistry = container.Locate<IAppTenantRegistry>();
+			var tenants = tenantRegistry.GetAll().ToList();
+
 			container.Configure(c =>
 			{
+				
 				c.Export<TenantGrainActivator>().As<IGrainActivator>().Lifestyle.Singleton();
 				//c
 				//	//.Export<MockLoLHeroDataClient>()
@@ -148,11 +156,7 @@ namespace Heroes.SiloHost.ConsoleApp
 				//	.As<IHeroDataClient>()
 				//	;
 				//c.
-				c.ExportFactory<IExportLocatorScope, ITenant>(
-					scope =>
-					{
-						return (ITenant)scope.GetExtraData("TenantContext");
-					});
+				c.ExportFactory<IExportLocatorScope, ITenant>(scope => scope.GetTenantContext());
 
 				//c.Export<MockHotsHeroDataClient>().AsKeyed<IHeroDataClient>("hots").Lifestyle.Singleton();
 				//c.Export<MockLoLHeroDataClient>().AsKeyed<IHeroDataClient>("lol").Lifestyle.Singleton();
@@ -170,11 +174,11 @@ namespace Heroes.SiloHost.ConsoleApp
 				//c.ForTenant(Tenants.LeageOfLegends).PopulateFrom(x => x.AddHeroesLoLGrains());
 				//c.ForTenant(Tenants.HeroesOfTheStorm).PopulateFrom(x => x.AddHeroesHotsGrains());
 
-				c.ForTenants(Tenants.All, tb =>
+				c.ForTenants(tenants, tb =>
 				{
 					tb
-					.ForTenant(Tenants.LeageOfLegends.Key, tc => tc.PopulateFrom(x => x.AddHeroesLoLGrains()))
-					.ForTenant(x => x.Key == Tenants.HeroesOfTheStorm.Key, tc => tc.PopulateFrom(x => x.AddHeroesHotsGrains()))
+					.ForTenant(AppTenantRegistry.LeagueOfLegends.Key, tc => tc.PopulateFrom(x => x.AddHeroesLoLGrains()))
+					.ForTenant(x => x.Key == AppTenantRegistry.HeroesOfTheStorm.Key, tc => tc.PopulateFrom(x => x.AddHeroesHotsGrains()))
 						;
 				});
 
@@ -195,9 +199,6 @@ namespace Heroes.SiloHost.ConsoleApp
 				 */
 
 			});
-
-
-			var ac = providers.GetService<IGrainActivator>();
 
 			return providers;
 		}

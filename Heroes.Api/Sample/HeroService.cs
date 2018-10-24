@@ -17,7 +17,7 @@ namespace Heroes.Api.Sample
 
 	public class HeroService : IHeroService
 	{
-		private readonly ISubject<Hero> _messageStream = new ReplaySubject<Hero>(1);
+		//private readonly ISubject<Hero> _messageStream = new ReplaySubject<Hero>(1);
 
 		private readonly List<Hero> _heroes = new List<Hero>();
 
@@ -31,14 +31,15 @@ namespace Heroes.Api.Sample
 			Console.WriteLine(">>> Hero::Adding Hero");
 			var hero = MockDataService.GetHeroes().RandomElement();
 			_heroes.Add(hero);
-			_messageStream.OnNext(hero);
+			//_messageStream.OnNext(hero);
 
 			return hero;
 		}
 
 		public IObservable<Hero> AddedHero()
 		{
-			return _messageStream.AsObservable();
+			return null;
+			//return _messageStream.AsObservable();
 		}
 
 		public List<Hero> Heroes()
