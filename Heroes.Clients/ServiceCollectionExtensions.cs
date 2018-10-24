@@ -8,7 +8,7 @@ namespace Heroes.Clients
 {
 	public static class ServiceCollectionExtensions
 	{
-		public static void AddHeroesClients(this IServiceCollection services)
+		public static void AddAppClients(this IServiceCollection services)
 		{
 			services.AddScoped<IHeroClient, HeroClient>();
 			services.AddScoped<IHeroStatsClient, HeroStatsClient>();

@@ -11,7 +11,7 @@ namespace Heroes.Api.GraphQLCore
 {
 	public static class GraphQLRegistryService
 	{
-		public static void AddHeroesAppGraphQL(this IServiceCollection services)
+		public static void AddAppGraphQL(this IServiceCollection services)
 		{
 			services.AddSingleton<IDocumentExecuter>(new DocumentExecuter());
 			services.AddSingleton<IDocumentWriter>(new DocumentWriter(true));
@@ -26,7 +26,7 @@ namespace Heroes.Api.GraphQLCore
 			services.AddScoped<ISchema, HeroesAppSchema>();
 		}
 
-		public static void SetGraphQLMiddleWare(this IApplicationBuilder app)
+		public static void UseAppGraphQLMiddleware(this IApplicationBuilder app)
 		{
 			app.UseMiddleware<GraphQLMiddleware>(new GraphQLSettings
 			{

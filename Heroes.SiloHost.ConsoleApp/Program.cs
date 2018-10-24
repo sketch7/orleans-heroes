@@ -177,8 +177,8 @@ namespace Heroes.SiloHost.ConsoleApp
 				c.ForTenants(tenants, tb =>
 				{
 					tb
-					.ForTenant(AppTenantRegistry.LeagueOfLegends.Key, tc => tc.PopulateFrom(x => x.AddHeroesLoLGrains()))
-					.ForTenant(x => x.Key == AppTenantRegistry.HeroesOfTheStorm.Key, tc => tc.PopulateFrom(x => x.AddHeroesHotsGrains()))
+					.ForTenant(AppTenantRegistry.LeagueOfLegends.Key, tc => tc.PopulateFrom(x => x.AddAppLoLGrains()))
+					.ForTenant(x => x.Key == AppTenantRegistry.HeroesOfTheStorm.Key, tc => tc.PopulateFrom(x => x.AddAppHotsGrains()))
 						;
 				});
 
