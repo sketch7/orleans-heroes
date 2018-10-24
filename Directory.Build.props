@@ -18,7 +18,7 @@
 
   <!-- Common compile parameters -->
   <PropertyGroup>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <NoWarn>$(NoWarn);1701;1702;1705;1591</NoWarn>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <LangVersion>latest</LangVersion>
