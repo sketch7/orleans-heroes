@@ -15,6 +15,7 @@ namespace Heroes.Api.Sample
 		List<Hero> Heroes();
 	}
 
+	// todo: either fix or remove
 	public class HeroService : IHeroService
 	{
 		//private readonly ISubject<Hero> _messageStream = new ReplaySubject<Hero>(1);
