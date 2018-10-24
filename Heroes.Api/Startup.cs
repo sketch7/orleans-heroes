@@ -29,6 +29,8 @@ namespace Heroes.Api
 			services.AddSingleton<IHeroService, HeroService>();
 			var appInfo = new AppInfo(Configuration);
 			services.AddSingleton<IAppInfo>(appInfo);
+			services.AddCustomAuthentication();
+
 			var clientBuilderContext = new ClientBuilderContext
 			{
 				Configuration = Configuration,

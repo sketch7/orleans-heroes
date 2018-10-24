@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using Heroes.Api.Realtime.Core;
 using Heroes.Contracts.Grains;
 using Heroes.Contracts.Grains.Heroes;
+using Heroes.Core.Extensions;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Orleans;
@@ -54,12 +56,9 @@ namespace Heroes.Api.Realtime
 			await Clients.All.Send($"{_source} {Context.ConnectionId} left");
 		}
 
-		public IObservable<Hero> GetUpdates(string id)
+		public ChannelReader<Hero> GetUpdates(string id)
 		{
-			//HACK: initialize timer grain
-			var grain = _clusterClient.GetGrain<IHeroGrain>(id);
-			grain.Get();
-
+			//TODO: this method need to be fixed.
 			Context.Items.TryGetValue(HeroStreamProviderKey, out object streamProviderObj);
 			var streamProvider = (IStreamProvider)streamProviderObj;
 			var stream = streamProvider.GetStream<Hero>(StreamConstants.HeroStream, $"hero:{id}");
@@ -81,7 +80,7 @@ namespace Heroes.Api.Realtime
 				});
 			});
 
-			return heroSubject.AsObservable();
+			return heroSubject.AsObservable().AsChannelReader();
 		}
 
 		public async Task StreamUnsubscribe(string methodName, string id)

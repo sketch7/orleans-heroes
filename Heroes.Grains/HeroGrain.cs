@@ -36,6 +36,7 @@ namespace Heroes.Grains
 			await base.OnActivateAsync();
 			if (State.Hero == null)
 			{
+				// todo: use key data
 				var keySplit = PrimaryKey.Split('/');
 				_keyData.Tenant = keySplit[1];
 				_keyData.HeroKey = keySplit[2];
