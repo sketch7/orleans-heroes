@@ -91,7 +91,7 @@ csharp_style_throw_expression = true:warning
 csharp_style_conditional_delegate_call = true:warning
 # Code block preferences
 # https://docs.microsoft.com/en-us/visualstudio/ide/editorconfig-code-style-settings-reference#code_block
-csharp_prefer_braces = true:warning
+csharp_prefer_braces = false:warning
 
 #############################
 # .NET Formatting Conventions
