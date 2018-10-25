@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Orleans;
+using Orleans.Concurrency;
 
 namespace Heroes.Core.Orleans
 {
@@ -29,6 +30,7 @@ namespace Heroes.Core.Orleans
 		/// Cause force activation in order for grain to be warmed up/preloaded.
 		/// </summary>
 		/// <returns></returns>
+		[OneWay]
 		Task Activate();
 	}
 

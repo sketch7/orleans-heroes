@@ -9,23 +9,35 @@ using Orleans.Providers;
 
 namespace Heroes.Grains
 {
+	public struct HeroCollectionKeyData
+	{
+		public string Tenant { get; set; }
+	}
+
 	[StorageProvider(ProviderName = OrleansConstants.GrainMemoryStorage)]
 	public class HeroCollectionGrain : AppGrain<HeroCollectionState>, IHeroCollectionGrain
 	{
 		private readonly IHeroDataClient _heroDataClient;
+		private readonly ITenant _tenant;
+		private HeroCollectionKeyData _keyData;
 
 		public HeroCollectionGrain(
 			ILogger<HeroCollectionGrain> logger,
-			IHeroDataClient heroDataClient
+			IHeroDataClient heroDataClient,
+			ITenant tenant
 
 		) : base(logger)
 		{
 			_heroDataClient = heroDataClient;
+			_tenant = tenant;
 		}
 
 		public override async Task OnActivateAsync()
 		{
 			await base.OnActivateAsync();
+
+			_keyData.Tenant = _tenant.Key;
+			//_keyData.Tenant = PrimaryKey.Split('/')[1];
 
 			if (State.HeroKeys == null)
 				await FetchFromRemote();
@@ -51,7 +63,7 @@ namespace Heroes.Grains
 			var promises = new List<Task<Hero>>();
 			foreach (var heroId in heroIds)
 			{
-				var heroGrain = GrainFactory.GetHeroGrain(heroId);
+				var heroGrain = GrainFactory.GetHeroGrain(_keyData.Tenant, heroId);
 				promises.Add(heroGrain.Get());
 			}
 

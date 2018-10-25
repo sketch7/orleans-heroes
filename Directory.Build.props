@@ -18,7 +18,7 @@
 
   <!-- Common compile parameters -->
   <PropertyGroup>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <NoWarn>$(NoWarn);1701;1702;1705;1591</NoWarn>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <LangVersion>latest</LangVersion>
@@ -31,7 +31,8 @@
   <!-- Shared Package Versions -->
   <PropertyGroup>
     <!-- vendors -->
-    <OrleansVersion>2.0.*</OrleansVersion>
-    <SignalROrleansVersion>1.0.0-preview-63</SignalROrleansVersion>
+    <MicrosoftExtensionsVersion>2.1.1</MicrosoftExtensionsVersion>
+    <OrleansVersion>2.1.2</OrleansVersion>
+    <SignalROrleansVersion>1.0.6</SignalROrleansVersion>
   </PropertyGroup>
 </Project>

@@ -7,7 +7,7 @@ namespace Heroes.Core
 {
 	public static class ReflectionExtensions
 	{
-		private static readonly ConcurrentDictionary<Type, string> DeymstifiedTypeNameCache = new ConcurrentDictionary<Type, string>();
+		private static readonly ConcurrentDictionary<Type, string> DemystifiedTypeNameCache = new ConcurrentDictionary<Type, string>();
 
 		/// <summary>
 		/// Gets the type name as a more clarified name when having generics e.g.
@@ -17,7 +17,7 @@ namespace Heroes.Core
 		/// <returns></returns>
 		public static string GetDemystifiedName(this Type type)
 		{
-			return DeymstifiedTypeNameCache.GetOrAdd(type, arg =>
+			return DemystifiedTypeNameCache.GetOrAdd(type, arg =>
 			{
 				if (type.GenericTypeArguments.Length == 0)
 					return type.Name;

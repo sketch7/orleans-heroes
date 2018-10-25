@@ -1,17 +1,23 @@
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Runtime.Loader;
-using System.Threading;
-using System.Threading.Tasks;
+using Grace.DependencyInjection;
+using Grace.DependencyInjection.Extensions;
+using Heroes.Contracts.Grains;
 using Heroes.Core;
+using Heroes.Core.Tenancy;
 using Heroes.Grains;
 using Heroes.SiloHost.ConsoleApp.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Orleans;
 using Orleans.Hosting;
+using Orleans.Runtime;
 using Serilog;
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Runtime.Loader;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Heroes.SiloHost.ConsoleApp
 {
@@ -92,6 +98,8 @@ namespace Heroes.SiloHost.ConsoleApp
 				.ConfigureApplicationParts(parts => parts
 					.AddApplicationPart(typeof(HeroGrain).Assembly).WithReferences()
 				)
+				//.AddIncomingGrainCallFilter<LoggingIncomingCallFilter>()
+				//.AddOutgoingGrainCallFilter<LoggingOutgoingCallFilter>()
 				.AddStartupTask<WarmupStartupTask>()
 				.UseServiceProviderFactory(ConfigureServices)
 				.UseSignalR();
@@ -129,9 +137,70 @@ namespace Heroes.SiloHost.ConsoleApp
 
 		private static IServiceProvider ConfigureServices(IServiceCollection services)
 		{
-			services.AddHeroesGrains();
+			//services.AddSingleton<IGrainActivator, TenantGrainActivator>();
+			var container = new DependencyInjectionContainer(c => c.Behaviors.AllowInstanceAndFactoryToReturnNull = true);
 
-			return services.BuildServiceProvider();
+			services.AddSingleton<IAppTenantRegistry, AppTenantRegistry>();
+
+			var providers = container.Populate(services);
+			var tenantRegistry = container.Locate<IAppTenantRegistry>();
+			var tenants = tenantRegistry.GetAll().ToList();
+
+			container.Configure(c =>
+			{
+				
+				c.Export<TenantGrainActivator>().As<IGrainActivator>().Lifestyle.Singleton();
+				//c
+				//	//.Export<MockLoLHeroDataClient>()
+				//	.Export<MockHotsHeroDataClient>()
+				//	.As<IHeroDataClient>()
+				//	;
+				//c.
+				c.ExportFactory<IExportLocatorScope, ITenant>(scope => scope.GetTenantContext());
+
+				//c.Export<MockHotsHeroDataClient>().AsKeyed<IHeroDataClient>("hots").Lifestyle.Singleton();
+				//c.Export<MockLoLHeroDataClient>().AsKeyed<IHeroDataClient>("lol").Lifestyle.Singleton();
+				//c.ExportFactory<IExportLocatorScope, ITenant, IHeroDataClient>((scope, tenant) =>
+				//{
+				//	var tenant = RequestContext.Get("tenant") ?? tenant?.Key;
+
+				//	if (tenant == null) throw new ArgumentNullException("tenant", "Tenant must be defined");
+				//	return scope.Locate<IHeroDataClient>(withKey: tenant);
+				//});
+
+
+				//c.ExportForAllTenants<IHeroDataClient, MockLoLHeroDataClient>(Tenants.All, x => x.Lifestyle.Singleton());
+
+				//c.ForTenant(Tenants.LeageOfLegends).PopulateFrom(x => x.AddHeroesLoLGrains());
+				//c.ForTenant(Tenants.HeroesOfTheStorm).PopulateFrom(x => x.AddHeroesHotsGrains());
+
+				c.ForTenants(tenants, tb =>
+				{
+					tb
+					.ForTenant(AppTenantRegistry.LeagueOfLegends.Key, tc => tc.PopulateFrom(x => x.AddAppLoLGrains()))
+					.ForTenant(x => x.Key == AppTenantRegistry.HeroesOfTheStorm.Key, tc => tc.PopulateFrom(x => x.AddAppHotsGrains()))
+						;
+				});
+
+				/*
+				 *
+				 * // register with filter tenant
+				 * c.ForTenants(tenants, tb =>
+				 * {
+				 *		tb.ForTenant(x => x.Platform == "x").PopulateFrom(x => x.AddHeroesHotsGrains());
+				 * });
+				 *
+				 * // register one per type
+				 * c.For<IHeroDataClient>(tb =>
+				 * {
+				 *		tb.For(x => x.Key == "lol").Use<MockLoLHeroDataClient>();
+				 * });
+				 *
+				 */
+
+			});
+
+			return providers;
 		}
 	}
 }

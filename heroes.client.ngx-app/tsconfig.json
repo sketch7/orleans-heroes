@@ -5,7 +5,7 @@
     "paths": {
       "@angular/*": ["../node_modules/@angular/*"],
       "rxjs/*": ["../node_modules/rxjs/*"],
-      "@ssv/signalr-client":  ["../../../signalr-client/src/index.ts"]
+      // "@ssv/signalr-client":  ["../../../signalr-client/src/index.ts"]
       // "@ssv/ngx.command": ["../../@ssv.ngx.command/src/index.ts"]
     },
     "outDir": "./dist/out-tsc",

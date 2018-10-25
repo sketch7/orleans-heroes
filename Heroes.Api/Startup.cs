@@ -35,8 +35,8 @@ namespace Heroes.Api
 			{
 				Configuration = Configuration,
 				AppInfo = appInfo,
-				ConfigureClientBuilder = clientbuilder =>
-					clientbuilder.ConfigureApplicationParts(x => x.AddApplicationPart(typeof(IHeroCollectionGrain).Assembly).WithReferences())
+				ConfigureClientBuilder = clientBuilder =>
+					clientBuilder.ConfigureApplicationParts(x => x.AddApplicationPart(typeof(IHeroCollectionGrain).Assembly).WithReferences())
 					.UseSignalR()
 			};
 
@@ -44,8 +44,9 @@ namespace Heroes.Api
 				.AddOrleans();
 
 			services.UseOrleansClient(clientBuilderContext);
-			services.AddHeroesClients();
-			services.AddHeroesAppGraphQL();
+			services.AddCustomAuthentication();
+			services.AddAppClients();
+			services.AddAppGraphQL();
 			services.AddMvc();
 			services.AddCors(o => o.AddPolicy("TempCorsPolicy", builder =>
 			{
@@ -67,7 +68,7 @@ namespace Heroes.Api
 			loggerFactory.AddDebug();
 
 			app.UseCors("TempCorsPolicy");
-			app.SetGraphQLMiddleWare();
+			app.UseAppGraphQLMiddleware();
 			//app.UseWebSockets();
 			//app.UseGraphQLEndPoint<HeroesAppSchema>("/graphql");
 

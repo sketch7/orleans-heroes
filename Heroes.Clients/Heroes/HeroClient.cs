@@ -17,13 +17,14 @@ namespace Heroes.Clients.Heroes
 
 		public Task<Hero> Get(string key)
 		{
-			var grain = _clusterClient.GetHeroGrain(key);
+			// todo: get tenant from context
+			var grain = _clusterClient.GetHeroGrain("lol", key);
 			return grain.Get();
 		}
 
 		public Task<List<Hero>> GetAll(HeroRoleType? role = null)
 		{
-			var grain = _clusterClient.GetHeroCollectionGrain();
+			var grain = _clusterClient.GetHeroCollectionGrain("lol");
 			return grain.GetAll(role);
 		}
 	}
