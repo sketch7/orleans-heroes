@@ -45,7 +45,7 @@ namespace Heroes.Grains
 			}
 
 			var streamProvider = GetStreamProvider(Constants.STREAM_PROVIDER);
-			var stream = streamProvider.GetStream<Hero>(StreamConstants.HeroStream, $"hero:{PrimaryKey}");
+			var stream = streamProvider.GetStream<Hero>(StreamConstants.HeroStream, $"hero:{_keyData.HeroKey}");
 
 			RegisterTimer(async x =>
 			{
