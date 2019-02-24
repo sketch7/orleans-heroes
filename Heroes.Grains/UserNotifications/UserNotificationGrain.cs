@@ -37,7 +37,7 @@ namespace Heroes.Grains.UserNotifications
 		{
 			await base.OnActivateAsync();
 			_hubContext = GrainFactory.GetHub<IUserNotificationHub>();
-			
+			var hubUser = _hubContext.User(PrimaryKey);
 			var item = new UserNotification
 			{
 				MessageCount = 0
@@ -54,7 +54,7 @@ namespace Heroes.Grains.UserNotifications
 					MessageCount = item.MessageCount
 				};
 
-				await _hubContext.User(PrimaryKey).SendSignalRMessage("Broadcast", userNotification);
+				await hubUser.SendSignalRMessage("Broadcast", userNotification);
 			}, State, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(3));
 		}
 	}

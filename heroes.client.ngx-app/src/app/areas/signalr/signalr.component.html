@@ -33,6 +33,13 @@
 	 (click)="dispose()">dispose</button>
 </div>
 <div>
+	<select [(ngModel)]="selectedGroupId">
+		<option *ngFor="let group of availableGroups" [value]="group.id">{{group.name}}</option>
+	</select>
+	<button class="btn btn-warning"
+	 (click)="subscribeToGroup()">Subscribe to Group</button>
+</div>
+<div>
 	<ul>
 		<li *ngFor="let hero of heroMessages; trackBy: trackByHero">{{hero.name}} - {{hero.health}}</li>
 	</ul>

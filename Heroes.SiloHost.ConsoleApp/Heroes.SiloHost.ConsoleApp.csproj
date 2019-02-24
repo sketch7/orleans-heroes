@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -38,12 +38,12 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="$(MicrosoftExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(MicrosoftExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(MicrosoftExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Orleans.Server" Version="$(OrleansVersion)" />
-    <PackageReference Include="Serilog" Version="2.6.0" />
+    <PackageReference Include="Microsoft.Orleans.Server" Version="$(OrleansServerVersion)" />
+    <PackageReference Include="Serilog" Version="2.8.0" />
     <PackageReference Include="Serilog.Enrichers.Demystify" Version="0.1.0-dev-00016" />
     <PackageReference Include="Serilog.Enrichers.Environment" Version="2.1.2" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="2.0.2" />
-    <PackageReference Include="Serilog.Settings.Configuration" Version="2.6.1" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="3.0.1" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageReference Include="SignalR.Orleans" Version="$(SignalROrleansVersion)" />
   </ItemGroup>

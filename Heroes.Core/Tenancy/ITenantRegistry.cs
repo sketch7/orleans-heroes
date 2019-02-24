@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Heroes.Contracts.Grains
+namespace Heroes.Core.Tenancy
 {
 	public interface ITenantRegistry<out TTenant>
 		where TTenant : class, ITenant

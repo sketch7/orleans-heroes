@@ -17,16 +17,28 @@ export class SignalrComponent implements OnInit, OnDestroy {
 	isConnected = false;
 	connectionState: ConnectionState | undefined;
 
+	availableGroups: Group[] = [
+		{id: "hero:all", name: "All"},
+		{id: "hero:singed", name: "Singed"},
+		{id: "hero:kha-zix", name: "Kha Zix"},
+		{id: "hero:malthael", name: "Malthael"},
+		{id: "hero:johanna", name: "Johanna"},
+		{id: "hero:keal-thas", name: "Keal-thas"},
+		{id: "hero:alexstrasza", name: "Alexstrasza"},
+	];
+	selectedGroupId = this.availableGroups[0].id;
+
 	private hubConnection!: HubConnection<HeroHub>;
 
 	private source = "HeroListComponent ::";
 
-	private hubConnection$$: Subscription | undefined;
-	private onSend$$: Subscription | undefined;
+	private hubConnection$$ = Subscription.EMPTY;
+	private onSend$$ = Subscription.EMPTY;
 
-	private kha$$: Subscription | undefined;
-	private singed$$: Subscription | undefined;
-	private connectionState$$: Subscription | undefined;
+	private kha$$ = Subscription.EMPTY;
+	private singed$$ = Subscription.EMPTY;
+	private singedOn$$ = Subscription.EMPTY;
+	private connectionState$$ = Subscription.EMPTY;
 
 	constructor(
 		private client: HeroRealtimeClient
@@ -51,6 +63,10 @@ export class SignalrComponent implements OnInit, OnDestroy {
 		this.onSend$$ = this.hubConnection!.on<string>("Send").subscribe((val: string) => {
 			console.log(`${this.source} send :: data received >>>`, val);
 		});
+
+		this.singedOn$$ = this.hubConnection!.on<string>("HeroChanged").subscribe((val: string) => {
+			console.log(`${this.source} send :: data received >>>`, val);
+		});
 		// this.kha$$ = this.hubConnection.stream<Hero>("GetUpdates", "kha-zix")
 		// 	.subscribe(x => console.log(`${this.source} stream :: kha`, x));
 	}
@@ -67,6 +83,10 @@ export class SignalrComponent implements OnInit, OnDestroy {
 
 	send() {
 		this.hubConnection.send("StreamUnsubscribe", "fakeMethod", "sad");
+	}
+
+	subscribeToGroup() {
+		this.hubConnection.send("AddToGroup", this.selectedGroupId);
 	}
 
 	invoke() {
@@ -111,6 +131,10 @@ export class SignalrComponent implements OnInit, OnDestroy {
 			console.log(`${this.source} disposing singed...`);
 			this.singed$$.unsubscribe();
 		}
+		if (this.singedOn$$) {
+			console.log(`${this.source} disposing singedOn...`);
+			this.singedOn$$.unsubscribe();
+		}
 	}
 
 }
@@ -121,8 +145,7 @@ export interface Hero {
 	health: number;
 }
 
-export interface HeroHub {
-	Send: string;
-	GetUpdates: string;
-	Echo: number;
+export interface Group {
+	id: string;
+	name: string;
 }

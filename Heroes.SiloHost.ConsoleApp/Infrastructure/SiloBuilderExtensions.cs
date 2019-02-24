@@ -38,7 +38,7 @@ namespace Heroes.SiloHost.ConsoleApp.Infrastructure
 				.AddMemoryGrainStorage(OrleansConstants.PubSubStore)
 				.ConfigureServices(services =>
 				{
-					services.Configure<GrainCollectionOptions>(options => { options.CollectionAge = TimeSpan.FromMinutes(1.5); });
+					//services.Configure<GrainCollectionOptions>(options => { options.CollectionAge = TimeSpan.FromMinutes(1.5); });
 				})
 				.Configure<ClusterMembershipOptions>(options => options.ExpectedClusterSize = 1);
 

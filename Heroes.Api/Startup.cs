@@ -1,4 +1,5 @@
-﻿using Heroes.Api.GraphQLCore;
+﻿using GraphiQl;
+using Heroes.Api.GraphQLCore;
 using Heroes.Api.Infrastructure;
 using Heroes.Api.Realtime;
 using Heroes.Api.Sample;
@@ -43,18 +44,22 @@ namespace Heroes.Api
 			services.AddSignalR()
 				.AddOrleans();
 
+			services.AddCors(o => o.AddPolicy("TempCorsPolicy", builder =>
+			{
+				builder
+					//.AllowAnyOrigin()
+					.AllowAnyMethod()
+					.AllowAnyHeader()
+					.WithOrigins("http://localhost:4200")
+					.AllowCredentials()
+					;
+			}));
+
 			services.UseOrleansClient(clientBuilderContext);
 			services.AddCustomAuthentication();
 			services.AddAppClients();
 			services.AddAppGraphQL();
 			services.AddMvc();
-			services.AddCors(o => o.AddPolicy("TempCorsPolicy", builder =>
-			{
-				builder.AllowAnyOrigin()
-					.AllowAnyMethod()
-					.AllowAnyHeader()
-					.AllowCredentials();
-			}));
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

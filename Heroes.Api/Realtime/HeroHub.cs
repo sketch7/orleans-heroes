@@ -83,6 +83,9 @@ namespace Heroes.Api.Realtime
 			return heroSubject.AsObservable().AsChannelReader();
 		}
 
+		public async Task AddToGroup(string name) 
+			=> await Groups.AddToGroupAsync(Context.ConnectionId, name);
+
 		public async Task StreamUnsubscribe(string methodName, string id)
 		{
 			var key = $"{methodName}:{id}";

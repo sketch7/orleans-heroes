@@ -1,4 +1,4 @@
-namespace Heroes.Contracts.Grains
+namespace Heroes.Core.Tenancy
 {
 	public interface ITenant
 	{

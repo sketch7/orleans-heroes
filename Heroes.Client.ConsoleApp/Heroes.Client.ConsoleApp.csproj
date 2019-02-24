@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -11,7 +11,7 @@
 
   <ItemGroup>
 	  <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(MicrosoftExtensionsVersion)" />
-	  <PackageReference Include="Microsoft.Orleans.Client" Version="$(OrleansVersion)" />
+	  <PackageReference Include="Microsoft.Orleans.Client" Version="$(OrleansClientVersion)" />
   </ItemGroup>
 
   <ItemGroup>

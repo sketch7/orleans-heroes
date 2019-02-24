@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Grace.DependencyInjection;
-using Heroes.Contracts.Grains;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Heroes.Core.Tenancy

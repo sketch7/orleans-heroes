@@ -5,8 +5,10 @@ using Heroes.Contracts.Grains.Heroes;
 using Heroes.Core.Orleans;
 using Heroes.Core.Utils;
 using Microsoft.Extensions.Logging;
+using Orleans;
 using Orleans.Providers;
 using SignalR.Orleans;
+using SignalR.Orleans.Core;
 
 namespace Heroes.Grains
 {
@@ -21,6 +23,7 @@ namespace Heroes.Grains
 	{
 		private readonly IHeroDataClient _heroDataClient;
 		private HeroKeyData _keyData;
+		private HubContext<IHeroHub> _hubContext;
 
 		public HeroGrain(
 			ILogger<HeroGrain> logger,
@@ -34,6 +37,8 @@ namespace Heroes.Grains
 		public override async Task OnActivateAsync()
 		{
 			await base.OnActivateAsync();
+			_hubContext = GrainFactory.GetHub<IHeroHub>();
+
 			if (State.Hero == null)
 			{
 				// todo: use key data
@@ -44,6 +49,9 @@ namespace Heroes.Grains
 				await Set(hero);
 			}
 
+			var hubGroup = _hubContext.Group($"hero:{_keyData.HeroKey}");
+			var hubAllGroup = _hubContext.Group($"hero:all");
+
 			var streamProvider = GetStreamProvider(Constants.STREAM_PROVIDER);
 			var stream = streamProvider.GetStream<Hero>(StreamConstants.HeroStream, $"hero:{_keyData.HeroKey}");
 
@@ -53,9 +61,10 @@ namespace Heroes.Grains
 
 				await Task.WhenAll(
 					Set(State.Hero),
-					stream.OnNextAsync(State.Hero)
+					stream.OnNextAsync(State.Hero),
+					hubGroup.SendSignalRMessage("HeroChanged", State.Hero),
+					hubAllGroup.SendSignalRMessage("HeroChanged", State.Hero)
 				);
-
 			}, State, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(3));
 		}
 

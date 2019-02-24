@@ -31,8 +31,11 @@
   <!-- Shared Package Versions -->
   <PropertyGroup>
     <!-- vendors -->
-    <MicrosoftExtensionsVersion>2.1.1</MicrosoftExtensionsVersion>
-    <OrleansVersion>2.1.2</OrleansVersion>
-    <SignalROrleansVersion>1.0.6</SignalROrleansVersion>
+    <MicrosoftExtensionsVersion>2.2.0</MicrosoftExtensionsVersion>
+    <OrleansCoreVersion>2.2.0</OrleansCoreVersion>
+    <OrleansCodeGeneratorVersion>2.2.3</OrleansCodeGeneratorVersion>
+    <OrleansServerVersion>2.2.3</OrleansServerVersion>
+    <OrleansClientVersion>2.2.0</OrleansClientVersion>
+    <SignalROrleansVersion>1.1.1</SignalROrleansVersion>
   </PropertyGroup>
 </Project>
