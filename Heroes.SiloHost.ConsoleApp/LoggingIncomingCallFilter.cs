@@ -71,7 +71,7 @@ namespace Heroes.SiloHost.ConsoleApp
 	{
 		private readonly ILogger _logger;
 
-		public LoggingOutgoingCallFilter(ILogger<LoggingIncomingCallFilter> logger)
+		public LoggingOutgoingCallFilter(ILogger<LoggingOutgoingCallFilter> logger)
 		{
 			_logger = logger;
 		}
