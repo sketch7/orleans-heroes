@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Heroes.Contracts.Grains.Heroes;
+﻿using Heroes.Contracts.Grains.Heroes;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Heroes.Api.Controllers
 {
@@ -22,7 +22,7 @@ namespace Heroes.Api.Controllers
 			return result;
 		}
 
-		// GET api/heroes/5
+		// GET api/heroes/rengar
 		[HttpGet("{id}")]
 		public Task<Hero> Get(string id)
 		{

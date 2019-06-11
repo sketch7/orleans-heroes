@@ -5,6 +5,7 @@
       "override": {
         "System": "Information",
         "Microsoft": "Information",
+        "SignalR.Orleans": "Information",
         "Heroes": "Debug"
       }
     }

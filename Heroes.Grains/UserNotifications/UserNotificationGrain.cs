@@ -54,7 +54,7 @@ namespace Heroes.Grains.UserNotifications
 					MessageCount = item.MessageCount
 				};
 
-				await hubUser.SendSignalRMessage("Broadcast", userNotification);
+				await hubUser.Send("Broadcast", userNotification);
 			}, State, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(3));
 		}
 	}

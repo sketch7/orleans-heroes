@@ -1,12 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Net;
-using Heroes.Contracts.Grains;
+﻿using Heroes.Contracts.Grains;
 using Heroes.Core;
 using Heroes.Core.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Orleans.Configuration;
 using Orleans.Hosting;
+using System;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 
 namespace Heroes.SiloHost.ConsoleApp.Infrastructure
 {
@@ -48,7 +49,8 @@ namespace Heroes.SiloHost.ConsoleApp.Infrastructure
 		private static ISiloHostBuilder UseDevelopmentClustering(this ISiloHostBuilder siloHost)
 		{
 			var siloAddress = IPAddress.Loopback;
-			var siloPort = 11111;
+			var siloPort = GetAvailablePort(11111, 12000);
+
 			var gatewayPort = 30000;
 
 			return siloHost
@@ -70,6 +72,29 @@ namespace Heroes.SiloHost.ConsoleApp.Infrastructure
 					RandomUtils.GenerateNumber(20001, 20100), // todo: really needed random?
 					listenOnAnyHostAddress: true
 				);
+		}
+
+		private static int GetAvailablePort(int start, int end)
+		{
+			for (var port = start; port < end; ++port)
+			{
+				var listener = TcpListener.Create(port);
+				listener.ExclusiveAddressUse = true;
+				try
+				{
+					listener.Start();
+					return port;
+				}
+				catch (SocketException)
+				{
+				}
+				finally
+				{
+					listener.Stop();
+				}
+			}
+
+			throw new InvalidOperationException();
 		}
 
 	}

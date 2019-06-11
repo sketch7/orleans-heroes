@@ -38,5 +38,6 @@
     <SignalROrleansVersion>1.3.1</SignalROrleansVersion>
 
     <MicrosoftExtensionsVersion>2.2.0</MicrosoftExtensionsVersion>
+    <NewtonsoftJsonVersion>12.0.1</NewtonsoftJsonVersion>
   </PropertyGroup>
 </Project>
