@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Grace.DependencyInjection;
+﻿using Grace.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Collections.Generic;
 
 namespace Heroes.Core.Tenancy
 {

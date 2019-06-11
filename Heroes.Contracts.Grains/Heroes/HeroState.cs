@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Heroes.Core.Orleans;
+using Orleans;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Heroes.Core.Orleans;
-using Orleans;
 
 namespace Heroes.Contracts.Grains.Heroes
 {

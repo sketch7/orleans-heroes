@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Heroes.Contracts.Grains.Heroes;
+﻿using Heroes.Contracts.Grains.Heroes;
 using Heroes.Contracts.Grains.Stats;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Heroes.Contracts.Grains.Mocks
 {

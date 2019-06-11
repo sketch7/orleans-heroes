@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Heroes.Contracts.Grains;
+﻿using Heroes.Contracts.Grains;
 using Heroes.Contracts.Grains.Heroes;
 using Heroes.Core.Orleans;
 using Heroes.Core.Utils;
@@ -9,6 +7,8 @@ using Orleans;
 using Orleans.Providers;
 using SignalR.Orleans;
 using SignalR.Orleans.Core;
+using System;
+using System.Threading.Tasks;
 
 namespace Heroes.Grains
 {
@@ -62,8 +62,8 @@ namespace Heroes.Grains
 				await Task.WhenAll(
 					Set(State.Hero),
 					stream.OnNextAsync(State.Hero),
-					hubGroup.SendSignalRMessage("HeroChanged", State.Hero),
-					hubAllGroup.SendSignalRMessage("HeroChanged", State.Hero)
+					hubGroup.Send("HeroChanged", State.Hero),
+					hubAllGroup.Send("HeroChanged", State.Hero)
 				);
 			}, State, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(3));
 		}

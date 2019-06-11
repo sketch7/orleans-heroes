@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Heroes.Contracts.Grains;
+﻿using Heroes.Contracts.Grains;
 using Heroes.Contracts.Grains.UserNotifications;
 using Heroes.Core.Orleans;
 using Heroes.Core.Utils;
@@ -9,6 +7,8 @@ using Orleans;
 using Orleans.Providers;
 using Orleans.Runtime;
 using SignalR.Orleans.Core;
+using System;
+using System.Threading.Tasks;
 
 namespace Heroes.Grains.UserNotifications
 {

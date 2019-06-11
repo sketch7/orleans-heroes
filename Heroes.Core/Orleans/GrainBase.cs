@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Concurrency;
+using System.Threading.Tasks;
 
 namespace Heroes.Core.Orleans
 {

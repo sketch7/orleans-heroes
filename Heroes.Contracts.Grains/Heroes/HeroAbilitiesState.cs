@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Heroes.Contracts.Grains.Heroes
 {
-	public class HeroAbilitiesState 
+	public class HeroAbilitiesState
 	{
 		public List<HeroAbility> HeroAbilities { get; set; }
 	}
