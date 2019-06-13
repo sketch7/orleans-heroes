@@ -24,9 +24,16 @@
     <PackageReference Include="Microsoft.AspNetCore.App"  />
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
     <PackageReference Include="Microsoft.Orleans.Client" Version="$(OrleansClientVersion)" />
-    <PackageReference Include="SignalR.Orleans" Version="$(SignalROrleansVersion)" />
     <PackageReference Include="System.Reactive" Version="4.1.3" />
     <PackageReference Include="System.Reactive.Linq" Version="4.1.3" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(SignalROrleansVersion)' == 'link'">
+    <ProjectReference Include="..\..\SignalR.Orleans\src\SignalR.Orleans\SignalR.Orleans.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(SignalROrleansVersion)' != 'link'">
+    <PackageReference Include="SignalR.Orleans" Version="$(SignalROrleansVersion)" />
   </ItemGroup>
 
   <ItemGroup>

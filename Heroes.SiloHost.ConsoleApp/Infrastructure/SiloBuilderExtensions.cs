@@ -13,7 +13,7 @@ namespace Heroes.SiloHost.ConsoleApp.Infrastructure
 {
 	public static class SiloBuilderExtensions
 	{
-		public static ISiloHostBuilder UseHeroConfiguration(this ISiloHostBuilder siloHost, IAppInfo appInfo, HostingEnvironment hostingEnv)
+		public static ISiloBuilder UseHeroConfiguration(this ISiloBuilder siloHost, IAppInfo appInfo)
 		{
 			siloHost
 				.AddMemoryGrainStorage(OrleansConstants.GrainMemoryStorage)
@@ -23,17 +23,17 @@ namespace Heroes.SiloHost.ConsoleApp.Infrastructure
 					options.ServiceId = appInfo.Name;
 				});
 
-			if (hostingEnv.IsDev)
-				siloHost.UseDevelopment();
-			if (appInfo.IsDockerized)
-				siloHost.UseDockerSwarm();
-			else
-				siloHost.UseDevelopmentClustering();
+			//if (hostingEnv.IsDev)
+			//	siloHost.UseDevelopment();
+			//if (appInfo.IsDockerized)
+			//	siloHost.UseDockerSwarm();
+			//else
+			//	siloHost.UseDevelopmentClustering();
 
 			return siloHost;
 		}
 
-		private static ISiloHostBuilder UseDevelopment(this ISiloHostBuilder siloHost)
+		private static ISiloBuilder UseDevelopment(this ISiloBuilder siloHost)
 		{
 			siloHost
 				.AddMemoryGrainStorage(OrleansConstants.PubSubStore)
@@ -46,7 +46,7 @@ namespace Heroes.SiloHost.ConsoleApp.Infrastructure
 			return siloHost;
 		}
 
-		private static ISiloHostBuilder UseDevelopmentClustering(this ISiloHostBuilder siloHost)
+		private static ISiloBuilder UseDevelopmentClustering(this ISiloBuilder siloHost)
 		{
 			var siloAddress = IPAddress.Loopback;
 			var siloPort = GetAvailablePort(11111, 12000);
@@ -60,7 +60,7 @@ namespace Heroes.SiloHost.ConsoleApp.Infrastructure
 				;
 		}
 
-		private static ISiloHostBuilder UseDockerSwarm(this ISiloHostBuilder siloHost)
+		private static ISiloBuilder UseDockerSwarm(this ISiloBuilder siloHost)
 		{
 			var ips = Dns.GetHostAddressesAsync(Dns.GetHostName()).Result;
 			var defaultIp = ips.FirstOrDefault();

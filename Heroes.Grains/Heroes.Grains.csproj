@@ -16,6 +16,13 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="$(OrleansCoreVersion)" />
     <PackageReference Include="Microsoft.Orleans.OrleansCodeGenerator.Build" Version="$(OrleansCodeGeneratorVersion)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(SignalROrleansVersion)' == 'link'">
+    <ProjectReference Include="..\..\SignalR.Orleans\src\SignalR.Orleans\SignalR.Orleans.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(SignalROrleansVersion)' != 'link'">
     <PackageReference Include="SignalR.Orleans" Version="$(SignalROrleansVersion)" />
   </ItemGroup>
 
