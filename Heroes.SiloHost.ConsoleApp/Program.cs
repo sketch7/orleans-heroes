@@ -1,3 +1,4 @@
+using Grace.AspNetCore.Hosting;
 using Grace.DependencyInjection;
 using Grace.DependencyInjection.Extensions;
 using Heroes.Contracts.Grains;
@@ -21,6 +22,7 @@ using System.Threading.Tasks;
 namespace Heroes.SiloHost.ConsoleApp
 {
 
+	// todo: remove after orleans 2.3.5
 	public static class SiloHostBuilderExtensions
 	{
 		public static ISiloBuilder AddIncomingGrainCallFilter<T>(this ISiloBuilder builder)
@@ -42,13 +44,24 @@ namespace Heroes.SiloHost.ConsoleApp
 		public static Task Main(string[] args)
 		{
 			var hostBuilder = new HostBuilder();
+			var graceConfig = new InjectionScopeConfiguration
+			{
+				Behaviors =
+				{
+					AllowInstanceAndFactoryToReturnNull = true
+				}
+			};
 
 			IAppInfo appInfo = null;
-			hostBuilder.ConfigureServices((ctx, services) =>
+			hostBuilder
+				.UseGrace(graceConfig)
+				.ConfigureServices((ctx, services) =>
 				{
 					appInfo = new AppInfo(ctx.Configuration); // rebuild it so we ensure we have latest all configs
 					Console.Title = $"{appInfo.Name} - {appInfo.Environment}";
 					services.AddSingleton(appInfo);
+
+					// services.AddHostedService<ApiHostedService>()
 				})
 				.ConfigureAppConfiguration((ctx, cfg) =>
 				{
