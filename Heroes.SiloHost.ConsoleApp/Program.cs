@@ -14,14 +14,11 @@ using Orleans.Hosting;
 using Orleans.Runtime;
 using Serilog;
 using System;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Heroes.SiloHost.ConsoleApp
 {
-
 	// todo: remove after orleans 2.3.5
 	public static class SiloHostBuilderExtensions
 	{
@@ -36,10 +33,10 @@ namespace Heroes.SiloHost.ConsoleApp
 
 	public class Program
 	{
-		private static ILogger _log;
-		private static ISiloHost _siloHost;
-		private static Stopwatch _startupStopwatch;
-		private static readonly ManualResetEvent SiloStopped = new ManualResetEvent(false);
+		//private static ILogger _log;
+		//private static ISiloHost _siloHost;
+		//private static Stopwatch _startupStopwatch;
+		//private static readonly ManualResetEvent SiloStopped = new ManualResetEvent(false);
 
 		public static Task Main(string[] args)
 		{
@@ -174,50 +171,50 @@ namespace Heroes.SiloHost.ConsoleApp
 		//	}
 		//}
 
-		private static ISiloHost BuildSilo(IAppInfo appInfo, ILogger logger)
-		{
-			var builder = new SiloHostBuilder()
-				//.UseHeroConfiguration(appInfo, _hostingEnv)
-				.ConfigureLogging(logging => logging.AddSerilog(logger, dispose: true))
-				.ConfigureApplicationParts(parts => parts
-					.AddApplicationPart(typeof(HeroGrain).Assembly).WithReferences()
-				)
-				.AddIncomingGrainCallFilter<LoggingIncomingCallFilter>()
-				//.AddOutgoingGrainCallFilter<LoggingOutgoingCallFilter>()
-				.AddStartupTask<WarmupStartupTask>()
-				.UseServiceProviderFactory(ConfigureServices)
-				.UseSignalR();
+		//private static ISiloHost BuildSilo(IAppInfo appInfo, ILogger logger)
+		//{
+		//	var builder = new SiloHostBuilder()
+		//		//.UseHeroConfiguration(appInfo, _hostingEnv)
+		//		.ConfigureLogging(logging => logging.AddSerilog(logger, dispose: true))
+		//		.ConfigureApplicationParts(parts => parts
+		//			.AddApplicationPart(typeof(HeroGrain).Assembly).WithReferences()
+		//		)
+		//		.AddIncomingGrainCallFilter<LoggingIncomingCallFilter>()
+		//		//.AddOutgoingGrainCallFilter<LoggingOutgoingCallFilter>()
+		//		.AddStartupTask<WarmupStartupTask>()
+		//		.UseServiceProviderFactory(ConfigureServices)
+		//		.UseSignalR();
 
-			return builder.Build();
-		}
+		//	return builder.Build();
+		//}
 
-		private static async Task StartSilo()
-		{
-			_log.Information("Silo initialized in {timeTaken:#.##}s. Starting...", _startupStopwatch.Elapsed.TotalSeconds);
+		//private static async Task StartSilo()
+		//{
+		//	_log.Information("Silo initialized in {timeTaken:#.##}s. Starting...", _startupStopwatch.Elapsed.TotalSeconds);
 
-			await _siloHost.StartAsync();
-			_startupStopwatch.Stop();
+		//	await _siloHost.StartAsync();
+		//	_startupStopwatch.Stop();
 
-			_log.Information("Successfully started Silo in {timeTaken:#.##}s (total).", _startupStopwatch.Elapsed.TotalSeconds);
-		}
+		//	_log.Information("Successfully started Silo in {timeTaken:#.##}s (total).", _startupStopwatch.Elapsed.TotalSeconds);
+		//}
 
-		private static async Task StopSilo()
-		{
-			_log.Information("Stopping Silo...");
+		//private static async Task StopSilo()
+		//{
+		//	_log.Information("Stopping Silo...");
 
-			try
-			{
-				await _siloHost.StopAsync();
-			}
-			catch (Exception ex)
-			{
-				_log.Error(ex, "Stopping Silo failed...");
-			}
+		//	try
+		//	{
+		//		await _siloHost.StopAsync();
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		_log.Error(ex, "Stopping Silo failed...");
+		//	}
 
-			_log.Information("Silo shutdown.");
+		//	_log.Information("Silo shutdown.");
 
-			SiloStopped.Set();
-		}
+		//	SiloStopped.Set();
+		//}
 
 		private static IServiceProvider ConfigureServices(IServiceCollection services)
 		{
