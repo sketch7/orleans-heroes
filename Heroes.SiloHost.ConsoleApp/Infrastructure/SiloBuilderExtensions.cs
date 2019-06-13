@@ -2,18 +2,20 @@
 using Heroes.Core;
 using Heroes.Core.Utils;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Orleans.Configuration;
 using Orleans.Hosting;
 using System;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using HostBuilderContext = Microsoft.Extensions.Hosting.HostBuilderContext;
 
 namespace Heroes.SiloHost.ConsoleApp.Infrastructure
 {
 	public static class SiloBuilderExtensions
 	{
-		public static ISiloBuilder UseHeroConfiguration(this ISiloBuilder siloHost, IAppInfo appInfo)
+		public static ISiloBuilder UseHeroConfiguration(this ISiloBuilder siloHost, HostBuilderContext hostBuilderContext, IAppInfo appInfo)
 		{
 			siloHost
 				.AddMemoryGrainStorage(OrleansConstants.GrainMemoryStorage)
@@ -23,12 +25,12 @@ namespace Heroes.SiloHost.ConsoleApp.Infrastructure
 					options.ServiceId = appInfo.Name;
 				});
 
-			//if (hostingEnv.IsDev)
-			//	siloHost.UseDevelopment();
-			//if (appInfo.IsDockerized)
-			//	siloHost.UseDockerSwarm();
-			//else
-			//	siloHost.UseDevelopmentClustering();
+			if (hostBuilderContext.HostingEnvironment.IsDevelopment())
+				siloHost.UseDevelopment();
+			if (appInfo.IsDockerized)
+				siloHost.UseDockerSwarm();
+			else
+				siloHost.UseDevelopmentClustering();
 
 			return siloHost;
 		}

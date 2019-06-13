@@ -26,6 +26,10 @@ namespace Heroes.SiloHost.ConsoleApp
 		public static ISiloBuilder AddIncomingGrainCallFilter<T>(this ISiloBuilder builder)
 			where T : class, IIncomingGrainCallFilter
 			=> builder.ConfigureServices(s => s.AddSingleton<IIncomingGrainCallFilter, T>());
+
+		public static ISiloBuilder AddOutgoingGrainCallFilter<T>(this ISiloBuilder builder)
+			where T : class, IOutgoingGrainCallFilter
+			=> builder.ConfigureServices(s => s.AddSingleton<IOutgoingGrainCallFilter, T>());
 	}
 
 	public class Program
@@ -80,29 +84,24 @@ namespace Heroes.SiloHost.ConsoleApp
 						.WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{SourceContext:l}] {Message:lj}{NewLine}{Exception}");
 
 					loggerConfig.WithAppInfo(appInfo);
-				});
+				})
 			;
 
 			hostBuilder.UseOrleans((ctx, builder) =>
 				{
-					//builder.Add
-					//builder.
 					builder
-						//.UseHeroConfiguration(appInfo, _hostingEnv)
+						.UseHeroConfiguration(ctx, appInfo)
 						//.ConfigureLogging(logging => logging.AddSerilog(logger, dispose: true)) // todo: no need?
 						.ConfigureApplicationParts(parts => parts
 							.AddApplicationPart(typeof(HeroGrain).Assembly).WithReferences()
 						)
 						.AddIncomingGrainCallFilter<LoggingIncomingCallFilter>()
-						//.AddOutgoingGrainCallFilter<LoggingOutgoingCallFilter>()
+						.AddOutgoingGrainCallFilter<LoggingOutgoingCallFilter>()
 						.AddStartupTask<WarmupStartupTask>()
 						//.UseServiceProviderFactory(ConfigureServices)
-						//appInfo.
-						//.UseSignalR();
-						;
-					//builder
-				})
-				;
+						.UseSignalR()
+					;
+				});
 
 			return hostBuilder.RunConsoleAsync();
 
