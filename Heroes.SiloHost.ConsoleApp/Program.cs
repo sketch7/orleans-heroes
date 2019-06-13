@@ -57,7 +57,7 @@ namespace Heroes.SiloHost.ConsoleApp
 					appInfo = new AppInfo(ctx.Configuration); // rebuild it so we ensure we have latest all configs
 					Console.Title = $"{appInfo.Name} - {appInfo.Environment}";
 					services.AddSingleton(appInfo);
-
+					services.AddSingleton<IAppTenantRegistry, AppTenantRegistry>();
 					// services.AddHostedService<ApiHostedService>()
 				})
 				.ConfigureAppConfiguration((ctx, cfg) =>
@@ -221,7 +221,7 @@ namespace Heroes.SiloHost.ConsoleApp
 			//services.AddSingleton<IGrainActivator, TenantGrainActivator>();
 			var container = new DependencyInjectionContainer(c => c.Behaviors.AllowInstanceAndFactoryToReturnNull = true);
 
-			services.AddSingleton<IAppTenantRegistry, AppTenantRegistry>();
+			//services.AddSingleton<IAppTenantRegistry, AppTenantRegistry>();
 
 			var providers = container.Populate(services);
 			var tenantRegistry = container.Locate<IAppTenantRegistry>();

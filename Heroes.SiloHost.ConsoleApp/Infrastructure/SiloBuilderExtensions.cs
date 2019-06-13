@@ -64,7 +64,7 @@ namespace Heroes.SiloHost.ConsoleApp.Infrastructure
 
 		private static ISiloBuilder UseDockerSwarm(this ISiloBuilder siloHost)
 		{
-			var ips = Dns.GetHostAddressesAsync(Dns.GetHostName()).Result;
+			var ips = Dns.GetHostAddresses(Dns.GetHostName());
 			var defaultIp = ips.FirstOrDefault();
 
 			return siloHost
