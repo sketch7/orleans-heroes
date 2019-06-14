@@ -18,7 +18,6 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Heroes.SiloHost.ConsoleApp
 {
-
 	public class ApiHostedServiceOptions
 	{
 		//public string PathString { get; set; } = "/health";
@@ -72,7 +71,5 @@ namespace Heroes.SiloHost.ConsoleApp
 		}
 
 		public Task StopAsync(CancellationToken cancellationToken) => _host.StopAsync(cancellationToken);
-
-
 	}
 }
