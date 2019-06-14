@@ -1,10 +1,10 @@
-﻿using GraphiQl;
+﻿using Grace.DependencyInjection;
+using GraphiQl;
 using Heroes.Api.GraphQLCore;
 using Heroes.Api.Infrastructure;
 using Heroes.Api.Realtime;
 using Heroes.Api.Sample;
 using Heroes.Clients;
-using Heroes.Contracts.Grains.Heroes;
 using Heroes.Core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -15,31 +15,40 @@ using Orleans;
 
 namespace Heroes.Api
 {
-	public class Startup
+	public class ApiStartup
 	{
-		public Startup(IConfiguration configuration)
+		private readonly IConfiguration _configuration;
+		private readonly IAppInfo _appInfo;
+
+		public ApiStartup(
+			IConfiguration configuration,
+			IAppInfo appInfo,
+			IClusterClient clusterClient
+		)
 		{
-			Configuration = configuration;
+			_configuration = configuration;
+			_appInfo = appInfo;
 		}
 
-		public IConfiguration Configuration { get; }
+		public void ConfigureContainer(IInjectionScope scope)
+		{
+
+		}
 
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddSingleton<IHeroService, HeroService>();
-			var appInfo = new AppInfo(Configuration);
-			services.AddSingleton<IAppInfo>(appInfo);
 			services.AddCustomAuthentication();
 
-			var clientBuilderContext = new ClientBuilderContext
-			{
-				Configuration = Configuration,
-				AppInfo = appInfo,
-				ConfigureClientBuilder = clientBuilder =>
-					clientBuilder.ConfigureApplicationParts(x => x.AddApplicationPart(typeof(IHeroCollectionGrain).Assembly).WithReferences())
-					.UseSignalR()
-			};
+			//var clientBuilderContext = new ClientBuilderContext
+			//{
+			//	Configuration = Configuration,
+			//	AppInfo = appInfo,
+			//	ConfigureClientBuilder = clientBuilder =>
+			//		clientBuilder.ConfigureApplicationParts(x => x.AddApplicationPart(typeof(IHeroCollectionGrain).Assembly).WithReferences())
+			//		.UseSignalR()
+			//};
 
 			services.AddSignalR()
 				.AddOrleans();
@@ -55,7 +64,7 @@ namespace Heroes.Api
 					;
 			}));
 
-			services.UseOrleansClient(clientBuilderContext);
+			//services.UseOrleansClient(clientBuilderContext);
 			services.AddCustomAuthentication();
 			services.AddAppClients();
 			services.AddAppGraphQL();
@@ -69,9 +78,6 @@ namespace Heroes.Api
 			ILoggerFactory loggerFactory
 		)
 		{
-			loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-			loggerFactory.AddDebug();
-
 			app.UseCors("TempCorsPolicy");
 			app.UseAppGraphQLMiddleware();
 			//app.UseWebSockets();

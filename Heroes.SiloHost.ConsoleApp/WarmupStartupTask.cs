@@ -1,8 +1,8 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Heroes.Contracts.Grains;
+﻿using Heroes.Contracts.Grains;
 using Orleans;
 using Orleans.Runtime;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Heroes.SiloHost.ConsoleApp
 {

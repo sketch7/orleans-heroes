@@ -12,7 +12,7 @@ namespace Heroes.Api
 
 		public static IWebHost BuildWebHost(string[] args) =>
 			WebHost.CreateDefaultBuilder(args)
-				.UseStartup<Startup>()
+				.UseStartup<ApiStartup>()
 				.UseUrls("http://*:62551")
 				.Build();
 	}

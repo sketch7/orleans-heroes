@@ -3,10 +3,6 @@
     "minimumLevel": {
       "default": "Warning",
       "override": {
-        "System": "Warning",
-        "Runtime": "Warning",
-        "Microsoft": "Warning",
-        "Orleans": "Warning",
         "Heroes": "Information"
       }
     }
