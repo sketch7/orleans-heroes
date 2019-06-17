@@ -216,16 +216,4 @@ namespace Heroes.Server
 			}
 		}
 	}
-
-	// todo: remove after orleans 2.3.5
-	public static class SiloHostBuilderExtensions
-	{
-		public static ISiloBuilder AddIncomingGrainCallFilter<T>(this ISiloBuilder builder)
-			where T : class, IIncomingGrainCallFilter
-			=> builder.ConfigureServices(s => s.AddSingleton<IIncomingGrainCallFilter, T>());
-
-		public static ISiloBuilder AddOutgoingGrainCallFilter<T>(this ISiloBuilder builder)
-			where T : class, IOutgoingGrainCallFilter
-			=> builder.ConfigureServices(s => s.AddSingleton<IOutgoingGrainCallFilter, T>());
-	}
 }

@@ -39,16 +39,6 @@ namespace Heroes.Server
 		{
 			services.AddSingleton<IHeroService, HeroService>();
 			services.AddCustomAuthentication();
-
-			//var clientBuilderContext = new ClientBuilderContext
-			//{
-			//	Configuration = Configuration,
-			//	AppInfo = appInfo,
-			//	ConfigureClientBuilder = clientBuilder =>
-			//		clientBuilder.ConfigureApplicationParts(x => x.AddApplicationPart(typeof(IHeroCollectionGrain).Assembly).WithReferences())
-			//		.UseSignalR()
-			//};
-
 			services.AddSignalR()
 				.AddOrleans();
 
@@ -63,8 +53,6 @@ namespace Heroes.Server
 					;
 			}));
 
-			//services.UseOrleansClient(clientBuilderContext);
-			services.AddCustomAuthentication();
 			services.AddAppClients();
 			services.AddAppGraphQL();
 			services.AddMvc();

@@ -41,8 +41,8 @@ namespace Heroes.Server
 		{
 			_appInfo = appInfo;
 			_logger = logger;
-			logger.LogInformation("Initializing api {appName} ({version}) [{env}]...",
-				appInfo.Name, appInfo.Version, appInfo.Environment);
+			logger.LogInformation("Initializing api {appName} ({version}) [{env}] on port {apiPort}...",
+				appInfo.Name, appInfo.Version, appInfo.Environment, options.Value.Port);
 
 			_host = WebHost.CreateDefaultBuilder()
 				.UseGrace(new InjectionScopeConfiguration

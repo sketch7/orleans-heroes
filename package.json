@@ -4,10 +4,10 @@
   "description": "Microsoft Orleans - Real life app scenario",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently \"npm run silo\" \"npm run web\"",
-    "silo": "cd ./Heroes.Server && start dotnet run --project ./ --no-build",
+    "start": "concurrently \"npm run server\" \"npm run web\"",
+    "server": "cd ./Heroes.Server && start dotnet run --project ./ --no-build",
     "web": "cd ./Heroes.Server && start dotnet run --project ./ --no-build",
-    "silo:multi": "seq 5 | xargs -Iz npm run silo"
+    "server:multi": "seq 3 | xargs -Iz npm run server"
   },
   "repository": {
     "type": "git",

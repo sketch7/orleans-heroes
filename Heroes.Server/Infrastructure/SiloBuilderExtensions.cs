@@ -1,7 +1,6 @@
 ﻿using Heroes.Contracts.Grains;
 using Heroes.Core;
 using Heroes.Core.Utils;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Orleans.Configuration;
 using Orleans.Hosting;
@@ -98,6 +97,5 @@ namespace Heroes.Server.Infrastructure
 
 			throw new InvalidOperationException();
 		}
-
 	}
 }
