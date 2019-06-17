@@ -1,10 +1,9 @@
 ﻿using Heroes.Contracts.Grains;
 using Heroes.Core;
-using Heroes.Core.Utils;
 using Microsoft.Extensions.Hosting;
 using Orleans.Configuration;
 using Orleans.Hosting;
-using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -12,10 +11,28 @@ using HostBuilderContext = Microsoft.Extensions.Hosting.HostBuilderContext;
 
 namespace Heroes.Server.Infrastructure
 {
+	[DebuggerDisplay("{DebuggerDisplay,nq}")]
+	public class AppSiloOptions
+	{
+		private string DebuggerDisplay => $"GatewayPort: '{GatewayPort}', SiloPort: '{SiloPort}'";
+
+		public int GatewayPort { get; set; } = 30000;
+		public int SiloPort { get; set; } = 11111;
+	}
+
+	public class AppSiloBuilderContext
+	{
+		public HostBuilderContext HostBuilderContext { get; set; }
+		public IAppInfo AppInfo { get; set; }
+		public AppSiloOptions SiloOptions { get; set; }
+	}
+
 	public static class SiloBuilderExtensions
 	{
-		public static ISiloBuilder UseHeroConfiguration(this ISiloBuilder siloHost, HostBuilderContext hostBuilderContext, IAppInfo appInfo)
+
+		public static ISiloBuilder UseAppConfiguration(this ISiloBuilder siloHost, AppSiloBuilderContext context)
 		{
+			var appInfo = context.AppInfo;
 			siloHost
 				.AddMemoryGrainStorage(OrleansConstants.GrainMemoryStorage)
 				.Configure<ClusterOptions>(options =>
@@ -24,17 +41,17 @@ namespace Heroes.Server.Infrastructure
 					options.ServiceId = appInfo.Name;
 				});
 
-			if (hostBuilderContext.HostingEnvironment.IsDevelopment())
-				siloHost.UseDevelopment();
+			if (context.HostBuilderContext.HostingEnvironment.IsDevelopment())
+				siloHost.UseDevelopment(context);
 			if (appInfo.IsDockerized)
-				siloHost.UseDockerSwarm();
+				siloHost.UseDockerSwarm(context);
 			else
-				siloHost.UseDevelopmentClustering();
+				siloHost.UseDevelopmentClustering(context);
 
 			return siloHost;
 		}
 
-		private static ISiloBuilder UseDevelopment(this ISiloBuilder siloHost)
+		private static ISiloBuilder UseDevelopment(this ISiloBuilder siloHost, AppSiloBuilderContext context)
 		{
 			siloHost
 				.AddMemoryGrainStorage(OrleansConstants.PubSubStore)
@@ -47,55 +64,34 @@ namespace Heroes.Server.Infrastructure
 			return siloHost;
 		}
 
-		private static ISiloBuilder UseDevelopmentClustering(this ISiloBuilder siloHost)
+		private static ISiloBuilder UseDevelopmentClustering(this ISiloBuilder siloHost, AppSiloBuilderContext context)
 		{
 			var siloAddress = IPAddress.Loopback;
-			var siloPort = GetAvailablePort(11111, 12000);
-
-			var gatewayPort = 30000; // todo: make it configurable
+			var siloPort = context.SiloOptions.SiloPort;
+			var gatewayPort = context.SiloOptions.GatewayPort;
 
 			return siloHost
-					.AddMemoryGrainStorage(OrleansConstants.GrainPersistenceStorage)
-					.UseDevelopmentClustering(options => options.PrimarySiloEndpoint = new IPEndPoint(siloAddress, siloPort))
-					.ConfigureEndpoints(siloAddress, siloPort, gatewayPort) //, listenOnAnyHostAddress: true)
+					.UseLocalhostClustering(siloPort: siloPort, gatewayPort: gatewayPort)
+				//.AddMemoryGrainStorage(OrleansConstants.GrainPersistenceStorage)
+				//.UseDevelopmentClustering(options => options.PrimarySiloEndpoint = new IPEndPoint(siloAddress, siloPort))
+				//.ConfigureEndpoints(siloAddress, siloPort, gatewayPort) //, listenOnAnyHostAddress: true)
 				;
 		}
 
-		private static ISiloBuilder UseDockerSwarm(this ISiloBuilder siloHost)
+		private static ISiloBuilder UseDockerSwarm(this ISiloBuilder siloHost, AppSiloBuilderContext context)
 		{
+			var siloPort = context.SiloOptions.SiloPort;
+
 			var ips = Dns.GetHostAddresses(Dns.GetHostName());
-			var defaultIp = ips.FirstOrDefault();
+			var defaultIpV4 = ips.First(x => x.AddressFamily == AddressFamily.InterNetwork);
 
 			return siloHost
 				.ConfigureEndpoints(
-					defaultIp,
-					RandomUtils.GenerateNumber(30001, 30100), // todo: really needed random?
-					RandomUtils.GenerateNumber(20001, 20100), // todo: really needed random?
+					defaultIpV4,
+					siloPort,
+					context.SiloOptions.GatewayPort,
 					listenOnAnyHostAddress: true
 				);
-		}
-
-		private static int GetAvailablePort(int start, int end)
-		{
-			for (var port = start; port < end; ++port)
-			{
-				var listener = TcpListener.Create(port);
-				listener.ExclusiveAddressUse = true;
-				try
-				{
-					listener.Start();
-					return port;
-				}
-				catch (SocketException)
-				{
-				}
-				finally
-				{
-					listener.Stop();
-				}
-			}
-
-			throw new InvalidOperationException();
 		}
 	}
 }

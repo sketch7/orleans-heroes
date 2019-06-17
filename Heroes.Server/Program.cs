@@ -15,6 +15,7 @@ using Serilog;
 using System;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 
 namespace Heroes.Server
@@ -38,8 +39,7 @@ namespace Heroes.Server
 				.ConfigureHostConfiguration(cfg =>
 				{
 					cfg.SetBasePath(Directory.GetCurrentDirectory())
-						//.AddEnvironmentVariables()
-						.AddEnvironmentVariables("ASPNETCORE_") // todo: change from ASPNETCORE_
+						.AddEnvironmentVariables("ASPNETCORE_") // todo: change from ASPNETCORE_?
 						.AddCommandLine(args);
 				})
 				.UseServiceProviderFactory(new GraceServiceProviderFactory(graceConfig))
@@ -52,7 +52,7 @@ namespace Heroes.Server
 					services.AddSingleton<IAppTenantRegistry, AppTenantRegistry>();
 					services.Configure<ApiHostedServiceOptions>(options =>
 					{
-						options.Port = 6600;
+						options.Port = GetAvailablePort(6600, 6699);
 						//options.PathString = "/health";
 					});
 
@@ -96,7 +96,16 @@ namespace Heroes.Server
 				.UseOrleans((ctx, builder) =>
 				{
 					builder
-						.UseHeroConfiguration(ctx, appInfo)
+						.UseAppConfiguration(new AppSiloBuilderContext
+						{
+							AppInfo = appInfo,
+							HostBuilderContext = ctx,
+							SiloOptions = new AppSiloOptions
+							{
+								SiloPort = GetAvailablePort(11111, 12000),
+								GatewayPort = 30001
+							}
+						})
 						.ConfigureApplicationParts(parts => parts
 							.AddApplicationPart(typeof(HeroGrain).Assembly).WithReferences()
 						)
@@ -214,6 +223,29 @@ namespace Heroes.Server
 			{
 				return containerBuilder.Locate<IServiceProvider>();
 			}
+		}
+
+		private static int GetAvailablePort(int start, int end)
+		{
+			for (var port = start; port < end; ++port)
+			{
+				var listener = TcpListener.Create(port);
+				listener.ExclusiveAddressUse = true;
+				try
+				{
+					listener.Start();
+					return port;
+				}
+				catch (SocketException)
+				{
+				}
+				finally
+				{
+					listener.Stop();
+				}
+			}
+
+			throw new InvalidOperationException();
 		}
 	}
 }

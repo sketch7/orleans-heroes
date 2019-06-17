@@ -40,7 +40,7 @@ namespace Heroes.Client.ConsoleApp
 				try
 				{
 					client = new ClientBuilder()
-						.UseLocalhostClustering()
+						.UseLocalhostClustering(30001)
 						.ConfigureApplicationParts(parts => parts
 							.AddApplicationPart(typeof(IHeroGrain).Assembly).WithReferences()
 						)
