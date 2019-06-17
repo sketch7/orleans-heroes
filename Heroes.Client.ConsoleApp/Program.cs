@@ -9,14 +9,9 @@ using System.Threading.Tasks;
 
 namespace Heroes.Client.ConsoleApp
 {
-	public class Program
+	public static class Program
 	{
-		static int Main(string[] args)
-		{
-			return RunMainAsync().Result;
-		}
-
-		private static async Task<int> RunMainAsync()
+		static async Task<int> Main(string[] args)
 		{
 			try
 			{
@@ -71,16 +66,16 @@ namespace Heroes.Client.ConsoleApp
 			return client;
 		}
 
-		private static async Task GetHero(IClusterClient client)
+		private static async Task GetHero(IGrainFactory grainFactory)
 		{
-			var grain = client.GetHeroGrain("lol", "rengar");
+			var grain = grainFactory.GetHeroGrain("lol", "rengar");
 			var hero = await grain.Get();
 			Console.WriteLine($"{hero.Name} is awaken!");
 		}
 
-		private static async Task GetAll(IClusterClient client)
+		private static async Task GetAll(IGrainFactory grainFactory)
 		{
-			var grain = client.GetHeroCollectionGrain("lol");
+			var grain = grainFactory.GetHeroCollectionGrain("lol");
 			var heroes = await grain.GetAll();
 
 			foreach (var hero in heroes)

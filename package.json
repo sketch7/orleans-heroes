@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "concurrently \"npm run silo\" \"npm run web\"",
-    "silo": "cd ./Heroes.SiloHost.ConsoleApp && start dotnet run --project ./ --no-build",
-    "web": "cd ./Heroes.Api && start dotnet run --project ./ --no-build",
+    "silo": "cd ./Heroes.Server && start dotnet run --project ./ --no-build",
+    "web": "cd ./Heroes.Server && start dotnet run --project ./ --no-build",
     "silo:multi": "seq 5 | xargs -Iz npm run silo"
   },
   "repository": {

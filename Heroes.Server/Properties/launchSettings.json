@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "Silo Local": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        // "DOCKER": "true"
+      }
+    }
+  }
+}
