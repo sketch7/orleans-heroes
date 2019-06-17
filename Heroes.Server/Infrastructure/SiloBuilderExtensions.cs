@@ -72,7 +72,6 @@ namespace Heroes.Server.Infrastructure
 
 			return siloHost
 					.UseLocalhostClustering(siloPort: siloPort, gatewayPort: gatewayPort)
-				//.AddMemoryGrainStorage(OrleansConstants.GrainPersistenceStorage)
 				//.UseDevelopmentClustering(options => options.PrimarySiloEndpoint = new IPEndPoint(siloAddress, siloPort))
 				//.ConfigureEndpoints(siloAddress, siloPort, gatewayPort) //, listenOnAnyHostAddress: true)
 				;
