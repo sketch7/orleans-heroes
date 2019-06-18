@@ -2,9 +2,7 @@
 using Heroes.Contracts.Grains.Heroes;
 using Microsoft.Extensions.Logging;
 using Orleans;
-using Orleans.Runtime;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Heroes.Client.ConsoleApp
@@ -15,54 +13,35 @@ namespace Heroes.Client.ConsoleApp
 		{
 			try
 			{
-				using (var client = await StartClientWithRetries())
+				using (var client = await BuildClient())
 				{
 					await GetHero(client);
 					await GetAll(client);
 					Console.ReadKey();
 				}
-
 				return 0;
 			}
 			catch (Exception e)
 			{
 				Console.WriteLine(e);
+				Console.ReadKey();
 				return 1;
 			}
 		}
 
-		private static async Task<IClusterClient> StartClientWithRetries(int initializeAttemptsBeforeFailing = 7)
+		private static async Task<IClusterClient> BuildClient()
 		{
-			int attempt = 0;
-			IClusterClient client;
-			while (true)
-			{
-				try
-				{
-					client = new ClientBuilder()
-						.UseLocalhostClustering(30001)
-						.ConfigureApplicationParts(parts => parts
-							.AddApplicationPart(typeof(IHeroGrain).Assembly).WithReferences()
-						)
-						.ConfigureLogging(logging => logging.AddConsole())
-						.Build();
+			var client = new ClientBuilder()
+					.UseLocalhostClustering(30001, clusterId: "dev", serviceId: "heroes")
+					.ConfigureApplicationParts(parts => parts
+						.AddApplicationPart(typeof(IHeroGrain).Assembly).WithReferences()
+					)
+					.ConfigureLogging(logging => logging.AddConsole())
+					.Build();
 
-					await client.Connect();
-					Console.WriteLine("Client successfully connect to silo host");
-					break;
-				}
-				catch (SiloUnavailableException)
-				{
-					attempt++;
-					Console.WriteLine($"Attempt {attempt} of {initializeAttemptsBeforeFailing} failed to initialize the Orleans client.");
-					if (attempt > initializeAttemptsBeforeFailing)
-					{
-						throw;
-					}
-					Thread.Sleep(TimeSpan.FromSeconds(3));
-				}
-			}
+			await client.Connect(CreateRetryFilter());
 
+			Console.WriteLine("Client successfully connect to silo host");
 			return client;
 		}
 
@@ -84,5 +63,23 @@ namespace Heroes.Client.ConsoleApp
 			}
 		}
 
+		private static Func<Exception, Task<bool>> CreateRetryFilter(int maxAttempts = 5)
+		{
+			var attempt = 0;
+			return RetryFilter;
+
+			async Task<bool> RetryFilter(Exception exception)
+			{
+				attempt++;
+				Console.WriteLine($"Cluster client attempt {attempt} of {maxAttempts} failed to connect to cluster.  Exception: {exception}");
+				if (attempt > maxAttempts)
+				{
+					return false;
+				}
+
+				await Task.Delay(TimeSpan.FromSeconds(3));
+				return true;
+			}
+		}
 	}
 }
