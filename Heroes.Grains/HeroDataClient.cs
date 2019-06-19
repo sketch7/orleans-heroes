@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Heroes.Contracts.Grains.Heroes;
+﻿using Heroes.Contracts.Grains.Heroes;
 using Heroes.Contracts.Grains.Mocks;
 using Microsoft.Extensions.Logging;
 using Orleans.Runtime;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Heroes.Grains
 {

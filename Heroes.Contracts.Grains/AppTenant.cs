@@ -1,5 +1,5 @@
-using System.Diagnostics;
 using Heroes.Core.Tenancy;
+using System.Diagnostics;
 
 namespace Heroes.Contracts.Grains
 {

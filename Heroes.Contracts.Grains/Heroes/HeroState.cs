@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using Heroes.Core.Orleans;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Orleans;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Heroes.Core.Orleans;
-using Orleans;
 
 namespace Heroes.Contracts.Grains.Heroes
 {
@@ -30,6 +32,7 @@ namespace Heroes.Contracts.Grains.Heroes
 		public override string ToString() => DebuggerDisplay;
 	}
 
+	[JsonConverter(typeof(StringEnumConverter), true)]
 	public enum HeroRoleType
 	{
 		Assassin = 1,

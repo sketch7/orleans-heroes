@@ -1,9 +1,9 @@
-﻿using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using Heroes.Core;
+﻿using Heroes.Core;
 using Microsoft.Extensions.Logging;
 using Orleans;
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Heroes.SiloHost.ConsoleApp
 {
@@ -44,7 +44,7 @@ namespace Heroes.SiloHost.ConsoleApp
 				_logger.LogDebug(
 					"Executed grain method {grain}.{grainMethod} ({primaryKey}) in {duration:n0}ms",
 					grainName,
-					context.ImplementationMethod,
+					context.ImplementationMethod.Name,
 					primaryKey,
 					stopwatch.ElapsedMilliseconds
 				);
@@ -57,7 +57,7 @@ namespace Heroes.SiloHost.ConsoleApp
 						"Execution failed for grain method {grain}.{grainMethod} ({primaryKey}) in {duration:n0}ms.",
 						primaryKey,
 						grainName,
-						context.ImplementationMethod,
+						context.ImplementationMethod.Name,
 						stopwatch.ElapsedMilliseconds
 						)
 					;

@@ -1,9 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Heroes.Contracts.Grains.Mocks;
+﻿using Heroes.Contracts.Grains.Mocks;
 using Heroes.Contracts.Grains.Stats;
 using Orleans;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Heroes.Grains
 {

@@ -1,7 +1,7 @@
-﻿using Heroes.Contracts.Grains.Stats;
-using System.Threading.Tasks;
-using Heroes.Contracts.Grains;
+﻿using Heroes.Contracts.Grains;
+using Heroes.Contracts.Grains.Stats;
 using Orleans;
+using System.Threading.Tasks;
 
 namespace Heroes.Clients.Statistics
 {

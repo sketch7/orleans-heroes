@@ -1,11 +1,11 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Heroes.Contracts.Grains;
+﻿using Heroes.Contracts.Grains;
 using Heroes.Contracts.Grains.Heroes;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Runtime;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Heroes.Client.ConsoleApp
 {

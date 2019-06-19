@@ -7,6 +7,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="$(OrleansCoreVersion)" />
     <PackageReference Include="Microsoft.Orleans.OrleansCodeGenerator.Build" Version="$(OrleansCodeGeneratorVersion)" />
+    <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftJsonVersion)" />
   </ItemGroup>
 
   <ItemGroup>

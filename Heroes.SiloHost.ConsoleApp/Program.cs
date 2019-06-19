@@ -98,7 +98,7 @@ namespace Heroes.SiloHost.ConsoleApp
 				.ConfigureApplicationParts(parts => parts
 					.AddApplicationPart(typeof(HeroGrain).Assembly).WithReferences()
 				)
-				//.AddIncomingGrainCallFilter<LoggingIncomingCallFilter>()
+				.AddIncomingGrainCallFilter<LoggingIncomingCallFilter>()
 				//.AddOutgoingGrainCallFilter<LoggingOutgoingCallFilter>()
 				.AddStartupTask<WarmupStartupTask>()
 				.UseServiceProviderFactory(ConfigureServices)
@@ -148,7 +148,7 @@ namespace Heroes.SiloHost.ConsoleApp
 
 			container.Configure(c =>
 			{
-				
+
 				c.Export<TenantGrainActivator>().As<IGrainActivator>().Lifestyle.Singleton();
 				//c
 				//	//.Export<MockLoLHeroDataClient>()
