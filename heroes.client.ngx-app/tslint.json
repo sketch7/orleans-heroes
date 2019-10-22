@@ -1,6 +1,6 @@
 {
   "extends": [
-    "./node_modules/@ssv/tools/tslint.base.json"
+    "./node_modules/@ssv/tools/config/tslint.json"
   ],
   "rulesDirectory": [
     "node_modules/codelyzer"
