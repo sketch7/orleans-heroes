@@ -39,12 +39,13 @@ namespace Heroes.Grains
 			await base.OnActivateAsync();
 			_hubContext = GrainFactory.GetHub<IHeroHub>();
 
+			// todo: use key data
+			var keySplit = PrimaryKey.Split('/');
+			_keyData.Tenant = keySplit[1];
+			_keyData.HeroKey = keySplit[2];
+
 			if (State.Hero == null)
 			{
-				// todo: use key data
-				var keySplit = PrimaryKey.Split('/');
-				_keyData.Tenant = keySplit[1];
-				_keyData.HeroKey = keySplit[2];
 				var hero = await _heroDataClient.GetByKey(_keyData.HeroKey);
 
 				if (hero == null)
