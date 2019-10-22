@@ -10,7 +10,7 @@
 - GraphQL & GraphiQL
 
 ### Client
-- Angular 6.x
+- Angular 8.x
 - TypeScript
 *Based on https://github.com/sketch7/angular-skeleton-app*
 

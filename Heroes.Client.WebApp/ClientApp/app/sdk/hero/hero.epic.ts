@@ -30,7 +30,7 @@ export class HeroEpics {
 	getAll = (action$: any) => action$
 		.ofType(HERO_ACTION_TYPE.getAll)
 		.map((action: ActionPayload<HeroRoleType | undefined>) => action.payload)
-		.switchMap((roleType: HeroRoleType | undefined) => this.service.getAll(roleType)
+		.switchMap((roleType: HeroRoleType | undefined) => this.service.getAll()
 			.map(response => this.actions.getAllSuccess(response))
 			.catch(err => of(this.actions.getAllFail(err)))
 		)

@@ -11,7 +11,7 @@ import { HeroRoleType, Hero } from "./hero.model";
 @Injectable()
 export class HeroService {
 
-		list = [
+	list = [
 		{
 			key: "rengar",
 			name: "mock data - mighty rengo",
@@ -53,7 +53,7 @@ export class HeroService {
 
 	getAllGraphQL(roleType?: HeroRoleType): Observable<Hero[]> {
 		console.log("HeroService :: graphQL - init");
-		const query: any = gql`
+		const query = gql`
         query GetAllHeroes($role: HeroRoleEnum) {
             heroes (role: $role) {
               key

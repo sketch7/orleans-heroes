@@ -61,14 +61,14 @@ namespace Heroes.Grains
 				.Select(x => x.Key)
 				.ToList();
 
-			var promises = new List<Task<Hero>>();
+			var tasks = new List<Task<Hero>>();
 			foreach (var heroId in heroIds)
 			{
 				var heroGrain = GrainFactory.GetHeroGrain(_keyData.Tenant, heroId);
-				promises.Add(heroGrain.Get());
+				tasks.Add(heroGrain.Get());
 			}
 
-			var result = await Task.WhenAll(promises);
+			var result = await Task.WhenAll(tasks);
 			return result.ToList();
 		}
 
