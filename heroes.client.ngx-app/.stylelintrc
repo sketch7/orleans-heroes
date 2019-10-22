@@ -1,5 +1,5 @@
 {
-	"extends": "./node_modules/@ssv/tools/base.stylelintrc",
+	"extends": "./node_modules/@ssv/tools/config/.stylelintrc",
 	"rules": {
 		"max-nesting-depth": [
 			5,

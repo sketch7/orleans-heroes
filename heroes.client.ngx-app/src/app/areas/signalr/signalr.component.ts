@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
-import { HubConnection, ConnectionState } from "@ssv/signalr-client";
+import { HubConnection, ConnectionState, VERSION } from "@ssv/signalr-client";
 import { Subscription } from "rxjs";
 
 import { HeroHub } from "../../shared/real-time/real-time.hero.model";
@@ -16,6 +16,7 @@ export class SignalrComponent implements OnInit, OnDestroy {
 	currentUser = "Anonymous";
 	isConnected = false;
 	connectionState: ConnectionState | undefined;
+	signalrVersion = VERSION;
 
 	availableGroups: Group[] = [
 		{id: "hero:all", name: "All"},
