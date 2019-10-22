@@ -2,7 +2,7 @@
 Angular 8.x navigation skeleton project with styling which get you started faster.
 
 ## What does it have?
- - Angular CLI 8.0 template
+ - Angular CLI 8.x template
  - SCSS for styling
  - Font Awesome and Bootstrap 4.x (no javascript, just styles)
  - Navigation/layout
