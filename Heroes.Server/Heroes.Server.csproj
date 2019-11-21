@@ -47,10 +47,12 @@
 
   <ItemGroup Condition="'$(SignalROrleansVersion)' == 'link'">
     <ProjectReference Include="..\..\SignalR.Orleans\src\SignalR.Orleans\SignalR.Orleans.csproj" />
+    <ProjectReference Include="..\..\SignalR.Orleans\src\SignalR.Orleans.AspNet\SignalR.Orleans.AspNet.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(SignalROrleansVersion)' != 'link'">
-    <PackageReference Include="SignalR.Orleans" Version="$(SignalROrleansVersion)" />
+    <PackageReference Include="Sketch7.SignalR.Orleans" Version="$(SignalROrleansVersion)" />
+    <PackageReference Include="Sketch7.SignalR.Orleans.AspNet" Version="$(SignalROrleansVersion)" />
   </ItemGroup>
 
   <ItemGroup>

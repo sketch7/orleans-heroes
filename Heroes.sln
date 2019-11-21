@@ -29,6 +29,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "external-libs", "external-l
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SignalR.Orleans", "..\SignalR.Orleans\src\SignalR.Orleans\SignalR.Orleans.csproj", "{8D4FC2A5-37B6-4D4A-911D-0608FBFCA2BA}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SignalR.Orleans.AspNet", "..\SignalR.Orleans\src\SignalR.Orleans.AspNet\SignalR.Orleans.AspNet.csproj", "{7EF548F3-35E4-4493-BB8E-68FA02A8E5D0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{8D4FC2A5-37B6-4D4A-911D-0608FBFCA2BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8D4FC2A5-37B6-4D4A-911D-0608FBFCA2BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8D4FC2A5-37B6-4D4A-911D-0608FBFCA2BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7EF548F3-35E4-4493-BB8E-68FA02A8E5D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EF548F3-35E4-4493-BB8E-68FA02A8E5D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EF548F3-35E4-4493-BB8E-68FA02A8E5D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EF548F3-35E4-4493-BB8E-68FA02A8E5D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -75,6 +81,7 @@ Global
 		{886FD2D5-5C53-46CB-A609-7D71A4F191DD} = {65507135-64DE-4BD5-AB2D-A0CC5455FD97}
 		{BBB8233C-FB07-4948-962F-4B535B5A5894} = {65507135-64DE-4BD5-AB2D-A0CC5455FD97}
 		{8D4FC2A5-37B6-4D4A-911D-0608FBFCA2BA} = {104FCBD5-6F8B-4562-A55D-75AADE4316AE}
+		{7EF548F3-35E4-4493-BB8E-68FA02A8E5D0} = {104FCBD5-6F8B-4562-A55D-75AADE4316AE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C8D162F0-CA39-495D-9796-16A8004BB075}

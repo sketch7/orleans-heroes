@@ -27,7 +27,7 @@
     "@angular/pwa": "^0.803.12",
     "@angular/router": "~8.2.11",
     "@angular/service-worker": "~8.2.11",
-    "@ssv/signalr-client": "^1.1.2",
+    "@ssv/signalr-client": "^2.0.0",
     "@ssv/tools": "^0.8.1",
     "bootstrap": "^4.1.1",
     "font-awesome": "^4.7.0",

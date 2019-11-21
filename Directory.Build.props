@@ -35,7 +35,7 @@
     <OrleansCodeGeneratorVersion>2.3.5</OrleansCodeGeneratorVersion>
     <OrleansServerVersion>2.3.5</OrleansServerVersion>
     <OrleansClientVersion>2.3.5</OrleansClientVersion>
-    <SignalROrleansVersion>1.3.2</SignalROrleansVersion>
+    <SignalROrleansVersion>1.0.0-rc1</SignalROrleansVersion>
 
     <MicrosoftExtensionsVersion>2.2.0</MicrosoftExtensionsVersion>
     <NewtonsoftJsonVersion>12.0.1</NewtonsoftJsonVersion>

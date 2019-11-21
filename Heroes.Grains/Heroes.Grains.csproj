@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(SignalROrleansVersion)' != 'link'">
-    <PackageReference Include="SignalR.Orleans" Version="$(SignalROrleansVersion)" />
+    <PackageReference Include="Sketch7.SignalR.Orleans" Version="$(SignalROrleansVersion)" />
   </ItemGroup>
 
 </Project>
