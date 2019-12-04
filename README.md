@@ -17,3 +17,12 @@
 
 ## Helpful links
 - [Orleans 2: Silo and Client](Https://dotnet.github.io/orleans/Documentation/Getting-Started-With-Orleans/Running-the-Application.html)
+
+
+# Development
+
+## Setup Redis locally
+
+```bash
+docker run -p 6379:6379 --name redis5-under-the-hood -d redis:5.0.6
+```

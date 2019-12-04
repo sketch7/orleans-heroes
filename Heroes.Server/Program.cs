@@ -103,7 +103,8 @@ namespace Heroes.Server
 							SiloOptions = new AppSiloOptions
 							{
 								SiloPort = GetAvailablePort(11111, 12000),
-								GatewayPort = 30001
+								GatewayPort = 30001,
+								// StorageProviderType = StorageProviderType.Redis
 							}
 						})
 						.ConfigureApplicationParts(parts => parts
@@ -112,8 +113,15 @@ namespace Heroes.Server
 						.AddIncomingGrainCallFilter<LoggingIncomingCallFilter>()
 						//.AddOutgoingGrainCallFilter<LoggingOutgoingCallFilter>()
 						.AddStartupTask<WarmupStartupTask>()
-						.UseSignalR()
+						.UseSignalR(cfg =>
+						{
+							cfg.Configure((siloBuilder, signalrBuilderConfig) =>
+							{
+								siloBuilder.UseStorage(signalrBuilderConfig.StorageProvider, appInfo, storeName: "SignalR");
+							});
+						})
 					;
+
 				})
 				.ConfigureServices((ctx, services) =>
 				{
