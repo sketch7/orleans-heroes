@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Orleans.Core" Version="$(OrleansCoreVersion)" />
+    <PackageReference Include="Microsoft.Orleans.Core" Version="$(OrleansVersion)" />
   </ItemGroup>
 
 </Project>
