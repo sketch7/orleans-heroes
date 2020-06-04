@@ -3,8 +3,15 @@
   "compilerOptions": {
     "baseUrl": "./src",
     "paths": {
-      "@angular/*": ["../node_modules/@angular/*"],
-      "rxjs/*": ["../node_modules/rxjs/*"],
+      "@angular/*": [
+        "./node_modules/@angular/*"
+      ],
+      "rxjs": [
+        "../node_modules/rxjs"
+      ],
+      "rxjs/*": [
+        "../node_modules/rxjs/*"
+      ],
       // "@ssv/signalr-client":  ["../../../signalr-client/src/index.ts"]
       // "@ssv/ngx.command": ["../../@ssv.ngx.command/src/index.ts"]
     },

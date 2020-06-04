@@ -17,7 +17,7 @@ export const AREAS_ROUTES: Routes = [
 	{
 		path: "heroes", component: HeroLayoutComponent,
 		children: [
-			{ path: "a", component: HeroListComponent, pathMatch: "full" },
+			{ path: "", component: HeroListComponent, pathMatch: "full" },
 			{ path: ":id", component: HeroDetailComponent }
 		]
 	},
