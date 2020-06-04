@@ -33,7 +33,7 @@ export class SignalrComponent implements OnInit, OnDestroy {
 
 	private hubConnection!: HubConnection<HeroHub>;
 
-	private source = "HeroListComponent ::";
+	private source = "SignalrComponent ::";
 
 	private hubConnection$$ = Subscription.EMPTY;
 	private onSend$$ = Subscription.EMPTY;

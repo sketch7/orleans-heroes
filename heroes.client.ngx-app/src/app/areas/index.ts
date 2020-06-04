@@ -7,21 +7,35 @@ import { NotFoundComponent } from "./not-found/not-found.component";
 import { ProjectsComponent } from "./projects/projects.component";
 import { ProjectComponent } from "./projects/project.component";
 import { SignalrComponent } from "./signalr/signalr.component";
+import { HeroListComponent } from "./heroes/hero-list.component";
+import { HeroDetailComponent } from "./heroes/hero-detail.component";
+import { HeroLayoutComponent } from "./heroes/hero-layout.component";
 
 export const AREAS_ROUTES: Routes = [
 	{ path: "", component: HomeComponent, pathMatch: "full" },
 	{ path: "projects", component: ProjectsComponent },
+	{
+		path: "heroes", component: HeroLayoutComponent,
+		children: [
+			{ path: "a", component: HeroListComponent, pathMatch: "full" },
+			{ path: ":id", component: HeroDetailComponent }
+		]
+	},
 	{ path: "signalr", component: SignalrComponent },
 	{ path: "error", component: ErrorComponent },
 	{ path: "**", component: NotFoundComponent },
 ];
 
 export const AREAS_COMPONENTS = [
-	HomeComponent,
-	ProjectsComponent,
-	ProjectComponent,
 	NavComponent,
 	ErrorComponent,
 	NotFoundComponent,
-	SignalrComponent
+
+	HomeComponent,
+	ProjectsComponent,
+	ProjectComponent,
+	SignalrComponent,
+	HeroListComponent, // todo: do we need?
+	HeroLayoutComponent,
+	HeroDetailComponent,
 ];
