@@ -11,9 +11,9 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(MicrosoftExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(MicrosoftExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(MicrosoftExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="$(OrleansCoreVersion)" />
-    <PackageReference Include="Serilog" Version="2.8.0" />
+    <PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="$(OrleansVersion)" />
+    <PackageReference Include="Serilog" Version="2.9.0" />
     <PackageReference Include="System.Reactive.Linq" Version="4.1.5" />
-    <PackageReference Include="System.Threading.Channels" Version="4.5.0" />
+    <PackageReference Include="System.Threading.Channels" Version="4.7.0" />
   </ItemGroup>
 </Project>

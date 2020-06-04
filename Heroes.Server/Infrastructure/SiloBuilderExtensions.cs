@@ -3,6 +3,8 @@ using Heroes.Core;
 using Microsoft.Extensions.Hosting;
 using Orleans.Configuration;
 using Orleans.Hosting;
+using Orleans.Persistence.Redis.Config;
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -11,6 +13,12 @@ using HostBuilderContext = Microsoft.Extensions.Hosting.HostBuilderContext;
 
 namespace Heroes.Server.Infrastructure
 {
+	public enum StorageProviderType
+	{
+		Memory,
+		Redis
+	}
+
 	[DebuggerDisplay("{DebuggerDisplay,nq}")]
 	public class AppSiloOptions
 	{
@@ -18,6 +26,7 @@ namespace Heroes.Server.Infrastructure
 
 		public int GatewayPort { get; set; } = 30000;
 		public int SiloPort { get; set; } = 11111;
+		public StorageProviderType? StorageProviderType { get; set; }
 	}
 
 	public class AppSiloBuilderContext
@@ -29,12 +38,17 @@ namespace Heroes.Server.Infrastructure
 
 	public static class SiloBuilderExtensions
 	{
+		private static StorageProviderType DefaultProviderType;
 
 		public static ISiloBuilder UseAppConfiguration(this ISiloBuilder siloHost, AppSiloBuilderContext context)
 		{
+			DefaultProviderType = context.SiloOptions.StorageProviderType ?? StorageProviderType.Memory;
+
 			var appInfo = context.AppInfo;
 			siloHost
 				.AddMemoryGrainStorage(OrleansConstants.GrainMemoryStorage)
+				.UseStorage(OrleansConstants.GrainPersistenceStorage, context.AppInfo)
+				.UseStorage(OrleansConstants.PubSubStore, context.AppInfo)
 				.Configure<ClusterOptions>(options =>
 				{
 					options.ClusterId = appInfo.ClusterId;
@@ -54,7 +68,6 @@ namespace Heroes.Server.Infrastructure
 		private static ISiloBuilder UseDevelopment(this ISiloBuilder siloHost, AppSiloBuilderContext context)
 		{
 			siloHost
-				.AddMemoryGrainStorage(OrleansConstants.PubSubStore)
 				.ConfigureServices(services =>
 				{
 					//services.Configure<GrainCollectionOptions>(options => { options.CollectionAge = TimeSpan.FromMinutes(1.5); });
@@ -77,6 +90,46 @@ namespace Heroes.Server.Infrastructure
 				;
 		}
 
+		public static ISiloBuilder UseStorage(this ISiloBuilder siloBuilder, string storeProviderName, IAppInfo appInfo, StorageProviderType? storageProvider = null, string storeName = null)
+		{
+			storeName = storeName.IfNullOrEmptyReturn(storeProviderName);
+			storageProvider = storageProvider ?? DefaultProviderType;
+
+			switch (storageProvider)
+			{
+				case StorageProviderType.Memory:
+					siloBuilder.AddMemoryGrainStorage(storeProviderName);
+					break;
+				case StorageProviderType.Redis:
+					siloBuilder
+						.AddRedisGrainStorage(storeProviderName)
+						.Build(builder =>
+							builder.Configure(ConfigureRedisOptions(storeName, appInfo))
+						);
+					break;
+				default:
+					throw new ArgumentOutOfRangeException(nameof(storageProvider), $"Storage provider '{storageProvider}' is not supported.");
+			}
+
+			return siloBuilder;
+		}
+
+		private static Action<RedisStorageOptions> ConfigureRedisOptions(
+			string tableType,
+			IAppInfo appInfo
+		)
+		{
+			// todo: make configurable
+			return config =>
+			{
+				config.Servers = new[] { "localhost" };
+				config.ClientName = appInfo.ClusterId;
+				config.KeyPrefix = $"{appInfo.ShortName}-{tableType}";
+				config.HumanReadableSerialization = true;
+			};
+		}
+
+		// todo: remove
 		private static ISiloBuilder UseDockerSwarm(this ISiloBuilder siloHost, AppSiloBuilderContext context)
 		{
 			var siloPort = context.SiloOptions.SiloPort;

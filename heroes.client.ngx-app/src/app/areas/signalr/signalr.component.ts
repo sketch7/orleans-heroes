@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from "@angular/core";
+import { Dictionary } from "@ssv/core";
 import { HubConnection, ConnectionState, VERSION } from "@ssv/signalr-client";
 import { Subscription } from "rxjs";
 
@@ -12,7 +13,8 @@ import { HeroRealtimeClient } from "../../shared/real-time/real-time.hero.client
 })
 export class SignalrComponent implements OnInit, OnDestroy {
 
-	heroMessages: Hero[] = [];
+	heroesState: Dictionary<Hero> = {};
+	heroes: Hero[] = [];
 	currentUser = "Anonymous";
 	isConnected = false;
 	connectionState: ConnectionState | undefined;
@@ -42,7 +44,8 @@ export class SignalrComponent implements OnInit, OnDestroy {
 	private connectionState$$ = Subscription.EMPTY;
 
 	constructor(
-		private client: HeroRealtimeClient
+		private client: HeroRealtimeClient,
+		private cdr: ChangeDetectorRef,
 	) {
 		this.hubConnection = this.client.get();
 	}
@@ -65,8 +68,18 @@ export class SignalrComponent implements OnInit, OnDestroy {
 			console.log(`${this.source} send :: data received >>>`, val);
 		});
 
-		this.singedOn$$ = this.hubConnection!.on<string>("HeroChanged").subscribe((val: string) => {
-			console.log(`${this.source} send :: data received >>>`, val);
+		this.singedOn$$ = this.hubConnection!.on<Hero>("HeroChanged").subscribe(heroChange => {
+			console.log(`${this.source} send :: data received >>>`, heroChange);
+			let hero = this.heroesState[heroChange.key];
+			if (hero) {
+				hero = {...hero, ...heroChange};
+			} else {
+				hero = heroChange;
+			}
+
+			this.heroesState[hero.key] = hero;
+			this.heroes = Object.values(this.heroesState);
+			this.cdr.markForCheck();
 		});
 		// this.kha$$ = this.hubConnection.stream<Hero>("GetUpdates", "kha-zix")
 		// 	.subscribe(x => console.log(`${this.source} stream :: kha`, x));
@@ -101,7 +114,7 @@ export class SignalrComponent implements OnInit, OnDestroy {
 	}
 
 	trackByHero(_index: number, hero: Hero): string {
-		return `${hero.id}-${hero.health}`;
+		return `${hero.key}`;
 	}
 
 	disconnect() {
@@ -141,7 +154,7 @@ export class SignalrComponent implements OnInit, OnDestroy {
 }
 
 export interface Hero {
-	id: string;
+	key: string;
 	name: string;
 	health: number;
 }

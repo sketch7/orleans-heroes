@@ -31,11 +31,8 @@
   <!-- Shared Package Versions -->
   <PropertyGroup>
     <!-- vendors -->
-    <OrleansCoreVersion>2.3.5</OrleansCoreVersion>
-    <OrleansCodeGeneratorVersion>2.3.5</OrleansCodeGeneratorVersion>
-    <OrleansServerVersion>2.3.5</OrleansServerVersion>
-    <OrleansClientVersion>2.3.5</OrleansClientVersion>
-    <SignalROrleansVersion>1.0.0-rc2</SignalROrleansVersion>
+    <OrleansVersion>2.4.4</OrleansVersion>
+    <SignalROrleansVersion>1.0.0-rc6</SignalROrleansVersion>
 
     <MicrosoftExtensionsVersion>2.2.0</MicrosoftExtensionsVersion>
     <NewtonsoftJsonVersion>12.0.1</NewtonsoftJsonVersion>

@@ -9,7 +9,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orleans;
-using Orleans.Runtime;
 using Serilog;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,7 +31,6 @@ namespace Heroes.Server
 		public ApiHostedService(
 			IOptions<ApiHostedServiceOptions> options,
 			IClusterClient client,
-			IMembershipOracle oracle,
 			IConfiguration configuration,
 			IExportLocatorScope exportScope,
 			IAppInfo appInfo,
