@@ -5,3 +5,10 @@
 	display: block;
 	position: relative;
 }
+
+.hero {
+	&__role {
+		font-size: 0.85em;
+		color: $accent-color;
+	}
+}

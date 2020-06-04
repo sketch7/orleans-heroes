@@ -18,26 +18,31 @@ export function arrayToObject<T extends { key: string }>(entities: T[]): Diction
 export namespace HeroActions {
 
 	export class Add {
-
 		static readonly type = "[Hero] Add";
 
 		constructor(
 			public payload: Hero
 		) {
 		}
-
 	}
 
 	export class Get {
-
 		static readonly type = "[Hero] Get";
+	}
 
+	export class Select {
+		static readonly type = "[Hero] Get";
+		constructor(
+			public key: string
+		) {
+		}
 	}
 
 }
 
 export interface HeroStateModel {
 	entities: Dictionary<Hero>;
+	selectedKey?: string;
 }
 
 @State<HeroStateModel>({
@@ -68,8 +73,12 @@ export class HeroState {
 	}
 
 	@Selector()
-	static getSelected(state: HeroStateModel) {
-		return state.entities; // todo:
+	static getSelected(state: HeroStateModel): Hero | undefined {
+		if (!state.selectedKey) {
+			return undefined;
+		}
+		const entity = state.entities[state.selectedKey];
+		return entity;
 	}
 
 	constructor(
@@ -82,6 +91,13 @@ export class HeroState {
 		return this.service.getAll().pipe(
 			tap(x => ctx.patchState({ entities: arrayToObject(x) })),
 		);
+	}
+
+	@Action(HeroActions.Select)
+	select(ctx: StateContext<HeroStateModel>, { key }: HeroActions.Select) {
+		ctx.patchState({
+			selectedKey: key
+		});
 	}
 
 	@Action(HeroActions.Add)
