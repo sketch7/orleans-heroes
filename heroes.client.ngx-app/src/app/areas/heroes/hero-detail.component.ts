@@ -26,7 +26,6 @@ export class HeroDetailComponent implements OnDestroy {
 		).subscribe();
 
 		activatedRoute.paramMap.pipe(
-			tap(x => console.warn(">>>> param change", x)),
 			map(params => this.key = params.get("id") as string),
 			tap(key => store.dispatch(new HeroActions.Select(key))),
 			// tap(_ => store.select(HeroState.getEntityList)), // todo: get by id
