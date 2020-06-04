@@ -89,7 +89,7 @@ export class HeroState {
 	@Action(HeroActions.Get)
 	get(ctx: StateContext<HeroStateModel>) {
 		return this.service.getAll().pipe(
-			tap(x => ctx.patchState({ entities: arrayToObject(x) })),
+			tap(x => ctx.patchState({ entities: arrayToObject(x || []) })),
 		);
 	}
 

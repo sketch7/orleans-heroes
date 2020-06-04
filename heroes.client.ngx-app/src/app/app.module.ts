@@ -1,4 +1,4 @@
-import { BrowserModule } from "@angular/platform-browser";
+import { BrowserModule, BrowserTransferStateModule } from "@angular/platform-browser";
 import { NgModule } from "@angular/core";
 import { ServiceWorkerModule } from "@angular/service-worker";
 import { FormsModule } from "@angular/forms";
@@ -23,6 +23,7 @@ import { AppStoreModule } from "./app-store.module";
 		HttpLinkModule,
 		HttpClientModule,
 		ServiceWorkerModule.register("/ngsw-worker.js", { enabled: environment.production }),
+		BrowserTransferStateModule,
 
 		// app
 		AppStoreModule,

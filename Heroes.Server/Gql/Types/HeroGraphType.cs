@@ -3,9 +3,9 @@ using Heroes.Contracts.Grains.Heroes;
 
 namespace Heroes.Server.Gql.Types
 {
-	public class HeroType : ObjectGraphType<Hero>
+	public class HeroGraphType : ObjectGraphType<Hero>
 	{
-		public HeroType()
+		public HeroGraphType()
 		{
 			Name = "Hero";
 			Description = "A hero object";
@@ -13,7 +13,8 @@ namespace Heroes.Server.Gql.Types
 			Field<StringGraphType>("id", resolve: ctx => ctx.Source.Key);
 			Field(x => x.Key).Description("unique key of a hero.");
 			Field(x => x.Name).Description("self descriptive.");
-			Field<HeroRoleEnum>("role", "hero role type.");
+			Field<HeroRoleGraphType>("role", "hero role type.");
+			Field<ListGraphType<StringGraphType>>("abilities", resolve: ctx => ctx.Source.Abilities, description: "Hero abilities.");
 		}
 	}
 }

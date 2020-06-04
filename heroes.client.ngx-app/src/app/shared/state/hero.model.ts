@@ -2,7 +2,7 @@ export interface Hero {
 	key: string;
 	name: string;
 	role: HeroRoleType;
-	abilities: string[];
+	abilities?: string[];
 }
 
 export enum HeroRoleType {

@@ -1,16 +1,21 @@
 import * as _ from "lodash";
+import gql from "graphql-tag";
 import { Observable, of } from "rxjs";
 import { Injectable } from "@angular/core";
-// import gql from "graphql-tag";
 
 import { HeroRoleType, Hero } from "./hero.model";
+import { AppApolloClient } from "../gql/apollo.client";
+import { ApolloBase } from "apollo-angular";
+import { AppGqlQuerySchema } from "../gql/gql.schema";
+import { tap, map } from "rxjs/operators";
 
 @Injectable({
 	providedIn: "root"
 })
 export class HeroService {
 
-	list: Hero[] = [
+	private apollo: ApolloBase;
+	private list: Hero[] = [
 		{
 			key: "rengar",
 			name: "Rengar (mock)",
@@ -31,6 +36,12 @@ export class HeroService {
 		}
 	];
 
+	constructor(
+		apollo: AppApolloClient,
+	) {
+		this.apollo = apollo.get();
+	}
+
 	add(entity: Hero): Observable<{}> {
 		this.list.push(entity);
 		return of({});
@@ -41,32 +52,36 @@ export class HeroService {
 		return of(entity);
 	}
 
-	getAll(): Observable<Hero[]> {
-		return of(this.list);
-	}
+	// getAll(): Observable<Hero[]> {
+	// 	return of(this.list);
+	// }
 
 	// getAllHttp(): Observable<Hero[]> {
 	// 	return this.http.get<Hero[]>("http://localhost:62551/api/heroes")
 	// 		.do(x => console.log("HeroService :: http response", x));
 	// }
 
-	// getAllGraphQL(roleType?: HeroRoleType): Observable<Hero[]> {
-	// 	console.log("HeroService :: graphQL - init");
-	// 	const query = gql`
-	//     query GetAllHeroes($role: HeroRoleEnum) {
-	//         heroes (role: $role) {
-	//           key
-	//           name
-	//           role
-	//         }
-	//       }
-	//     `;
+	getAll(roleType?: HeroRoleType): Observable<Hero[] | undefined> {
+		console.log("HeroService :: getAll");
+		const query = gql`query getAllHeroes($role: HeroRoleEnum) {
+	        heroes (role: $role) {
+	          key
+	          name
+	          role
+	          abilities
+	        }
+	      }
+	    `;
 
-	// 	return this.apollo.query<any>({
-	// 		query
-	// 	})
-	// 		.do(x => console.log("HeroService :: graphQL - response", x))
-	// 		.map(({ data }) => data.heroes);
-	// }
+		return this.apollo.query<AppGqlQuerySchema>({
+			query,
+			variables: {
+				role: roleType,
+			}
+		}).pipe(
+			tap(result => console.log("HeroService :: getAll result", result)),
+			map(({ data }) => data.heroes),
+		);
+	}
 
 }

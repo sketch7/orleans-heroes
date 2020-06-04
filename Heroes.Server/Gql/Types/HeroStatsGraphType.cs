@@ -3,9 +3,9 @@ using Heroes.Contracts.Grains.Stats;
 
 namespace Heroes.Server.Gql.Types
 {
-	public class HeroStatsType : ObjectGraphType<HeroStats>
+	public class HeroStatsGraphType : ObjectGraphType<HeroStats>
 	{
-		public HeroStatsType()
+		public HeroStatsGraphType()
 		{
 			Name = "HeroStats";
 			Description = "View all hero stats";
