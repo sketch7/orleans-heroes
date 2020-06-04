@@ -15,7 +15,7 @@ namespace Heroes.Contracts.Grains.Mocks
 			new Hero {Name = "AAtrox", Key = "aatrox", Role = HeroRoleType.Fighter, Abilities = new HashSet<string> { "darkin-blade", "infernal-chains", "umbral-dash", "world-ender"}},
 			new Hero {Name = "Blitzcrank", Key = "aatrox", Role = HeroRoleType.Tank, Abilities = new HashSet<string> { "rocket-grab", "overdrive", "power-fist", "static-field"}},
 			new Hero {Name = "Alistar", Key = "alistar", Role = HeroRoleType.Support, Abilities = new HashSet<string> { "pulverize","headbutt","trample","unbreakable-will"}},
-			new Hero {Name = "MORGANA", Key = "MORGANA", Role = HeroRoleType.Support, Abilities = new HashSet<string> { "dark-binding","tormented-shadow","black-shield","soul-shackles"}},
+			new Hero {Name = "Morgana", Key = "morgana", Role = HeroRoleType.Support, Abilities = new HashSet<string> { "dark-binding","tormented-shadow","black-shield","soul-shackles"}},
 		};
 
 		public static List<Hero> GetHeroes()
