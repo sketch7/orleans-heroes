@@ -51,10 +51,7 @@ export interface HeroStateModel {
 		entities: {}
 	}
 })
-// eslint-disable-next-line @angular-eslint/use-injectable-provided-in
-@Injectable({
-	providedIn: "root"
-})
+@Injectable()
 export class HeroState {
 
 	@Selector()

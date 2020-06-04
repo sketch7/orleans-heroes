@@ -5,7 +5,9 @@ import { HeroHub } from "./real-time.hero.model";
 
 const connectionKey = "hero";
 
-@Injectable()
+@Injectable({
+	providedIn: "root"
+})
 export class HeroRealtimeClient {
 
 	constructor(
