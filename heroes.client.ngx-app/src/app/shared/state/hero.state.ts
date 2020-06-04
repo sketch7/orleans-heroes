@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 import { Injectable } from "@angular/core";
 import { tap } from "rxjs/operators";
-import { State, StateContext, Action, Selector } from "@ngxs/store";
+import { State, StateContext, Action, Selector, createSelector } from "@ngxs/store";
 
 import { Hero } from "./hero.model";
 import { HeroService } from "./hero.service";
@@ -78,6 +78,16 @@ export class HeroState {
 		return entity;
 	}
 
+	static getByKey(key: string) {
+		return createSelector([HeroState], (state: HeroStateModel) => {
+			if (!key) {
+				return undefined;
+			}
+			const entity = state.entities[key];
+			return entity;
+		});
+	}
+
 	constructor(
 		private service: HeroService,
 	) {
@@ -104,9 +114,6 @@ export class HeroState {
 		ctx.patchState({
 			entities: { ...state.entities, [hero.key]: hero }
 		});
-		// ctx.setState({
-		// 	heroes: append(action.payload)
-		// });
 	}
 
 }

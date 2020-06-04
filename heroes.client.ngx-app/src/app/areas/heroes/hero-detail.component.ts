@@ -28,7 +28,8 @@ export class HeroDetailComponent implements OnDestroy {
 		activatedRoute.paramMap.pipe(
 			map(params => this.key = params.get("id") as string),
 			tap(key => store.dispatch(new HeroActions.Select(key))),
-			// tap(_ => store.select(HeroState.getEntityList)), // todo: get by id
+			// switchMap(() => store.select(HeroState.getByKey("rengar"))), // todo: get by id
+			// tap(x => console.warn(">>>> getByKey", x)),
 			takeUntil(this._destroy$),
 		).subscribe();
 	}
