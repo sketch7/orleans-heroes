@@ -1,7 +1,7 @@
 import { Component, OnDestroy } from "@angular/core";
 import { Store } from "@ngxs/store";
 
-import { HeroState, Hero, HeroActions } from "../../shared/index";
+import { HeroState, Hero } from "../../shared/index";
 import { Subject } from "rxjs";
 import { takeUntil, tap } from "rxjs/operators";
 
@@ -18,9 +18,6 @@ export class HeroListComponent implements OnDestroy  {
 	constructor(
 		store: Store,
 	) {
-		console.warn(">> hero list ctor");
-
-		store.dispatch(new HeroActions.Get());
 		store.select(HeroState.getEntityList).pipe(
 			tap(heroes => this.heroes = heroes),
 			takeUntil(this._destroy$)
@@ -31,7 +28,6 @@ export class HeroListComponent implements OnDestroy  {
 		this._destroy$.next();
 		this._destroy$.complete();
 	}
-
 
 	trackByHero(_index: number, hero: Hero): string {
 		return hero.key;

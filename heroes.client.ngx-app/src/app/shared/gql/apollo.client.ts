@@ -20,7 +20,7 @@ export class AppApolloClient {
 	) {
 		const key = "app-gql";
 		const stateKey = makeStateKey<string>(`apollo-state.${key}`);
-		const uri = `http://localhost:6600/graphql`;
+		const uri = `http://localhost:6600/graphql`; // todo: configurable
 		const cache = new InMemoryCache();
 		apollo.create({
 			link: httpLink.create({ uri, withCredentials: true }),

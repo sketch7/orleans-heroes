@@ -26,12 +26,12 @@ export namespace HeroActions {
 		}
 	}
 
-	export class Get {
-		static readonly type = "[Hero] Get";
+	export class Load {
+		static readonly type = "[Hero] Load";
 	}
 
 	export class Select {
-		static readonly type = "[Hero] Get";
+		static readonly type = "[Hero] Select";
 		constructor(
 			public key: string
 		) {
@@ -86,7 +86,7 @@ export class HeroState {
 	) {
 	}
 
-	@Action(HeroActions.Get)
+	@Action(HeroActions.Load)
 	get(ctx: StateContext<HeroStateModel>) {
 		return this.service.getAll().pipe(
 			tap(x => ctx.patchState({ entities: arrayToObject(x || []) })),
