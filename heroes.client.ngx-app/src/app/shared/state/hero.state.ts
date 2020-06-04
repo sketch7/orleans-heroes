@@ -10,9 +10,10 @@ export interface Dictionary<T> {
 	[key: string]: T;
 }
 
-export const arrayToObject = (entities: any[]) =>
-	entities.reduce((obj, entity: any) =>
-		({ ...obj, [entity.id]: entity }), {});
+export function arrayToObject<T extends { key: string }>(entities: T[]): Dictionary<T> {
+	return entities.reduce((obj, entity: T) =>
+		({ ...obj, [entity.key]: entity }), {});
+}
 
 export namespace HeroActions {
 
@@ -79,16 +80,16 @@ export class HeroState {
 	@Action(HeroActions.Get)
 	get(ctx: StateContext<HeroStateModel>) {
 		return this.service.getAll().pipe(
-			tap(x => ctx.patchState(arrayToObject(x))),
+			tap(x => ctx.patchState({ entities: arrayToObject(x) })),
 		);
 	}
 
 	@Action(HeroActions.Add)
-	add(ctx: StateContext<HeroStateModel>, {payload: hero}: HeroActions.Add) {
+	add(ctx: StateContext<HeroStateModel>, { payload: hero }: HeroActions.Add) {
 		const state = ctx.getState();
 
 		ctx.patchState({
-			entities: {...state.entities, [hero.key]: hero }
+			entities: { ...state.entities, [hero.key]: hero }
 		});
 		// ctx.setState({
 		// 	heroes: append(action.payload)
