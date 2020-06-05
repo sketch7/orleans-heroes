@@ -29,6 +29,7 @@
     "@angular/service-worker": "~8.2.11",
     "@ngxs/devtools-plugin": "^3.6.2",
     "@ngxs/logger-plugin": "^3.6.2",
+    "@ngxs/storage-plugin": "^3.6.2",
     "@ngxs/store": "^3.6.2",
     "@ssv/core": "^0.6.1",
     "@ssv/signalr-client": "^2.0.0",
