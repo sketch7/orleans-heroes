@@ -12,9 +12,9 @@ import { Hero, HeroState, HeroActions } from "../../shared/index";
 })
 export class HeroDetailComponent implements OnDestroy {
 
-	private readonly _destroy$ = new Subject<void>();
 	key!: string | null;
 	hero: Hero | undefined;
+	private readonly _destroy$ = new Subject<void>();
 
 	constructor(
 		activatedRoute: ActivatedRoute,

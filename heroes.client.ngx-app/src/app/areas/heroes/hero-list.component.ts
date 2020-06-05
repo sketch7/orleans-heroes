@@ -10,10 +10,10 @@ import { takeUntil, tap } from "rxjs/operators";
 	templateUrl: "./hero-list.component.html",
 	styleUrls: ["./hero-list.component.scss"],
 })
-export class HeroListComponent implements OnDestroy  {
+export class HeroListComponent implements OnDestroy {
 
-	private readonly _destroy$ = new Subject<void>();
 	heroes!: Hero[];
+	private readonly _destroy$ = new Subject<void>();
 
 	constructor(
 		store: Store,
