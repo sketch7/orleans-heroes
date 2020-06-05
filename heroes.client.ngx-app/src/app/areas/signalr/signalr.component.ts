@@ -3,8 +3,7 @@ import { Dictionary } from "@ssv/core";
 import { HubConnection, ConnectionState, VERSION } from "@ssv/signalr-client";
 import { Subscription } from "rxjs";
 
-import { HeroHub } from "../../shared/real-time/real-time.hero.model";
-import { HeroRealtimeClient } from "../../shared/real-time/real-time.hero.client";
+import { HeroHub, HeroRealtimeClient } from "../../shared";
 
 @Component({
 	selector: "app-signalr-sample",

@@ -6,11 +6,11 @@ import { Store } from "@ngxs/store";
 import { HeroActions, HeroState, Hero } from "../../shared";
 
 @Component({
-	selector: "app-hero-layout",
-	templateUrl: "./hero-layout.component.html",
-	styleUrls: ["./hero-layout.component.scss"],
+	selector: "app-hero-layout-container",
+	templateUrl: "./hero-layout.container.html",
+	styleUrls: ["./hero-layout.container.scss"],
 })
-export class HeroLayoutComponent implements OnDestroy {
+export class HeroLayoutContainer implements OnDestroy {
 
 	popularHeroes: Hero[] | undefined;
 	private readonly _destroy$ = new Subject<void>();

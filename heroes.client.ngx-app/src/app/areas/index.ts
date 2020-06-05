@@ -8,18 +8,18 @@ import { ProjectsComponent } from "./projects/projects.component";
 import { ProjectComponent } from "./projects/project.component";
 import { SignalrComponent } from "./signalr/signalr.component";
 import { HeroListComponent } from "./heroes/hero-list.component";
-import { HeroDetailComponent } from "./heroes/hero-detail.component";
-import { HeroLayoutComponent } from "./heroes/hero-layout.component";
+import { HeroDetailContainer } from "./heroes/hero-detail.container";
+import { HeroLayoutContainer } from "./heroes/hero-layout.container";
 import { HeroListContainer } from "./heroes/hero-list.container";
 
 export const AREAS_ROUTES: Routes = [
 	{ path: "", component: HomeComponent, pathMatch: "full" },
 	{ path: "projects", component: ProjectsComponent },
 	{
-		path: "heroes", component: HeroLayoutComponent,
+		path: "heroes", component: HeroLayoutContainer,
 		children: [
 			{ path: "", component: HeroListContainer, pathMatch: "full" },
-			{ path: ":id", component: HeroDetailComponent }
+			{ path: ":id", component: HeroDetailContainer }
 		]
 	},
 	{ path: "signalr", component: SignalrComponent },
@@ -29,15 +29,16 @@ export const AREAS_ROUTES: Routes = [
 
 export const AREAS_COMPONENTS = [
 	NavComponent,
+	HeroListComponent,
+
+	// pages
+	HomeComponent,
 	ErrorComponent,
 	NotFoundComponent,
-
-	HomeComponent,
 	ProjectsComponent,
 	ProjectComponent,
 	SignalrComponent,
-	HeroListComponent,
-	HeroListContainer, // todo: do we need?
-	HeroLayoutComponent,
-	HeroDetailComponent,
+	HeroListContainer,
+	HeroLayoutContainer,
+	HeroDetailContainer,
 ];

@@ -3,7 +3,7 @@ import { takeUntil, tap } from "rxjs/operators";
 import { Component, OnDestroy } from "@angular/core";
 import { Store } from "@ngxs/store";
 
-import { HeroState, Hero } from "../../shared/index";
+import { HeroState, Hero } from "../../shared";
 
 @Component({
 	selector: "app-hero-list-page",

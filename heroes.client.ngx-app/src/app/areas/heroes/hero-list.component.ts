@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
 
-import { Hero } from "../../shared/index";
+import { Hero } from "../../shared";
 
 @Component({
 	selector: "app-hero-list",

@@ -1,16 +1,17 @@
+import { Subject } from "rxjs";
+import { takeUntil, tap, map } from "rxjs/operators";
 import { Component, OnDestroy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { takeUntil, tap, map } from "rxjs/operators";
-import { Subject } from "rxjs";
 import { Store } from "@ngxs/store";
+
 import { Hero, HeroState, HeroActions } from "../../shared/index";
 
 @Component({
-	selector: "app-hero-detail",
-	templateUrl: "./hero-detail.component.html",
-	styleUrls: ["./hero-detail.component.scss"],
+	selector: "app-hero-detail-container",
+	templateUrl: "./hero-detail.container.html",
+	styleUrls: ["./hero-detail.container.scss"],
 })
-export class HeroDetailComponent implements OnDestroy {
+export class HeroDetailContainer implements OnDestroy {
 
 	key!: string | null;
 	hero: Hero | undefined;
