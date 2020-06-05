@@ -75,7 +75,10 @@ namespace Heroes.Grains
 		private async Task FetchFromRemote()
 		{
 			var heroes = await _heroDataClient.GetAll();
-			await Set(heroes);
+			await Set(heroes.OrderBy(x => x.Name)
+				.ThenBy(x => x.Role)
+				.ToList()
+			);
 		}
 
 	}
