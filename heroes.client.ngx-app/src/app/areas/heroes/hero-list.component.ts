@@ -1,33 +1,15 @@
-import { Component, OnDestroy } from "@angular/core";
-import { Store } from "@ngxs/store";
+import { Component, Input } from "@angular/core";
 
-import { HeroState, Hero } from "../../shared/index";
-import { Subject } from "rxjs";
-import { takeUntil, tap } from "rxjs/operators";
+import { Hero } from "../../shared/index";
 
 @Component({
 	selector: "app-hero-list",
 	templateUrl: "./hero-list.component.html",
 	styleUrls: ["./hero-list.component.scss"],
 })
-export class HeroListComponent implements OnDestroy {
+export class HeroListComponent {
 
-	heroes!: Hero[];
-	private readonly _destroy$ = new Subject<void>();
-
-	constructor(
-		store: Store,
-	) {
-		store.select(HeroState.getEntityList).pipe(
-			tap(heroes => this.heroes = heroes),
-			takeUntil(this._destroy$)
-		).subscribe();
-	}
-
-	ngOnDestroy(): void {
-		this._destroy$.next();
-		this._destroy$.complete();
-	}
+	@Input() heroes: Hero[] | undefined;
 
 	trackByHero(_index: number, hero: Hero): string {
 		return hero.key;

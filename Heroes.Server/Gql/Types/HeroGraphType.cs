@@ -12,7 +12,8 @@ namespace Heroes.Server.Gql.Types
 
 			Field<StringGraphType>("id", resolve: ctx => ctx.Source.Key);
 			Field(x => x.Key).Description("unique key of a hero.");
-			Field(x => x.Name).Description("self descriptive.");
+			Field(x => x.Name).Description("Hero name.");
+			Field(x => x.Popularity).Description("Hero popularity.");
 			Field<HeroRoleGraphType>("role", "hero role type.");
 			Field<ListGraphType<StringGraphType>>("abilities", resolve: ctx => ctx.Source.Abilities, description: "Hero abilities.");
 		}

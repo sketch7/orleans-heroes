@@ -1,9 +1,9 @@
+import { Subject } from "rxjs";
 import { tap, takeUntil } from "rxjs/operators";
 import { Component, OnDestroy } from "@angular/core";
 import { Store } from "@ngxs/store";
 
-import { HeroActions } from "../../shared";
-import { Subject } from "rxjs";
+import { HeroActions, HeroState, Hero } from "../../shared";
 
 @Component({
 	selector: "app-hero-layout",
@@ -12,6 +12,7 @@ import { Subject } from "rxjs";
 })
 export class HeroLayoutComponent implements OnDestroy {
 
+	popularHeroes: Hero[] | undefined;
 	private readonly _destroy$ = new Subject<void>();
 
 	constructor(
@@ -19,6 +20,11 @@ export class HeroLayoutComponent implements OnDestroy {
 	) {
 		store.dispatch(new HeroActions.Load()).pipe(
 			tap(x => console.debug(">>>> heroes loaded!", x)),
+			takeUntil(this._destroy$)
+		).subscribe();
+
+		store.select(HeroState.getPopular(3)).pipe(
+			tap(heroes => this.popularHeroes = heroes),
 			takeUntil(this._destroy$)
 		).subscribe();
 	}

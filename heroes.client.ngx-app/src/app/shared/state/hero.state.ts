@@ -71,6 +71,14 @@ export class HeroState {
 		return entity;
 	}
 
+	static getPopular(count = 5) {
+		return createSelector([HeroState.getEntities], (heroes: Hero[]) => {
+			heroes = _.orderBy(heroes, x => x.popularity);
+			heroes = _.take(heroes, count);
+			return heroes;
+		});
+	}
+
 	static getByKey(key: string) {
 		return createSelector([HeroState], (state: HeroStateModel) => {
 			if (!key) {

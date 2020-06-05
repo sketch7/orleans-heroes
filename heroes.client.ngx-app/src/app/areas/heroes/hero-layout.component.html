@@ -1,1 +1,7 @@
 <router-outlet></router-outlet>
+
+<aside *ngIf="popularHeroes?.length"
+	class="hero-layout__most-popular">
+	<h3 class="hero-layout__header">Most popular</h3>
+	<app-hero-list [heroes]="popularHeroes"></app-hero-list>
+</aside>

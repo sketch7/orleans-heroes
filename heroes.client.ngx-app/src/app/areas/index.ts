@@ -10,6 +10,7 @@ import { SignalrComponent } from "./signalr/signalr.component";
 import { HeroListComponent } from "./heroes/hero-list.component";
 import { HeroDetailComponent } from "./heroes/hero-detail.component";
 import { HeroLayoutComponent } from "./heroes/hero-layout.component";
+import { HeroListContainer } from "./heroes/hero-list.container";
 
 export const AREAS_ROUTES: Routes = [
 	{ path: "", component: HomeComponent, pathMatch: "full" },
@@ -17,7 +18,7 @@ export const AREAS_ROUTES: Routes = [
 	{
 		path: "heroes", component: HeroLayoutComponent,
 		children: [
-			{ path: "", component: HeroListComponent, pathMatch: "full" },
+			{ path: "", component: HeroListContainer, pathMatch: "full" },
 			{ path: ":id", component: HeroDetailComponent }
 		]
 	},
@@ -35,7 +36,8 @@ export const AREAS_COMPONENTS = [
 	ProjectsComponent,
 	ProjectComponent,
 	SignalrComponent,
-	HeroListComponent, // todo: do we need?
+	HeroListComponent,
+	HeroListContainer, // todo: do we need?
 	HeroLayoutComponent,
 	HeroDetailComponent,
 ];
