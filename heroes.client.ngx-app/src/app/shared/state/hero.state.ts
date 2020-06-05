@@ -2,18 +2,11 @@ import * as _ from "lodash";
 import { Injectable } from "@angular/core";
 import { tap } from "rxjs/operators";
 import { State, StateContext, Action, Selector, createSelector } from "@ngxs/store";
+import { Dictionary } from "@ssv/core";
 
+import { arrayToObject } from "../utils";
 import { Hero } from "./hero.model";
 import { HeroService } from "./hero.service";
-
-export interface Dictionary<T> {
-	[key: string]: T;
-}
-
-export function arrayToObject<T extends { key: string }>(entities: T[]): Dictionary<T> {
-	return entities.reduce((obj, entity: T) =>
-		({ ...obj, [entity.key]: entity }), {});
-}
 
 export namespace HeroActions {
 
