@@ -7,8 +7,8 @@ namespace Heroes.Server.Gql.Types
 	{
 		public HeroRoleGraphType()
 		{
-			Name = "HeroRoleEnum";
-			Description = "Role types for heroes.";
+			Name = "HeroRole";
+			Description = "Hero role type.";
 
 			AddValue("assassin", "self descriptive", (int)HeroRoleType.Assassin);
 			AddValue("fighter", "self descriptive", (int)HeroRoleType.Fighter);
