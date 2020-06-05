@@ -13,7 +13,7 @@ namespace Heroes.Contracts.Grains.Mocks
 			new Hero {Name = "Kha'zix", Key = "kha-zix", Role = HeroRoleType.Assassin, Abilities = new HashSet<string> { "taste-their-fear", "void-spike", "leap", "void-assault"}},
 			new Hero {Name = "Singed", Key = "singed", Role = HeroRoleType.Tank, Abilities = new HashSet<string> { "poison-trail", "mega-adhesive", "fling", "insanity-potion"}},
 			new Hero {Name = "AAtrox", Key = "aatrox", Role = HeroRoleType.Fighter, Abilities = new HashSet<string> { "darkin-blade", "infernal-chains", "umbral-dash", "world-ender"}},
-			new Hero {Name = "Blitzcrank", Key = "aatrox", Role = HeroRoleType.Tank, Abilities = new HashSet<string> { "rocket-grab", "overdrive", "power-fist", "static-field"}},
+			new Hero {Name = "Blitzcrank", Key = "blitzcrank", Role = HeroRoleType.Tank, Abilities = new HashSet<string> { "rocket-grab", "overdrive", "power-fist", "static-field"}},
 			new Hero {Name = "Alistar", Key = "alistar", Role = HeroRoleType.Support, Abilities = new HashSet<string> { "pulverize","headbutt","trample","unbreakable-will"}},
 			new Hero {Name = "Morgana", Key = "morgana", Role = HeroRoleType.Support, Abilities = new HashSet<string> { "dark-binding","tormented-shadow","black-shield","soul-shackles"}},
 		};
