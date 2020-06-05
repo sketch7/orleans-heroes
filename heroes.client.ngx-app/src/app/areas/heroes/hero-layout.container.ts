@@ -13,6 +13,7 @@ import { HeroActions, HeroState, Hero } from "../../shared";
 export class HeroLayoutContainer implements OnDestroy {
 
 	popularHeroes: Hero[] | undefined;
+	recentViewedHeroes: Hero[] | undefined;
 	private readonly _destroy$ = new Subject<void>();
 
 	constructor(
@@ -25,6 +26,11 @@ export class HeroLayoutContainer implements OnDestroy {
 
 		store.select(HeroState.getPopular(3)).pipe(
 			tap(heroes => this.popularHeroes = heroes),
+			takeUntil(this._destroy$)
+		).subscribe();
+
+		store.select(HeroState.getRecentlyViewed).pipe(
+			tap(heroes => this.recentViewedHeroes = heroes),
 			takeUntil(this._destroy$)
 		).subscribe();
 	}

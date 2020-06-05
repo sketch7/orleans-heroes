@@ -2,6 +2,7 @@ import * as _ from "lodash";
 import { Injectable } from "@angular/core";
 import { tap } from "rxjs/operators";
 import { State, StateContext, Action, Selector, createSelector } from "@ngxs/store";
+import { patch } from "@ngxs/store/operators";
 import { Dictionary } from "@ssv/core";
 
 import { arrayToObject } from "../utils";
@@ -36,12 +37,14 @@ export namespace HeroActions {
 export interface HeroStateModel {
 	entities: Dictionary<Hero>;
 	selectedKey?: string;
+	recentlyViewed: string[];
 }
 
 @State<HeroStateModel>({
 	name: "heroes",
 	defaults: {
-		entities: {}
+		entities: {},
+		recentlyViewed: []
 	}
 })
 @Injectable()
@@ -60,6 +63,13 @@ export class HeroState {
 	@Selector()
 	static getEntityList(state: HeroStateModel): Hero[] {
 		return _.values(state.entities);
+	}
+
+	@Selector()
+	static getRecentlyViewed(state: HeroStateModel): Hero[] {
+		const recentlyViewed = state.recentlyViewed;
+		return recentlyViewed.map(key => state.entities[key])
+			.filter(x => !!x);
 	}
 
 	@Selector()
@@ -103,9 +113,17 @@ export class HeroState {
 
 	@Action(HeroActions.Select)
 	select(ctx: StateContext<HeroStateModel>, { key }: HeroActions.Select) {
-		ctx.patchState({
-			selectedKey: key
-		});
+		let recentlyViewed = [...ctx.getState().recentlyViewed];
+		recentlyViewed = [key, ...recentlyViewed]
+		recentlyViewed = _.uniq(recentlyViewed);
+		recentlyViewed = _.take(recentlyViewed, 3);
+
+		ctx.setState(
+			patch({
+				selectedKey: key,
+				recentlyViewed
+			})
+		);
 	}
 
 	@Action(HeroActions.Add)

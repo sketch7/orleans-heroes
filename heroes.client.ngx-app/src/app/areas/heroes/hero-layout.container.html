@@ -5,3 +5,8 @@
 	<h3 class="hero-layout__header">Most popular</h3>
 	<app-hero-list [heroes]="popularHeroes"></app-hero-list>
 </aside>
+<aside *ngIf="recentViewedHeroes?.length"
+	class="hero-layout__recent-view">
+	<h3 class="hero-layout__header">Recently viewed</h3>
+	<app-hero-list [heroes]="recentViewedHeroes"></app-hero-list>
+</aside>
