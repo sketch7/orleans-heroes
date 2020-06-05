@@ -29,15 +29,9 @@ export class HeroDetailContainer implements OnDestroy {
 		activatedRoute.paramMap.pipe(
 			map(params => this.key = params.get("id") as string),
 			tap(key => store.dispatch(new HeroActions.Select(key))),
-			// switchMap(() => store.select(HeroState.getByKey("rengar"))), // todo: get by id
-			// tap(x => console.warn(">>>> getByKey", x)),
 			takeUntil(this._destroy$),
 		).subscribe();
 	}
-
-	// ngOnInit(): void {
-	// 	throw new Error("Method not implemented.");
-	// }
 
 	ngOnDestroy(): void {
 		this._destroy$.next();
