@@ -1,4 +1,5 @@
-﻿using GraphQL.Types;
+﻿using GraphQL;
+using GraphQL.Types;
 using Heroes.Contracts.Grains.Heroes;
 using Heroes.Contracts.Grains.Stats;
 using Heroes.Server.Gql.Types;
@@ -12,11 +13,11 @@ namespace Heroes.Server.Gql
 			IHeroClient heroClient,
 			IHeroStatsClient heroStatsClient,
 			IHeroService mockHeroService
-			)
+		)
 		{
 			Name = "AppQueries";
 
-			Field<HeroType>(
+			Field<HeroGraphType>(
 				name: "hero",
 				description: "hero full object",
 				arguments: new QueryArguments(
@@ -29,11 +30,11 @@ namespace Heroes.Server.Gql
 				}
 			);
 
-			Field<ListGraphType<HeroType>>(
+			Field<ListGraphType<HeroGraphType>>(
 				name: "heroes",
 				description: "heroes list",
 				arguments: new QueryArguments(
-					new QueryArgument<HeroRoleEnum> { Name = "role", Description = "filtering heroes by role." }
+					new QueryArgument<HeroRoleGraphType> { Name = "role", Description = "filtering heroes by role." }
 				),
 				resolve: context =>
 				{
@@ -43,7 +44,7 @@ namespace Heroes.Server.Gql
 				}
 			);
 
-			Field<HeroStatsType>(
+			Field<HeroStatsGraphType>(
 				name: "herostats",
 				description: "view all hero stats",
 				arguments: new QueryArguments(
@@ -57,7 +58,7 @@ namespace Heroes.Server.Gql
 			);
 
 
-			Field<ListGraphType<HeroType>>(
+			Field<ListGraphType<HeroGraphType>>(
 				name: "heroesMock",
 				description: "heroes list",
 				resolve: context =>

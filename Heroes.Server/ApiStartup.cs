@@ -1,5 +1,6 @@
 ﻿using Grace.DependencyInjection;
 using GraphiQl;
+using GraphQL.Types;
 using Heroes.Clients;
 using Heroes.Core;
 using Heroes.Server.Gql;
@@ -65,7 +66,12 @@ namespace Heroes.Server
 		)
 		{
 			app.UseCors("TempCorsPolicy");
-			app.UseAppGraphQLMiddleware();
+			// add http for Schema at default url /graphql
+			app.UseGraphQL<ISchema>();
+
+			// use graphql-playground at default url /ui/playground
+			app.UseGraphQLPlayground();
+
 			//app.UseWebSockets();
 			//app.UseGraphQLEndPoint<AppSchema>("/graphql");
 

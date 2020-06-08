@@ -32,7 +32,8 @@
   <PropertyGroup>
     <!-- vendors -->
     <OrleansVersion>2.4.4</OrleansVersion>
-    <SignalROrleansVersion>1.0.0-rc6</SignalROrleansVersion>
+    <SignalROrleansVersion>1.0.0-rc8</SignalROrleansVersion>
+    <!-- <SignalROrleansVersion>link</SignalROrleansVersion> -->
 
     <MicrosoftExtensionsVersion>2.2.0</MicrosoftExtensionsVersion>
     <NewtonsoftJsonVersion>12.0.1</NewtonsoftJsonVersion>

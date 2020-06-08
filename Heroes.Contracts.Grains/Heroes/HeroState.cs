@@ -22,10 +22,11 @@ namespace Heroes.Contracts.Grains.Heroes
 	[DebuggerDisplay("{DebuggerDisplay,nq}")]
 	public class Hero
 	{
-		protected string DebuggerDisplay => $"Key: '{Key}', Name: '{Name}', Role: {Role}, Health: {Health}";
+		protected string DebuggerDisplay => $"Key: '{Key}', Name: '{Name}', Role: {Role}, Health: {Health}, Popularity: {Popularity}";
 		public string Key { get; set; }
 		public string Name { get; set; }
 		public int Health { get; set; }
+		public int Popularity { get; set; }
 		public HeroRoleType Role { get; set; }
 		public HashSet<string> Abilities { get; set; }
 

@@ -54,7 +54,7 @@ export class HeroService {
 	getAllGraphQL(roleType?: HeroRoleType): Observable<Hero[]> {
 		console.log("HeroService :: graphQL - init");
 		const query = gql`
-        query GetAllHeroes($role: HeroRoleEnum) {
+        query GetAllHeroes($role: HeroRole) {
             heroes (role: $role) {
               key
               name

@@ -10,7 +10,7 @@ namespace Heroes.Server.Gql
 			IHeroService service
 		)
 		{
-			FieldSubscribe<ListGraphType<HeroType>>(
+			FieldSubscribe<ListGraphType<HeroGraphType>>(
 				name: "heroAdded",
 				description: "hero added",
 				resolve: context => service.Heroes(),

@@ -3,8 +3,12 @@ import { Dictionary } from "@ssv/core";
 import { HubConnection, ConnectionState, VERSION } from "@ssv/signalr-client";
 import { Subscription } from "rxjs";
 
-import { HeroHub } from "../../shared/real-time/real-time.hero.model";
-import { HeroRealtimeClient } from "../../shared/real-time/real-time.hero.client";
+import { HeroHub, HeroHubClient, Hero } from "../../shared";
+
+export interface Group {
+	id: string;
+	name: string;
+}
 
 @Component({
 	selector: "app-signalr-sample",
@@ -21,33 +25,33 @@ export class SignalrComponent implements OnInit, OnDestroy {
 	signalrVersion = VERSION;
 
 	availableGroups: Group[] = [
-		{id: "hero:all", name: "All"},
-		{id: "hero:singed", name: "Singed"},
-		{id: "hero:kha-zix", name: "Kha Zix"},
-		{id: "hero:malthael", name: "Malthael"},
-		{id: "hero:johanna", name: "Johanna"},
-		{id: "hero:keal-thas", name: "Keal-thas"},
-		{id: "hero:alexstrasza", name: "Alexstrasza"},
+		{ id: "hero:all", name: "All" },
+		{ id: "hero:singed", name: "Singed" },
+		{ id: "hero:kha-zix", name: "Kha Zix" },
+		{ id: "hero:malthael", name: "Malthael" },
+		{ id: "hero:johanna", name: "Johanna" },
+		{ id: "hero:keal-thas", name: "Keal-thas" },
+		{ id: "hero:alexstrasza", name: "Alexstrasza" },
 	];
 	selectedGroupId = this.availableGroups[0].id;
 
 	private hubConnection!: HubConnection<HeroHub>;
 
-	private source = "HeroListComponent ::";
+	private source = "SignalrComponent ::";
 
 	private hubConnection$$ = Subscription.EMPTY;
 	private onSend$$ = Subscription.EMPTY;
 
 	private kha$$ = Subscription.EMPTY;
 	private singed$$ = Subscription.EMPTY;
-	private singedOn$$ = Subscription.EMPTY;
+	private heroChange$$ = Subscription.EMPTY;
 	private connectionState$$ = Subscription.EMPTY;
 
 	constructor(
-		private client: HeroRealtimeClient,
+		private hubClient: HeroHubClient,
 		private cdr: ChangeDetectorRef,
 	) {
-		this.hubConnection = this.client.get();
+		this.hubConnection = this.hubClient.get();
 	}
 
 	ngOnInit(): void {
@@ -60,19 +64,25 @@ export class SignalrComponent implements OnInit, OnDestroy {
 		this.connect();
 	}
 
+	ngOnDestroy(): void {
+		this.connectionState$$.unsubscribe();
+		this.hubConnection$$.unsubscribe();
+		this.dispose();
+	}
+
 	subscribe() {
 		// this.singed$$ = this.hubConnection.stream<Hero>("GetUpdates", "singed")
 		// 	.subscribe(x => console.log(`${this.source} stream :: singed`, x));
 
-		this.onSend$$ = this.hubConnection!.on<string>("Send").subscribe((val: string) => {
+		this.onSend$$ = this.hubClient.send$().subscribe((val: string) => {
 			console.log(`${this.source} send :: data received >>>`, val);
 		});
 
-		this.singedOn$$ = this.hubConnection!.on<Hero>("HeroChanged").subscribe(heroChange => {
+		this.heroChange$$ = this.hubClient.heroChanged$().subscribe(heroChange => {
 			console.log(`${this.source} send :: data received >>>`, heroChange);
 			let hero = this.heroesState[heroChange.key];
 			if (hero) {
-				hero = {...hero, ...heroChange};
+				hero = { ...hero, ...heroChange };
 			} else {
 				hero = heroChange;
 			}
@@ -89,10 +99,9 @@ export class SignalrComponent implements OnInit, OnDestroy {
 		this.hubConnection$$ = this.hubConnection.connect(() => {
 			console.log("setting data..");
 			return { token: "cla-key" };
-		})
-			.subscribe(() => {
-				console.log(`${this.source} connected!!`);
-			});
+		}).subscribe(() => {
+			console.log(`${this.source} connected!!`);
+		});
 	}
 
 	send() {
@@ -100,7 +109,7 @@ export class SignalrComponent implements OnInit, OnDestroy {
 	}
 
 	subscribeToGroup() {
-		this.hubConnection.send("AddToGroup", this.selectedGroupId);
+		this.hubClient.addToGroup$(this.selectedGroupId);
 	}
 
 	invoke() {
@@ -121,45 +130,12 @@ export class SignalrComponent implements OnInit, OnDestroy {
 		this.hubConnection.disconnect().subscribe();
 	}
 
-	ngOnDestroy(): void {
-		if (this.connectionState$$) {
-			this.connectionState$$.unsubscribe();
-		}
-		if (this.hubConnection$$) {
-			this.hubConnection$$.unsubscribe();
-		}
-		this.dispose();
-	}
-
 	dispose() {
 		console.log(`${this.source} disposing...`);
-		if (this.onSend$$) {
-			console.log(`${this.source} disposing onSend...`);
-			this.onSend$$.unsubscribe();
-		}
-		if (this.kha$$) {
-			console.log(`${this.source} disposing kha...`);
-			this.kha$$.unsubscribe();
-		}
-		if (this.singed$$) {
-			console.log(`${this.source} disposing singed...`);
-			this.singed$$.unsubscribe();
-		}
-		if (this.singedOn$$) {
-			console.log(`${this.source} disposing singedOn...`);
-			this.singedOn$$.unsubscribe();
-		}
+		this.onSend$$.unsubscribe();
+		this.kha$$.unsubscribe();
+		this.singed$$.unsubscribe();
+		this.heroChange$$.unsubscribe();
 	}
 
-}
-
-export interface Hero {
-	key: string;
-	name: string;
-	health: number;
-}
-
-export interface Group {
-	id: string;
-	name: string;
 }

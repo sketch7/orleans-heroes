@@ -21,7 +21,9 @@
     <PackageReference Include="Grace.AspNetCore.Hosting" Version="7.0.1" />
     <PackageReference Include="Grace.DependencyInjection.Extensions" Version="7.0.1" />
     <PackageReference Include="graphiql" Version="1.2.0" />
-    <PackageReference Include="GraphQL" Version="2.4.0" />
+    <PackageReference Include="GraphQL" Version="3.0.0-preview-1552" />
+    <PackageReference Include="GraphQL.Server.Transports.AspNetCore.NewtonsoftJson" Version="3.5.0-alpha0060" />
+    <PackageReference Include="GraphQL.Server.Ui.Playground" Version="3.5.0-alpha0060" />
     <!-- <PackageReference Include="GraphQL.Server.Transports.AspNetCore" Version="3.4.0" />
     <PackageReference Include="GraphQL.Server.Transports.WebSockets" Version="3.4.0" /> -->
     <PackageReference Include="Microsoft.AspNetCore.App" />

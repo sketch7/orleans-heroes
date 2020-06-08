@@ -6,4 +6,5 @@
 export const environment = {
 	production: false,
 	debug: true,
+	apiRemoteBaseUrl: "http://localhost:6600",
 };

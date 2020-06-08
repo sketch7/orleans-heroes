@@ -1,0 +1,10 @@
+<ng-container *ngIf="hero">
+	<h1 class="hero__name">{{hero.name}} <span class="hero__role">[{{hero.role}}]</span></h1>
+	<ul *ngIf="hero.abilities?.length; else noAbilities" class="hero-detail__abilities">
+		<li *ngFor="let ability of hero.abilities"
+			class="hero-detail__ability">
+			{{ability}}
+		</li>
+	</ul>
+	<ng-template #noAbilities>No abilities listed</ng-template>
+</ng-container>

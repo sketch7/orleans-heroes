@@ -1,0 +1,7 @@
+<ul class="heroes__container">
+	<li *ngFor="let hero of heroes; trackBy: trackByHero">
+		<a [routerLink]="['/heroes', hero.key]">
+			{{hero.name}}
+		</a>
+	</li>
+</ul>
