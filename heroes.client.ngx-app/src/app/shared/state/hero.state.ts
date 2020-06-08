@@ -44,8 +44,8 @@ export interface HeroStateModel {
 	name: "heroes",
 	defaults: {
 		entities: {},
-		recentlyViewed: []
-	}
+		recentlyViewed: [],
+	},
 })
 @Injectable()
 export class HeroState {
@@ -114,14 +114,14 @@ export class HeroState {
 	@Action(HeroActions.Select)
 	select(ctx: StateContext<HeroStateModel>, { key }: HeroActions.Select) {
 		let recentlyViewed = [...ctx.getState().recentlyViewed];
-		recentlyViewed = [key, ...recentlyViewed]
+		recentlyViewed = [key, ...recentlyViewed];
 		recentlyViewed = _.uniq(recentlyViewed);
 		recentlyViewed = _.take(recentlyViewed, 3);
 
 		ctx.setState(
 			patch({
 				selectedKey: key,
-				recentlyViewed
+				recentlyViewed,
 			})
 		);
 	}
