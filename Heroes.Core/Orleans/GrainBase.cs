@@ -59,7 +59,7 @@ namespace Heroes.Core.Orleans
 		protected readonly ILogger Logger;
 
 		private string _primaryKey;
-		public string PrimaryKey => _primaryKey ?? (_primaryKey = this.GetPrimaryKeyAny());
+		public string PrimaryKey => _primaryKey ??= this.GetPrimaryKeyAny();
 
 		public string Source { get; }
 
@@ -93,7 +93,7 @@ namespace Heroes.Core.Orleans
 		protected readonly ILogger Logger;
 
 		private string _primaryKey;
-		public string PrimaryKey => _primaryKey ?? (_primaryKey = this.GetPrimaryKeyAny());
+		public string PrimaryKey => _primaryKey ??= this.GetPrimaryKeyAny();
 
 		public string Source { get; }
 

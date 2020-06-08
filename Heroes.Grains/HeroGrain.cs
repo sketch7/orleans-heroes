@@ -1,5 +1,5 @@
-﻿using Heroes.Contracts.Grains;
-using Heroes.Contracts.Grains.Heroes;
+﻿using Heroes.Contracts;
+using Heroes.Contracts.Heroes;
 using Heroes.Core.Orleans;
 using Heroes.Core.Utils;
 using Microsoft.Extensions.Logging;
@@ -12,6 +12,11 @@ using System.Threading.Tasks;
 
 namespace Heroes.Grains
 {
+	public class HeroState
+	{
+		public Hero Hero { get; set; }
+	}
+
 	public struct HeroKeyData
 	{
 		public string Tenant { get; set; }

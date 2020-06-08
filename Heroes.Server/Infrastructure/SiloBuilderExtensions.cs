@@ -1,4 +1,4 @@
-﻿using Heroes.Contracts.Grains;
+﻿using Heroes.Contracts;
 using Heroes.Core;
 using Microsoft.Extensions.Hosting;
 using Orleans.Configuration;

@@ -59,8 +59,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Heroes.Clients\Heroes.Clients.csproj" />
-    <ProjectReference Include="..\Heroes.Contracts.Grains\Heroes.Contracts.Grains.csproj" />
+    <ProjectReference Include="..\Heroes.GrainClients\Heroes.GrainClients.csproj" />
+    <ProjectReference Include="..\Heroes.Contracts\Heroes.Contracts.csproj" />
     <ProjectReference Include="..\Heroes.Core\Heroes.Core.csproj" />
     <ProjectReference Include="..\Heroes.Grains\Heroes.Grains.csproj" />
   </ItemGroup>

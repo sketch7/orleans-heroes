@@ -1,5 +1,5 @@
 ﻿using GraphQL.Types;
-using Heroes.Contracts.Grains.Stats;
+using Heroes.Contracts.Stats;
 
 namespace Heroes.Server.Gql.Types
 {

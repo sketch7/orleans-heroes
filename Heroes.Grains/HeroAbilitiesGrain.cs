@@ -1,5 +1,5 @@
-﻿using Heroes.Contracts.Grains.Heroes;
-using Heroes.Contracts.Grains.Mocks;
+﻿using Heroes.Contracts.Heroes;
+using Heroes.Contracts.Mocks;
 using Orleans;
 using System;
 using System.Collections.Generic;
@@ -8,6 +8,11 @@ using System.Threading.Tasks;
 
 namespace Heroes.Grains
 {
+	public class HeroAbilitiesState
+	{
+		public List<HeroAbility> HeroAbilities { get; set; }
+	}
+
 	public class HeroAbilitiesGrain : Grain<HeroAbilitiesState>, IHeroAbilitiesGrain
 	{
 		private const string Source = nameof(HeroAbilitiesGrain);

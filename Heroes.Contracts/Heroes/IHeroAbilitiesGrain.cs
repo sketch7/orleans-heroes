@@ -3,13 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace Heroes.Contracts.Grains.Heroes
+namespace Heroes.Contracts.Heroes
 {
-	public class HeroAbilitiesState
-	{
-		public List<HeroAbility> HeroAbilities { get; set; }
-	}
-
 	public interface IHeroAbilitiesGrain : IGrainWithStringKey
 	{
 		Task<List<HeroAbility>> Get();

@@ -1,5 +1,5 @@
-﻿using Heroes.Contracts.Grains;
-using Heroes.Contracts.Grains.Heroes;
+﻿using Heroes.Contracts;
+using Heroes.Contracts.Heroes;
 using Heroes.Core.Orleans;
 using Heroes.Core.Tenancy;
 using Microsoft.Extensions.Logging;
@@ -10,6 +10,11 @@ using System.Threading.Tasks;
 
 namespace Heroes.Grains
 {
+	public class HeroCollectionState
+	{
+		public Dictionary<string, HeroRoleType> HeroKeys { get; set; }
+	}
+
 	public struct HeroCollectionKeyData
 	{
 		public string Tenant { get; set; }

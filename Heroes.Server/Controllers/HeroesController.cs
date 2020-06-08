@@ -1,4 +1,4 @@
-﻿using Heroes.Contracts.Grains.Heroes;
+﻿using Heroes.Contracts.Heroes;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -8,9 +8,11 @@ namespace Heroes.Server.Controllers
 	[Route("api/[controller]")]
 	public class HeroesController : Controller
 	{
-		private readonly IHeroClient _client;
+		private readonly IHeroGrainClient _client;
 
-		public HeroesController(IHeroClient client)
+		public HeroesController(
+			IHeroGrainClient client
+		)
 		{
 			_client = client;
 		}

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Heroes.Contracts.Grains.Heroes
+namespace Heroes.Contracts.Heroes
 {
 	public interface IHeroHub
 	{

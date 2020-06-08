@@ -1,8 +1,8 @@
 ﻿using Grace.DependencyInjection;
 using GraphiQl;
 using GraphQL.Types;
-using Heroes.Clients;
 using Heroes.Core;
+using Heroes.GrainClients;
 using Heroes.Server.Gql;
 using Heroes.Server.Infrastructure;
 using Heroes.Server.Realtime;
@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Orleans;
 
 namespace Heroes.Server
 {
@@ -22,8 +21,7 @@ namespace Heroes.Server
 
 		public ApiStartup(
 			IConfiguration configuration,
-			IAppInfo appInfo,
-			IClusterClient clusterClient
+			IAppInfo appInfo
 		)
 		{
 			_configuration = configuration;

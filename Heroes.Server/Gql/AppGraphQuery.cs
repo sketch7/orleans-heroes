@@ -1,7 +1,7 @@
 ﻿using GraphQL;
 using GraphQL.Types;
-using Heroes.Contracts.Grains.Heroes;
-using Heroes.Contracts.Grains.Stats;
+using Heroes.Contracts.Heroes;
+using Heroes.Contracts.Stats;
 using Heroes.Server.Gql.Types;
 using Heroes.Server.Sample;
 
@@ -10,8 +10,8 @@ namespace Heroes.Server.Gql
 	public class AppGraphQuery : ObjectGraphType
 	{
 		public AppGraphQuery(
-			IHeroClient heroClient,
-			IHeroStatsClient heroStatsClient,
+			IHeroGrainClient heroGrainClient,
+			IHeroStatsGrainClient heroStatsClient,
 			IHeroService mockHeroService
 		)
 		{
@@ -25,7 +25,7 @@ namespace Heroes.Server.Gql
 					),
 				resolve: context =>
 				{
-					var result = heroClient.Get(context.GetArgument<string>("key"));
+					var result = heroGrainClient.Get(context.GetArgument<string>("key"));
 					return result;
 				}
 			);
@@ -39,7 +39,7 @@ namespace Heroes.Server.Gql
 				resolve: context =>
 				{
 					var role = context.GetArgument<int?>("role");
-					var result = heroClient.GetAll((HeroRoleType?)role);
+					var result = heroGrainClient.GetAll((HeroRoleType?)role);
 					return result;
 				}
 			);

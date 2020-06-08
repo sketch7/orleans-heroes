@@ -1,9 +1,9 @@
-﻿using Heroes.Contracts.Grains.Heroes;
-using Heroes.Contracts.Grains.Stats;
+﻿using Heroes.Contracts.Heroes;
+using Heroes.Contracts.Stats;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Heroes.Contracts.Grains.Mocks
+namespace Heroes.Contracts.Mocks
 {
 	public static class MockDataService
 	{
@@ -32,19 +32,19 @@ namespace Heroes.Contracts.Grains.Mocks
 		{
 			return new List<HeroAbility>
 			{
-				//rengar
+				// rengar
 				new HeroAbility{ Id = "savagery", Name = "Savagery", Damage = 120, DamageType = DamageType.AttackDamage},
 				new HeroAbility{ Id = "battle-roar", Name = "Battle Roar", Damage = 170, DamageType = DamageType.MagicDamage},
 				new HeroAbility{ Id = "bola-strike", Name = "Bola Strike", Damage = 250, DamageType = DamageType.AttackDamage},
 				new HeroAbility{ Id = "thrill-of-the-hunt", Name = "Thrill of the Hunt", Damage = 0, DamageType = DamageType.None},
 			
-				//kha zix
+				// kha zix
 				new HeroAbility{ Id = "taste-their-fear", Name = "Taste Their Fear", Damage = 170, DamageType = DamageType.AttackDamage},
 				new HeroAbility{ Id = "void-spike", Name = "Void Spike", Damage = 200, DamageType = DamageType.AttackDamage},
 				new HeroAbility{ Id = "leap", Name = "Leap", Damage = 205, DamageType = DamageType.AttackDamage},
 				new HeroAbility{ Id = "void-assault", Name = "Void Assault", Damage = 0, DamageType = DamageType.None},
 
-				//singed
+				// singed
 				new HeroAbility{ Id = "poison-trail", Name = "Poison Trail", Damage = 70, DamageType = DamageType.MagicDamage},
 				new HeroAbility{ Id = "mega-adhesive", Name = "Mega Adhesive", Damage = 0, DamageType = DamageType.None},
 				new HeroAbility{ Id = "fling", Name = "Fling", Damage = 110, DamageType = DamageType.MagicDamage},

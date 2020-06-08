@@ -1,8 +1,8 @@
-﻿using Heroes.Contracts.Grains.Heroes;
-using Heroes.Contracts.Grains.Stats;
+﻿using Heroes.Contracts.Heroes;
+using Heroes.Contracts.Stats;
 using Orleans;
 
-namespace Heroes.Contracts.Grains
+namespace Heroes.Contracts
 {
 	public static class GrainFactoryExtensions
 	{

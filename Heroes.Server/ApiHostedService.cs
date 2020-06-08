@@ -31,6 +31,7 @@ namespace Heroes.Server
 		public ApiHostedService(
 			IOptions<ApiHostedServiceOptions> options,
 			IClusterClient client,
+			IGrainFactory grainFactory,
 			IConfiguration configuration,
 			IExportLocatorScope exportScope,
 			IAppInfo appInfo,
@@ -58,6 +59,7 @@ namespace Heroes.Server
 				{
 					services.AddSingleton(appInfo);
 					services.AddSingleton(client);
+					services.AddSingleton(grainFactory);
 					services.AddSingleton(exportScope);
 				})
 				.UseStartup<ApiStartup>()

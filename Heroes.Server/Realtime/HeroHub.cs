@@ -1,5 +1,5 @@
-﻿using Heroes.Contracts.Grains;
-using Heroes.Contracts.Grains.Heroes;
+﻿using Heroes.Contracts;
+using Heroes.Contracts.Heroes;
 using Heroes.Core.Extensions;
 using Heroes.Server.Realtime.Core;
 using Microsoft.AspNetCore.SignalR;

@@ -1,5 +1,5 @@
-﻿using Heroes.Contracts.Grains.Mocks;
-using Heroes.Contracts.Grains.Stats;
+﻿using Heroes.Contracts.Mocks;
+using Heroes.Contracts.Stats;
 using Orleans;
 using System;
 using System.Linq;
@@ -7,6 +7,11 @@ using System.Threading.Tasks;
 
 namespace Heroes.Grains
 {
+	public class HeroStatsState
+	{
+		public HeroStats HeroStats { get; set; }
+	}
+
 	public class HeroStatsGrain : Grain<HeroStatsState>, IHeroStatsGrain
 	{
 		private const string Source = nameof(HeroStatsGrain);

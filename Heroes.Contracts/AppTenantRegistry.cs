@@ -4,14 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Heroes.Contracts.Grains
+namespace Heroes.Contracts
 {
 	public interface IAppTenantRegistry : ITenantRegistry<AppTenant>
 	{
 		ITenant GetByPrimaryKey(string primaryKey);
 	}
 
-	public class AppTenantRegistry :  IAppTenantRegistry
+	public class AppTenantRegistry : IAppTenantRegistry
 	{
 		private const string TenantGroupKey = "tenant";
 		private readonly Regex _regex = new Regex($@"tenant\/(?'{TenantGroupKey}'[\w@-]+)\/?(.*)", RegexOptions.Compiled);
