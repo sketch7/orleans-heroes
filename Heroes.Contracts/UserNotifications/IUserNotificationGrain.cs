@@ -1,7 +1,7 @@
 ﻿using Orleans;
 using System.Threading.Tasks;
 
-namespace Heroes.Contracts.Grains.UserNotifications
+namespace Heroes.Contracts.UserNotifications
 {
 	public interface IUserNotificationGrain : IGrainWithStringKey
 	{

@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Heroes.Contracts.Grains\Heroes.Contracts.Grains.csproj" />
+    <ProjectReference Include="..\Heroes.Contracts\Heroes.Contracts.csproj" />
     <ProjectReference Include="..\Heroes.Core\Heroes.Core.csproj" />
   </ItemGroup>
 
@@ -15,7 +15,9 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="$(OrleansVersion)" />
-    <PackageReference Include="Microsoft.Orleans.OrleansCodeGenerator.Build" Version="$(OrleansVersion)" />
+    <PackageReference Include="Microsoft.Orleans.CodeGenerator.MSBuild" Version="$(OrleansVersion)" PrivateAssets="all">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup Condition="'$(SignalROrleansVersion)' == 'link'">

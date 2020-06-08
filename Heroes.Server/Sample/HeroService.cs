@@ -1,5 +1,5 @@
-﻿using Heroes.Contracts.Grains.Heroes;
-using Heroes.Contracts.Grains.Mocks;
+﻿using Heroes.Contracts.Heroes;
+using Heroes.Contracts.Mocks;
 using Heroes.Core;
 using System;
 using System.Collections.Generic;

@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 
-namespace Heroes.Contracts.Grains.Stats
+namespace Heroes.Contracts.Stats
 {
-	public interface IHeroStatsClient
+	public interface IHeroStatsGrainClient
 	{
 		Task<HeroStats> Get(string heroId);
 		Task Set(HeroStats heroStats);

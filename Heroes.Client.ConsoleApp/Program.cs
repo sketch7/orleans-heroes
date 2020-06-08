@@ -1,9 +1,9 @@
-﻿using Heroes.Contracts.Grains;
-using Heroes.Contracts.Grains.Heroes;
+﻿using Heroes.Contracts.Heroes;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using System;
 using System.Threading.Tasks;
+using Heroes.Contracts;
 
 namespace Heroes.Client.ConsoleApp
 {

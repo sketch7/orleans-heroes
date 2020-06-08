@@ -1,7 +1,7 @@
 using Heroes.Core.Tenancy;
 using System.Diagnostics;
 
-namespace Heroes.Contracts.Grains
+namespace Heroes.Contracts
 {
 	[DebuggerDisplay("{DebuggerDisplay,nq}")]
 	public class AppTenant : ITenant

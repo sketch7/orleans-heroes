@@ -6,17 +6,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace Heroes.Contracts.Grains.Heroes
+namespace Heroes.Contracts.Heroes
 {
-	public class HeroState
-	{
-		public Hero Hero { get; set; }
-	}
-
 	public interface IHeroGrain : IGrainWithStringKey, IAppGrainContract
 	{
-		Task Set(Hero hero);
 		Task<Hero> Get();
+		Task Set(Hero hero);
 	}
 
 	[DebuggerDisplay("{DebuggerDisplay,nq}")]

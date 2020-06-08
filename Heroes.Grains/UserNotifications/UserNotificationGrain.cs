@@ -1,5 +1,5 @@
-﻿using Heroes.Contracts.Grains;
-using Heroes.Contracts.Grains.UserNotifications;
+﻿using Heroes.Contracts;
+using Heroes.Contracts.UserNotifications;
 using Heroes.Core.Orleans;
 using Heroes.Core.Utils;
 using Microsoft.Extensions.Logging;

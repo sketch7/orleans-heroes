@@ -1,6 +1,6 @@
 using Grace.DependencyInjection;
 using Grace.DependencyInjection.Extensions;
-using Heroes.Contracts.Grains;
+using Heroes.Contracts;
 using Heroes.Core;
 using Heroes.Core.Tenancy;
 using Heroes.Grains;

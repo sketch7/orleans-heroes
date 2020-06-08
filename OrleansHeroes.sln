@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29009.5
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Heroes.Grains", "Heroes.Grains\Heroes.Grains.csproj", "{812E3337-C3B3-4232-B546-22216DFC5D2E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Heroes.Contracts.Grains", "Heroes.Contracts.Grains\Heroes.Contracts.Grains.csproj", "{663092C6-1939-4E55-AEFA-2CF731DD21D3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Heroes.Contracts", "Heroes.Contracts\Heroes.Contracts.csproj", "{663092C6-1939-4E55-AEFA-2CF731DD21D3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Heroes.Client.ConsoleApp", "Heroes.Client.ConsoleApp\Heroes.Client.ConsoleApp.csproj", "{E41408EF-E16E-48F4-9F82-752DD8F3DD48}"
 EndProject
@@ -19,7 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{C5911799
 		readme.md = readme.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Heroes.Clients", "Heroes.Clients\Heroes.Clients.csproj", "{886FD2D5-5C53-46CB-A609-7D71A4F191DD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Heroes.GrainClients", "Heroes.GrainClients\Heroes.GrainClients.csproj", "{886FD2D5-5C53-46CB-A609-7D71A4F191DD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{65507135-64DE-4BD5-AB2D-A0CC5455FD97}"
 EndProject

@@ -1,14 +1,14 @@
-using System;
-using System.Text.RegularExpressions;
 using Grace.DependencyInjection;
 using Grace.DependencyInjection.Exceptions;
-using Heroes.Contracts.Grains;
+using Heroes.Contracts;
 using Heroes.Core;
 using Heroes.Core.Tenancy;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Runtime;
+using System;
+using System.Text.RegularExpressions;
 
 namespace Heroes.Server.Infrastructure
 {

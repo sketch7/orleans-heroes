@@ -1,4 +1,4 @@
-﻿using Heroes.Contracts.Grains;
+﻿using Heroes.Contracts;
 using Orleans;
 using Orleans.Runtime;
 using System.Threading;

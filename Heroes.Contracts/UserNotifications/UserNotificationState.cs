@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace Heroes.Contracts.Grains.UserNotifications
+namespace Heroes.Contracts.UserNotifications
 {
 	public class UserNotificationState
 	{

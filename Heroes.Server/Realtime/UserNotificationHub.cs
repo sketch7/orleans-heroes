@@ -1,4 +1,4 @@
-﻿using Heroes.Contracts.Grains.UserNotifications;
+﻿using Heroes.Contracts.UserNotifications;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Heroes.Server.Realtime

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Heroes.Contracts.Grains
+namespace Heroes.Contracts
 {
 	public static class OrleansConstants
 	{
