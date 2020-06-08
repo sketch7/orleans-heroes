@@ -1,13 +1,13 @@
 import * as _ from "lodash";
 import gql from "graphql-tag";
 import { Observable, of } from "rxjs";
-import { Injectable } from "@angular/core";
-
-import { HeroRoleType, Hero } from "./hero.model";
-import { AppApolloClient } from "../gql/apollo.client";
-import { ApolloBase } from "apollo-angular";
-import { AppGqlQuerySchema } from "../gql/gql.schema";
 import { tap, map } from "rxjs/operators";
+import { Injectable } from "@angular/core";
+import { ApolloBase } from "apollo-angular";
+
+import { AppApolloClient } from "../gql/apollo.client";
+import { AppGqlQuerySchema } from "../gql/gql.schema";
+import { HeroRoleType, Hero } from "./hero.model";
 
 @Injectable({
 	providedIn: "root"
