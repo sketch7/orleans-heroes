@@ -63,7 +63,7 @@ export class HeroService {
 
 	getAll(roleType?: HeroRoleType): Observable<Hero[] | undefined> {
 		console.log("HeroService :: getAll");
-		const query = gql`query getAllHeroes($role: HeroRoleEnum) {
+		const query = gql`query getAllHeroes($role: HeroRole) {
 	        heroes (role: $role) {
 	          key
 	          name
