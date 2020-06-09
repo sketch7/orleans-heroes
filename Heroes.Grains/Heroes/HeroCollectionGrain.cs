@@ -44,32 +44,23 @@ namespace Heroes.Grains.Heroes
 				await FetchFromRemote();
 		}
 
-		public async Task Set(List<Hero> heroes)
-		{
-			State.HeroKeys = heroes.ToDictionary(x => x.Key, x => x.Role);
-			await WriteStateAsync();
-		}
-
-		public async Task<List<Hero>> GetAll(HeroRoleType? role = null)
+		public Task<List<string>> GetAll(HeroRoleType? role = null)
 		{
 			var query = State.HeroKeys.AsQueryable();
 
 			if (role.HasValue)
 				query = query.Where(x => x.Value == role);
 
-			var heroIds = query
-				.Select(x => x.Key)
+			var heroIds = query.Select(x => x.Key)
 				.ToList();
 
-			var tasks = new List<Task<Hero>>();
-			foreach (var heroId in heroIds)
-			{
-				var heroGrain = GrainFactory.GetHeroGrain(_keyData.Tenant, heroId);
-				tasks.Add(heroGrain.Get());
-			}
+			return Task.FromResult(heroIds);
+		}
 
-			var result = await Task.WhenAll(tasks);
-			return result.ToList();
+		private async Task Set(IEnumerable<Hero> heroes)
+		{
+			State.HeroKeys = heroes.ToDictionary(x => x.Key, x => x.Role);
+			await WriteStateAsync();
 		}
 
 		private async Task FetchFromRemote()

@@ -36,10 +36,11 @@ namespace Heroes.GrainClients.Heroes
 			return heroes.ToList();
 		}
 
-		public Task<List<Hero>> GetAll(HeroRoleType? role = null)
+		public async Task<List<Hero>> GetAll(HeroRoleType? role = null)
 		{
 			var grain = _grainFactory.GetHeroCollectionGrain(Tenant);
-			return grain.GetAll(role);
+			var keys = await grain.GetAll(role);
+			return await GetAllByRefs(keys);
 		}
 	}
 }

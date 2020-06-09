@@ -14,13 +14,13 @@ namespace Heroes.Grains.Heroes
 {
 	public class HeroState
 	{
-		public Hero Hero { get; set; }
+		public Hero Entity { get; set; }
 	}
 
 	public struct HeroKeyData
 	{
 		public string Tenant { get; set; }
-		public string HeroKey { get; set; }
+		public string Key { get; set; }
 	}
 
 	[StorageProvider(ProviderName = OrleansConstants.GrainMemoryStorage)]
@@ -47,44 +47,43 @@ namespace Heroes.Grains.Heroes
 			// todo: use key data
 			var keySplit = PrimaryKey.Split('/');
 			_keyData.Tenant = keySplit[1];
-			_keyData.HeroKey = keySplit[2];
+			_keyData.Key = keySplit[2];
 
-			if (State.Hero == null)
+			if (State.Entity == null)
 			{
-				var hero = await _heroDataClient.GetByKey(_keyData.HeroKey);
+				var entity = await _heroDataClient.GetByKey(_keyData.Key);
 
-				if (hero == null)
+				if (entity == null)
 					return;
 
-				await Set(hero);
+				await Set(entity);
 			}
 
-			var hubGroup = _hubContext.Group($"hero:{_keyData.HeroKey}");
+			var hubGroup = _hubContext.Group($"hero:{_keyData.Key}");
 			var hubAllGroup = _hubContext.Group($"hero:all");
 
 			var streamProvider = GetStreamProvider(Constants.STREAM_PROVIDER);
-			var stream = streamProvider.GetStream<Hero>(StreamConstants.HeroStream, $"hero:{_keyData.HeroKey}");
+			var stream = streamProvider.GetStream<Hero>(StreamConstants.HeroStream, $"hero:{_keyData.Key}");
 
 			RegisterTimer(async x =>
 			{
-				State.Hero.Health = RandomUtils.GenerateNumber(1, 100);
+				State.Entity.Health = RandomUtils.GenerateNumber(1, 100);
 
 				await Task.WhenAll(
-					Set(State.Hero),
-					stream.OnNextAsync(State.Hero),
-					hubGroup.Send("HeroChanged", State.Hero),
-					hubAllGroup.Send("HeroChanged", State.Hero)
+					Set(State.Entity),
+					stream.OnNextAsync(State.Entity),
+					hubGroup.Send("HeroChanged", State.Entity),
+					hubAllGroup.Send("HeroChanged", State.Entity)
 				);
 			}, State, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(3));
 		}
 
-		public Task Set(Hero hero)
+		public Task<Hero> Get() => Task.FromResult(State.Entity);
+
+		private Task Set(Hero hero)
 		{
-			State.Hero = hero;
+			State.Entity = hero;
 			return WriteStateAsync();
 		}
-
-		public Task<Hero> Get() => Task.FromResult(State.Hero);
-
 	}
 }

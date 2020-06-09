@@ -28,8 +28,8 @@ namespace Heroes.Server
 				await grain.Activate();
 
 				var heroes = await grain.GetAll();
-				foreach (var hero in heroes)
-					await _grainFactory.GetHeroGrain(tenant.Key, hero.Key).Activate();
+				foreach (var heroKey in heroes)
+					await _grainFactory.GetHeroGrain(tenant.Key, heroKey).Activate();
 			}
 		}
 	}
