@@ -33,7 +33,6 @@ namespace Heroes.Grains.Heroes
 		public HeroGrain(
 			ILogger<HeroGrain> logger,
 			IHeroDataClient heroDataClient
-
 		) : base(logger)
 		{
 			_heroDataClient = heroDataClient;

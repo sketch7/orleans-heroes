@@ -26,7 +26,6 @@ namespace Heroes.Grains.Heroes
 			ILogger<HeroCollectionGrain> logger,
 			IHeroDataClient heroDataClient,
 			ITenant tenant
-
 		) : base(logger)
 		{
 			_heroDataClient = heroDataClient;
