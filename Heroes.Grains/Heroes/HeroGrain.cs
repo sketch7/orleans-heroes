@@ -10,7 +10,7 @@ using SignalR.Orleans.Core;
 using System;
 using System.Threading.Tasks;
 
-namespace Heroes.Grains
+namespace Heroes.Grains.Heroes
 {
 	public class HeroState
 	{

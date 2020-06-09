@@ -3,7 +3,7 @@ using Grace.DependencyInjection.Extensions;
 using Heroes.Contracts;
 using Heroes.Core;
 using Heroes.Core.Tenancy;
-using Heroes.Grains;
+using Heroes.Grains.Heroes;
 using Heroes.Server.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

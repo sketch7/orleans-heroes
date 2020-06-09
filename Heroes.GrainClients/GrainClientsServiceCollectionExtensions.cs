@@ -1,5 +1,7 @@
-﻿using Heroes.Contracts.Heroes;
+﻿using Heroes.Contracts.HeroCategories;
+using Heroes.Contracts.Heroes;
 using Heroes.Contracts.Stats;
+using Heroes.GrainClients.HeroCategories;
 using Heroes.GrainClients.Heroes;
 using Heroes.GrainClients.Statistics;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,8 +12,9 @@ namespace Heroes.GrainClients
 	{
 		public static void AddAppClients(this IServiceCollection services)
 		{
-			services.AddScoped<IHeroGrainClient, HeroGrainClient>();
-			services.AddScoped<IHeroStatsGrainClient, HeroStatsGrainClient>();
+			services.AddSingleton<IHeroCategoryGrainClient, HeroCategoryGrainClient>();
+			services.AddSingleton<IHeroGrainClient, HeroGrainClient>();
+			services.AddSingleton<IHeroStatsGrainClient, HeroStatsGrainClient>();
 		}
 	}
 }

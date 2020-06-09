@@ -7,5 +7,6 @@ namespace Heroes.Contracts.Heroes
 	{
 		Task<Hero> Get(string key);
 		Task<List<Hero>> GetAll(HeroRoleType? role = null);
+		Task<List<Hero>> GetAllByRefs(ICollection<string> keys);
 	}
 }

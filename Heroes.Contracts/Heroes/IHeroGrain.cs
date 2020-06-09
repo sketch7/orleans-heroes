@@ -11,13 +11,13 @@ namespace Heroes.Contracts.Heroes
 	public interface IHeroGrain : IGrainWithStringKey, IAppGrainContract
 	{
 		Task<Hero> Get();
-		Task Set(Hero hero);
 	}
 
 	[DebuggerDisplay("{DebuggerDisplay,nq}")]
 	public class Hero
 	{
 		protected string DebuggerDisplay => $"Key: '{Key}', Name: '{Name}', Role: {Role}, Health: {Health}, Popularity: {Popularity}";
+
 		public string Key { get; set; }
 		public string Name { get; set; }
 		public int Health { get; set; }

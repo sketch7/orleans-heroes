@@ -1,5 +1,6 @@
 ﻿using GraphQL;
 using GraphQL.Types;
+using Heroes.Contracts.HeroCategories;
 using Heroes.Contracts.Heroes;
 using Heroes.Contracts.Stats;
 using Heroes.Server.Gql.Types;
@@ -11,6 +12,7 @@ namespace Heroes.Server.Gql
 	{
 		public AppGraphQuery(
 			IHeroGrainClient heroGrainClient,
+			IHeroCategoryGrainClient heroCategoryGrainClient,
 			IHeroStatsGrainClient heroStatsClient,
 			IHeroService mockHeroService
 		)
@@ -26,6 +28,16 @@ namespace Heroes.Server.Gql
 				resolve: context =>
 				{
 					var result = heroGrainClient.Get(context.GetArgument<string>("key"));
+					return result;
+				}
+			);
+
+			Field<ListGraphType<HeroCategoryGraphType>>(
+				name: "heroCategories",
+				description: "hero categories",
+				resolve: context =>
+				{
+					var result = heroCategoryGrainClient.GetAll();
 					return result;
 				}
 			);

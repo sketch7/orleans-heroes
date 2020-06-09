@@ -8,16 +8,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Heroes.Grains
+namespace Heroes.Grains.Heroes
 {
 	public class HeroCollectionState
 	{
 		public Dictionary<string, HeroRoleType> HeroKeys { get; set; }
-	}
-
-	public struct HeroCollectionKeyData
-	{
-		public string Tenant { get; set; }
 	}
 
 	[StorageProvider(ProviderName = OrleansConstants.GrainMemoryStorage)]
@@ -25,7 +20,7 @@ namespace Heroes.Grains
 	{
 		private readonly IHeroDataClient _heroDataClient;
 		private readonly ITenant _tenant;
-		private HeroCollectionKeyData _keyData;
+		private TenantKeyData _keyData;
 
 		public HeroCollectionGrain(
 			ILogger<HeroCollectionGrain> logger,
