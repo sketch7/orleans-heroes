@@ -19,11 +19,12 @@ namespace Heroes.Server.Gql
 				.AddUserContextBuilder(httpContext => new GraphQLUserContext { User = httpContext.User });
 
 			services.AddSingleton<ISchema, AppSchema>();
-			services.AddScoped<AppGraphQuery>();
+			services.AddSingleton<AppGraphQuery>();
 			services.AddScoped<AppGraphSubscription>();
 
 			services.AddSingleton<HeroRoleGraphType>();
 			services.AddSingleton<HeroGraphType>();
+			services.AddSingleton<HeroCategoryGraphType>();
 			services.AddSingleton<HeroStatsGraphType>();
 		}
 	}

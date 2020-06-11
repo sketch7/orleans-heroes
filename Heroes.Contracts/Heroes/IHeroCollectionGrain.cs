@@ -7,7 +7,6 @@ namespace Heroes.Contracts.Heroes
 {
 	public interface IHeroCollectionGrain : IGrainWithStringKey, IAppGrainContract
 	{
-		Task Set(List<Hero> heroes);
-		Task<List<Hero>> GetAll(HeroRoleType? role = null);
+		Task<List<string>> GetAll(HeroRoleType? role = null);
 	}
 }

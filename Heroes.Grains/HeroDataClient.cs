@@ -1,4 +1,5 @@
-﻿using Heroes.Contracts.Heroes;
+﻿using Heroes.Contracts.HeroCategories;
+using Heroes.Contracts.Heroes;
 using Heroes.Contracts.Mocks;
 using Microsoft.Extensions.Logging;
 using Orleans.Runtime;
@@ -13,6 +14,8 @@ namespace Heroes.Grains
 	{
 		Task<Hero> GetByKey(string key);
 		Task<List<Hero>> GetAll();
+		Task<HeroCategory> GetHeroCategoryByKey(string key);
+		Task<List<HeroCategory>> GetAllHeroCategory();
 	}
 
 	public class MockLoLHeroDataClient : IHeroDataClient
@@ -36,6 +39,18 @@ namespace Heroes.Grains
 		{
 			_logger.Debug($"[{nameof(GetByKey)}] Fetching key: {key} from mock service", key);
 			return Task.FromResult(MockDataService.GetById(key));
+		}
+
+		public Task<HeroCategory> GetHeroCategoryByKey(string key)
+		{
+			_logger.Debug($"[{nameof(GetHeroCategoryByKey)}] Fetching key: {key} from mock service", key);
+			return Task.FromResult(MockDataService.GetHeroCategoryById(key));
+		}
+
+		public Task<List<HeroCategory>> GetAllHeroCategory()
+		{
+			_logger.Debug($"[{nameof(GetAllHeroCategory)}] Fetch from mock service");
+			return Task.FromResult(MockDataService.GetAllHeroCategory());
 		}
 	}
 
@@ -63,6 +78,9 @@ namespace Heroes.Grains
 			_logger.Debug($"[{nameof(GetAll)}] Fetch from mock service");
 			return Task.FromResult(_data);
 		}
+
+		public Task<HeroCategory> GetHeroCategoryByKey(string key) => throw new NotImplementedException();
+		public Task<List<HeroCategory>> GetAllHeroCategory() => throw new NotImplementedException();
 
 		public Task<Hero> GetByKey(string key)
 		{

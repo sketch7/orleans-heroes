@@ -18,7 +18,7 @@ namespace Heroes.Grains.UserNotifications
 		private HubContext<IUserNotificationHub> _hubContext;
 
 		public UserNotificationGrain(
-			ILogger<HeroGrain> logger
+			ILogger<UserNotificationGrain> logger
 		) : base(logger)
 		{
 		}

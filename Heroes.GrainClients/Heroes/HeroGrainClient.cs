@@ -1,13 +1,17 @@
-﻿using Heroes.Contracts.Heroes;
+﻿using Heroes.Contracts;
+using Heroes.Contracts.Heroes;
+using Heroes.Core;
 using Orleans;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using Heroes.Contracts;
 
 namespace Heroes.GrainClients.Heroes
 {
 	public class HeroGrainClient : IHeroGrainClient
 	{
+		// todo: get tenant from context
+		private const string Tenant = "lol";
 		private readonly IGrainFactory _grainFactory;
 
 		public HeroGrainClient(
@@ -19,15 +23,24 @@ namespace Heroes.GrainClients.Heroes
 
 		public Task<Hero> Get(string key)
 		{
-			// todo: get tenant from context
-			var grain = _grainFactory.GetHeroGrain("lol", key);
+			var grain = _grainFactory.GetHeroGrain(Tenant, key);
 			return grain.Get();
 		}
 
-		public Task<List<Hero>> GetAll(HeroRoleType? role = null)
+		public async Task<List<Hero>> GetAllByRefs(ICollection<string> keys)
 		{
-			var grain = _grainFactory.GetHeroCollectionGrain("lol");
-			return grain.GetAll(role);
+			if (keys?.Count == 0)
+				return null;
+
+			var heroes = await keys.SelectAsync(key => _grainFactory.GetHeroGrain(Tenant, key).Get());
+			return heroes.ToList();
+		}
+
+		public async Task<List<Hero>> GetAll(HeroRoleType? role = null)
+		{
+			var grain = _grainFactory.GetHeroCollectionGrain(Tenant);
+			var keys = await grain.GetAll(role);
+			return await GetAllByRefs(keys);
 		}
 	}
 }
