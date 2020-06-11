@@ -1,5 +1,5 @@
 # Orleans Heroes Sample App
-*This example project is still work in progress...*
+*This example project is still work in progress...* 
 
 ## Technologies
 
