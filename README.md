@@ -1,16 +1,16 @@
 # Orleans Heroes Sample App
-*This example project is still work in progress...* 
+*This example project is still work in progress...*
 
 ## Technologies
 
 ### Server
 - .NET Core 2.2
 - SignalR 2
-- Microsoft Orleans 2.3
+- Microsoft Orleans 2.4.4
 - GraphQL & GraphiQL
 
 ### Client
-- Angular 8.x
+- Angular 9.x
 - TypeScript
 *Based on https://github.com/sketch7/angular-skeleton-app*
 
