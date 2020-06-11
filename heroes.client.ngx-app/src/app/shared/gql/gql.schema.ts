@@ -1,5 +1,7 @@
 import { Hero } from "../state/hero.model";
+import { HeroCategory } from "../state/hero-category.model";
 
 export interface AppGqlQuerySchema {
-	heroes?: Hero[]
+	heroCategories?: HeroCategory[];
+	heroes?: Hero[];
 }

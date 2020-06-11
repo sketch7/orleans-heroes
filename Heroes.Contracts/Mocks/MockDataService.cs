@@ -11,21 +11,21 @@ namespace Heroes.Contracts.Mocks
 	{
 		private static readonly List<Hero> Heroes = new List<Hero>
 		{
-			new Hero {Name = "Rengar", Key = "rengar", Role = HeroRoleType.Assassin, Abilities = new HashSet<string> { "savagery", "battle-roar", "bola-strike", "thrill-of-the-hunt"}, Popularity = 6},
-			new Hero {Name = "Kha'zix", Key = "kha-zix", Role = HeroRoleType.Assassin, Abilities = new HashSet<string> { "taste-their-fear", "void-spike", "leap", "void-assault"}, Popularity = 4},
-			new Hero {Name = "Singed", Key = "singed", Role = HeroRoleType.Tank, Abilities = new HashSet<string> { "poison-trail", "mega-adhesive", "fling", "insanity-potion"}, Popularity = 3},
-			new Hero {Name = "Aatrox", Key = "aatrox", Role = HeroRoleType.Fighter, Abilities = new HashSet<string> { "darkin-blade", "infernal-chains", "umbral-dash", "world-ender"}, Popularity = 9},
-			new Hero {Name = "Blitzcrank", Key = "blitzcrank", Role = HeroRoleType.Tank, Abilities = new HashSet<string> { "rocket-grab", "overdrive", "power-fist", "static-field"}, Popularity = 6},
-			new Hero {Name = "Alistar", Key = "alistar", Role = HeroRoleType.Support, Abilities = new HashSet<string> { "pulverize","headbutt","trample","unbreakable-will"}, Popularity = 3},
-			new Hero {Name = "Morgana", Key = "morgana", Role = HeroRoleType.Support, Abilities = new HashSet<string> { "dark-binding","tormented-shadow","black-shield","soul-shackles"}, Popularity = 8},
-			new Hero {Name = "Garen", Key = "garen", Role = HeroRoleType.Fighter, Abilities = new HashSet<string> { "decisive-strike", "courage", "judgment","demacian-justice"}, Popularity = 7},
-			new Hero {Name = "Ryze", Key = "ryze", Role = HeroRoleType.Mage, Abilities = new HashSet<string> { "overload","rune-prison","spell-flux","realm-warp"}, Popularity = 5},
+			new Hero {Name = "Rengar", Id = "rengar", Role = HeroRoleType.Assassin, Abilities = new HashSet<string> { "savagery", "battle-roar", "bola-strike", "thrill-of-the-hunt"}, Popularity = 6},
+			new Hero {Name = "Kha'zix", Id = "kha-zix", Role = HeroRoleType.Assassin, Abilities = new HashSet<string> { "taste-their-fear", "void-spike", "leap", "void-assault"}, Popularity = 4},
+			new Hero {Name = "Singed", Id = "singed", Role = HeroRoleType.Tank, Abilities = new HashSet<string> { "poison-trail", "mega-adhesive", "fling", "insanity-potion"}, Popularity = 3},
+			new Hero {Name = "Aatrox", Id = "aatrox", Role = HeroRoleType.Fighter, Abilities = new HashSet<string> { "darkin-blade", "infernal-chains", "umbral-dash", "world-ender"}, Popularity = 9},
+			new Hero {Name = "Blitzcrank", Id = "blitzcrank", Role = HeroRoleType.Tank, Abilities = new HashSet<string> { "rocket-grab", "overdrive", "power-fist", "static-field"}, Popularity = 6},
+			new Hero {Name = "Alistar", Id = "alistar", Role = HeroRoleType.Support, Abilities = new HashSet<string> { "pulverize","headbutt","trample","unbreakable-will"}, Popularity = 3},
+			new Hero {Name = "Morgana", Id = "morgana", Role = HeroRoleType.Support, Abilities = new HashSet<string> { "dark-binding","tormented-shadow","black-shield","soul-shackles"}, Popularity = 8},
+			new Hero {Name = "Garen", Id = "garen", Role = HeroRoleType.Fighter, Abilities = new HashSet<string> { "decisive-strike", "courage", "judgment","demacian-justice"}, Popularity = 7},
+			new Hero {Name = "Ryze", Id = "ryze", Role = HeroRoleType.Mage, Abilities = new HashSet<string> { "overload","rune-prison","spell-flux","realm-warp"}, Popularity = 5},
 		};
 
 		private static readonly List<HeroCategory> HeroCategories = new List<HeroCategory>
 		{
-			new HeroCategory { Key = "featured", Title = "Featured", Heroes = new List<string> { "kha-zix", "aatrox" } },
-			new HeroCategory { Key = "recommended", Title = "Recommended", Heroes = new List<string> { "garen","ryze" } },
+			new HeroCategory { Id = "featured", Title = "Featured", Heroes = new List<string> { "kha-zix", "aatrox" } },
+			new HeroCategory { Id = "recommended", Title = "Recommended", Heroes = new List<string> { "garen","ryze" } },
 		};
 
 		public static List<Hero> GetHeroes()
@@ -34,10 +34,10 @@ namespace Heroes.Contracts.Mocks
 		}
 
 		public static Hero GetById(string key)
-			=> Heroes.FirstOrDefault(x => x.Key == key);
+			=> Heroes.FirstOrDefault(x => x.Id == key);
 
 		public static HeroCategory GetHeroCategoryById(string key)
-			=> HeroCategories.FirstOrDefault(x => x.Key == key);
+			=> HeroCategories.FirstOrDefault(x => x.Id == key);
 		public static List<HeroCategory> GetAllHeroCategory()
 			=> HeroCategories;
 

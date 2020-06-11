@@ -53,7 +53,7 @@ namespace Heroes.Grains.Heroes
 
 		private async Task Set(IEnumerable<Hero> heroes)
 		{
-			State.HeroKeys = heroes.ToDictionary(x => x.Key, x => x.Role);
+			State.HeroKeys = heroes.ToDictionary(x => x.Id, x => x.Role);
 			await WriteStateAsync();
 		}
 

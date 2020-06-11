@@ -13,19 +13,19 @@ export class HeroService {
 
 	list = [
 		{
-			key: "rengar",
+			id: "rengar",
 			name: "mock data - mighty rengo",
 			role: HeroRoleType.assassin,
 			abilities: []
 		},
 		{
-			key: "kha-zix",
+			id: "kha-zix",
 			name: "mock data - kha zix",
 			role: HeroRoleType.assassin,
 			abilities: []
 		},
 		{
-			key: "singed",
+			id: "singed",
 			name: "mock data - singed",
 			role: HeroRoleType.tank,
 			abilities: []
@@ -39,7 +39,7 @@ export class HeroService {
 	}
 
 	getById(id: string): Observable<Hero> {
-		return Observable.of(_.find(this.list, x => x.key === id)!);
+		return Observable.of(_.find(this.list, x => x.id === id)!);
 	}
 
 	getAll(): Observable<Hero[]> {

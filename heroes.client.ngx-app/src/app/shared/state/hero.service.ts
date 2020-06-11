@@ -17,19 +17,19 @@ export class HeroService {
 	private apollo: ApolloBase;
 	private list: Hero[] = [
 		{
-			key: "rengar",
+			id: "rengar",
 			name: "Rengar (mock)",
 			role: HeroRoleType.assassin,
 			abilities: []
 		},
 		{
-			key: "kha-zix",
+			id: "kha-zix",
 			name: "Kha'Zix (mock)",
 			role: HeroRoleType.assassin,
 			abilities: []
 		},
 		{
-			key: "singed",
+			id: "singed",
 			name: "Singed (mock)",
 			role: HeroRoleType.tank,
 			abilities: []
@@ -48,7 +48,7 @@ export class HeroService {
 	}
 
 	getByKey(key: string): Observable<Hero | undefined> {
-		const entity = _.find(this.list, x => x.key === key);
+		const entity = _.find(this.list, x => x.id === key);
 		return of(entity);
 	}
 
@@ -64,14 +64,13 @@ export class HeroService {
 	getAll(roleType?: HeroRoleType): Observable<Hero[] | undefined> {
 		console.log("HeroService :: getAll");
 		const query = gql`query getAllHeroes($role: HeroRole) {
-	        heroes (role: $role) {
-	          key
-	          name
-	          role
-	          abilities
-	        }
-	      }
-	    `;
+			heroes (role: $role) {
+				id
+				name
+				role
+				abilities
+			}
+		}`;
 
 		return this.apollo.query<AppGqlQuerySchema>({
 			query,
@@ -81,6 +80,26 @@ export class HeroService {
 		}).pipe(
 			tap(result => console.log("HeroService :: getAll result", result)),
 			map(({ data }) => data.heroes),
+		);
+	}
+
+	getAllHeroCategories() {
+		console.log("HeroService :: getAllHeroCategories");
+		const query = gql`query getAllHeroCategories {
+			heroCategories {
+				id
+				title
+				heroes {
+					id
+				}
+			}
+		}`;
+
+		return this.apollo.query<AppGqlQuerySchema>({
+			query,
+		}).pipe(
+			tap(result => console.log("HeroService :: getAllHeroCategories result", result)),
+			map(({ data }) => data.heroCategories),
 		);
 	}
 

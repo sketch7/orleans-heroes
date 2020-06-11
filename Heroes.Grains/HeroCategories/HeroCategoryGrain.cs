@@ -17,12 +17,12 @@ namespace Heroes.Grains.HeroCategories
 	[DebuggerDisplay("{DebuggerDisplay,nq}")]
 	public struct HeroCategoryKeyData
 	{
-		private string DebuggerDisplay => $"Tenant: '{Tenant}', Key: '{Key}'";
+		private string DebuggerDisplay => $"Tenant: '{Tenant}', Id: '{Id}'";
 
-		public static string Template = "tenant/{tenant}/{key}";
+		public static string Template = "tenant/{tenant}/{id}";
 
 		public string Tenant { get; set; }
-		public string Key { get; set; }
+		public string Id { get; set; }
 	}
 
 	[StorageProvider(ProviderName = OrleansConstants.GrainMemoryStorage)]
@@ -47,7 +47,7 @@ namespace Heroes.Grains.HeroCategories
 
 			if (State.Entity == null)
 			{
-				var entity = await _heroDataClient.GetHeroCategoryByKey(_keyData.Key);
+				var entity = await _heroDataClient.GetHeroCategoryByKey(_keyData.Id);
 
 				if (entity == null)
 					return;

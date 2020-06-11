@@ -80,14 +80,14 @@ export class SignalrComponent implements OnInit, OnDestroy {
 
 		this.heroChange$$ = this.hubClient.heroChanged$().subscribe(heroChange => {
 			console.log(`${this.source} send :: data received >>>`, heroChange);
-			let hero = this.heroesState[heroChange.key];
+			let hero = this.heroesState[heroChange.id];
 			if (hero) {
 				hero = { ...hero, ...heroChange };
 			} else {
 				hero = heroChange;
 			}
 
-			this.heroesState[hero.key] = hero;
+			this.heroesState[hero.id] = hero;
 			this.heroes = Object.values(this.heroesState);
 			this.cdr.markForCheck();
 		});
@@ -123,7 +123,7 @@ export class SignalrComponent implements OnInit, OnDestroy {
 	}
 
 	trackByHero(_index: number, hero: Hero): string {
-		return `${hero.key}`;
+		return `${hero.id}`;
 	}
 
 	disconnect() {

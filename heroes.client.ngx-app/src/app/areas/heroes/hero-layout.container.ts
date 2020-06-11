@@ -3,7 +3,8 @@ import { tap, takeUntil } from "rxjs/operators";
 import { Component, OnDestroy } from "@angular/core";
 import { Store } from "@ngxs/store";
 
-import { HeroActions, HeroState, Hero } from "../../shared";
+import { HeroActions, HeroState, Hero, HeroCategory } from "../../shared";
+import { HeroCategoryState } from "app/shared/state/hero-category.state";
 
 @Component({
 	selector: "app-hero-layout-container",
@@ -14,6 +15,7 @@ export class HeroLayoutContainer implements OnDestroy {
 
 	popularHeroes: Hero[] | undefined;
 	recentViewedHeroes: Hero[] | undefined;
+	heroCategories: HeroCategory[] | undefined;
 	private readonly _destroy$ = new Subject<void>();
 
 	constructor(
@@ -31,6 +33,11 @@ export class HeroLayoutContainer implements OnDestroy {
 
 		store.select(HeroState.getRecentlyViewed).pipe(
 			tap(heroes => this.recentViewedHeroes = heroes),
+			takeUntil(this._destroy$)
+		).subscribe();
+
+		store.select(HeroCategoryState.getEntityList).pipe(
+			tap(heroCategories => this.heroCategories = heroCategories),
 			takeUntil(this._destroy$)
 		).subscribe();
 	}

@@ -131,7 +131,7 @@ export class HeroState {
 		const state = ctx.getState();
 
 		ctx.patchState({
-			entities: { ...state.entities, [hero.key]: hero }
+			entities: { ...state.entities, [hero.id]: hero }
 		});
 	}
 

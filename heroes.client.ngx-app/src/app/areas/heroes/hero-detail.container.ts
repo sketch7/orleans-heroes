@@ -13,7 +13,7 @@ import { Hero, HeroState, HeroActions } from "../../shared/index";
 })
 export class HeroDetailContainer implements OnDestroy {
 
-	key!: string | null;
+	id!: string | null;
 	hero: Hero | undefined;
 	private readonly _destroy$ = new Subject<void>();
 
@@ -27,8 +27,8 @@ export class HeroDetailContainer implements OnDestroy {
 		).subscribe();
 
 		activatedRoute.paramMap.pipe(
-			map(params => this.key = params.get("id") as string),
-			tap(key => store.dispatch(new HeroActions.Select(key))),
+			map(params => this.id = params.get("id") as string),
+			tap(id => store.dispatch(new HeroActions.Select(id))),
 			takeUntil(this._destroy$),
 		).subscribe();
 	}
