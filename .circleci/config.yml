@@ -19,9 +19,9 @@ jobs:
       - run:
           name: dotnet restore
           command: dotnet restore OrleansHeroes.sln
-      - run:
-          name: dotnet build
-          command: dotnet build OrleansHeroes.sln -c Release
+      # - run:
+      #     name: dotnet build
+      #     command: dotnet build OrleansHeroes.sln -c Release
 workflows:
   version: 2
   build:
