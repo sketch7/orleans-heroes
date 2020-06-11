@@ -1,7 +1,6 @@
 ﻿using Heroes.Contracts;
 using Heroes.Contracts.Heroes;
 using Heroes.Core.Orleans;
-using Heroes.Core.Tenancy;
 using Microsoft.Extensions.Logging;
 using Orleans.Providers;
 using System.Collections.Generic;
@@ -19,25 +18,21 @@ namespace Heroes.Grains.Heroes
 	public class HeroCollectionGrain : AppGrain<HeroCollectionState>, IHeroCollectionGrain
 	{
 		private readonly IHeroDataClient _heroDataClient;
-		private readonly ITenant _tenant;
 		private TenantKeyData _keyData;
 
 		public HeroCollectionGrain(
 			ILogger<HeroCollectionGrain> logger,
-			IHeroDataClient heroDataClient,
-			ITenant tenant
+			IHeroDataClient heroDataClient
 		) : base(logger)
 		{
 			_heroDataClient = heroDataClient;
-			_tenant = tenant;
 		}
 
 		public override async Task OnActivateAsync()
 		{
 			await base.OnActivateAsync();
 
-			_keyData.Tenant = _tenant.Key;
-			//_keyData.Tenant = PrimaryKey.Split('/')[1];
+			_keyData = this.ParseKey<TenantKeyData>(TenantKeyData.Template);
 
 			if (State.HeroKeys == null)
 				await FetchFromRemote();

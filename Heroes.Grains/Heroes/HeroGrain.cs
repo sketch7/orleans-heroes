@@ -8,6 +8,7 @@ using Orleans.Providers;
 using SignalR.Orleans;
 using SignalR.Orleans.Core;
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Heroes.Grains.Heroes
@@ -17,8 +18,13 @@ namespace Heroes.Grains.Heroes
 		public Hero Entity { get; set; }
 	}
 
+	[DebuggerDisplay("{DebuggerDisplay,nq}")]
 	public struct HeroKeyData
 	{
+		private string DebuggerDisplay => $"Tenant: '{Tenant}', Key: '{Key}'";
+
+		public static string Template = "tenant/{tenant}/{key}";
+
 		public string Tenant { get; set; }
 		public string Key { get; set; }
 	}
@@ -42,11 +48,7 @@ namespace Heroes.Grains.Heroes
 		{
 			await base.OnActivateAsync();
 			_hubContext = GrainFactory.GetHub<IHeroHub>();
-
-			// todo: use key data
-			var keySplit = PrimaryKey.Split('/');
-			_keyData.Tenant = keySplit[1];
-			_keyData.Key = keySplit[2];
+			_keyData = this.ParseKey<HeroKeyData>(HeroKeyData.Template);
 
 			if (State.Entity == null)
 			{

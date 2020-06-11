@@ -4,6 +4,7 @@ using Heroes.Core.Orleans;
 using Heroes.Grains.Heroes;
 using Microsoft.Extensions.Logging;
 using Orleans.Providers;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Heroes.Grains.HeroCategories
@@ -13,8 +14,13 @@ namespace Heroes.Grains.HeroCategories
 		public HeroCategory Entity { get; set; }
 	}
 
+	[DebuggerDisplay("{DebuggerDisplay,nq}")]
 	public struct HeroCategoryKeyData
 	{
+		private string DebuggerDisplay => $"Tenant: '{Tenant}', Key: '{Key}'";
+
+		public static string Template = "tenant/{tenant}/{key}";
+
 		public string Tenant { get; set; }
 		public string Key { get; set; }
 	}
@@ -37,11 +43,7 @@ namespace Heroes.Grains.HeroCategories
 		public override async Task OnActivateAsync()
 		{
 			await base.OnActivateAsync();
-
-			// todo: use key data
-			var keySplit = PrimaryKey.Split('/');
-			_keyData.Tenant = keySplit[1];
-			_keyData.Key = keySplit[2];
+			_keyData = this.ParseKey<HeroCategoryKeyData>(HeroCategoryKeyData.Template);
 
 			if (State.Entity == null)
 			{
