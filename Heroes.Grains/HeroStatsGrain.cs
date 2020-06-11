@@ -12,6 +12,7 @@ namespace Heroes.Grains
 		public HeroStats HeroStats { get; set; }
 	}
 
+	// todo: rewrite if its used
 	public class HeroStatsGrain : Grain<HeroStatsState>, IHeroStatsGrain
 	{
 		private const string Source = nameof(HeroStatsGrain);

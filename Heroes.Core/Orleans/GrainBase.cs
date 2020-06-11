@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Heroes.Core.Utils;
+using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Concurrency;
 using System.Threading.Tasks;
@@ -34,24 +35,24 @@ namespace Heroes.Core.Orleans
 		Task Activate();
 	}
 
-	///// <summary>
-	///// Extensions which applies to both Odin Grains, <see cref="AppGrain"/> and <see cref="AppGrain{TState}"/>.
-	///// </summary>
-	//public static class AppGrainExtensions
-	//{
-	//	private static readonly StringTokenParserFactory StringTokenParserFactory = new StringTokenParserFactory();
+	/// <summary>
+	/// Extensions which applies to both Odin Grains, <see cref="AppGrain"/> and <see cref="AppGrain{TState}"/>.
+	/// </summary>
+	public static class AppGrainExtensions
+	{
+		private static readonly StringTokenParserFactory StringTokenParserFactory = new StringTokenParserFactory();
 
-	//	/// <summary>
-	//	/// Parses template key string into an object.
-	//	/// </summary>
-	//	/// <typeparam name="T">Type to cast key data to.</typeparam>
-	//	/// <param name="grain"></param>
-	//	/// <param name="template">Template pattern to parse e.g. '{brand}/{locale}/{id}'</param>
-	//	/// <returns></returns>
-	//	public static T ParseKey<T>(this IAppGrain grain, string template) where T : new()
-	//		=> StringTokenParserFactory.Get(template)
-	//		.Parse<T>(grain.PrimaryKey);
-	//}
+		/// <summary>
+		/// Parses template key string into an object.
+		/// </summary>
+		/// <typeparam name="T">Type to cast key data to.</typeparam>
+		/// <param name="grain"></param>
+		/// <param name="template">Template pattern to parse e.g. '{brand}/{locale}/{id}'</param>
+		/// <returns></returns>
+		public static T ParseKey<T>(this IAppGrain grain, string template) where T : new()
+			=> StringTokenParserFactory.Get(template)
+			.Parse<T>(grain.PrimaryKey);
+	}
 
 	public abstract class AppGrain<TState> : Grain<TState>, IAppGrain
 		where TState : new()

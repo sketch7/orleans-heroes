@@ -38,11 +38,11 @@ namespace Heroes.Server.Infrastructure
 
 	public static class SiloBuilderExtensions
 	{
-		private static StorageProviderType DefaultProviderType;
+		private static StorageProviderType _defaultProviderType;
 
 		public static ISiloBuilder UseAppConfiguration(this ISiloBuilder siloHost, AppSiloBuilderContext context)
 		{
-			DefaultProviderType = context.SiloOptions.StorageProviderType ?? StorageProviderType.Memory;
+			_defaultProviderType = context.SiloOptions.StorageProviderType ?? StorageProviderType.Memory;
 
 			var appInfo = context.AppInfo;
 			siloHost
@@ -93,7 +93,7 @@ namespace Heroes.Server.Infrastructure
 		public static ISiloBuilder UseStorage(this ISiloBuilder siloBuilder, string storeProviderName, IAppInfo appInfo, StorageProviderType? storageProvider = null, string storeName = null)
 		{
 			storeName = storeName.IfNullOrEmptyReturn(storeProviderName);
-			storageProvider = storageProvider ?? DefaultProviderType;
+			storageProvider ??= _defaultProviderType;
 
 			switch (storageProvider)
 			{
