@@ -28,6 +28,7 @@ export class HeroLayoutContainer implements OnDestroy {
 			switchMap(() => hubClient.addToGroup$("lol/hero")),
 		).subscribe();
 
+		// todo: move to state?
 		hubClient.heroChanged$().pipe(
 			// tap(x => console.warn(">>>> hero changed", x)),
 			bufferTime(500),
