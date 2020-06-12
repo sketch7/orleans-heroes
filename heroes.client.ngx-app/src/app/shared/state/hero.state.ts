@@ -144,17 +144,8 @@ export class HeroState {
 		);
 	}
 
-	@Action(HeroActions.Add)
+	@Action([HeroActions.Add, HeroActions.Update])
 	add(ctx: StateContext<HeroStateModel>, { payload: hero }: HeroActions.Add) {
-		const state = ctx.getState();
-
-		ctx.patchState({
-			entities: { ...state.entities, [hero.id]: hero }
-		});
-	}
-
-	@Action(HeroActions.Update)
-	update(ctx: StateContext<HeroStateModel>, { payload: hero }: HeroActions.Update) {
 		const state = ctx.getState();
 
 		ctx.patchState({
