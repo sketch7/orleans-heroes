@@ -34,7 +34,6 @@ namespace Heroes.Grains.HeroCategories
 		public HeroCategoryGrain(
 			ILogger<HeroGrain> logger,
 			IHeroDataClient heroDataClient
-
 		) : base(logger)
 		{
 			_heroDataClient = heroDataClient;
