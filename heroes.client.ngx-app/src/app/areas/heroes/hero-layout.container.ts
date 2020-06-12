@@ -4,8 +4,7 @@ import { tap, takeUntil, mergeMap, switchMap, bufferTime, filter } from "rxjs/op
 import { Component, OnDestroy, ChangeDetectorRef } from "@angular/core";
 import { Store } from "@ngxs/store";
 
-import { HeroActions, HeroState, Hero, HeroCategory, HeroHubClient } from "../../shared";
-import { HeroCategoryState } from "app/shared/state/hero-category.state";
+import { HeroActions, HeroState, Hero, HeroCategory, HeroHubClient, HeroCategoryState } from "../../shared";
 
 @Component({
 	selector: "app-hero-layout-container",
