@@ -25,13 +25,14 @@ export class SignalrComponent implements OnInit, OnDestroy {
 	signalrVersion = VERSION;
 
 	availableGroups: Group[] = [
-		{ id: "hero:all", name: "All" },
-		{ id: "hero:singed", name: "Singed" },
-		{ id: "hero:kha-zix", name: "Kha Zix" },
-		{ id: "hero:malthael", name: "Malthael" },
-		{ id: "hero:johanna", name: "Johanna" },
-		{ id: "hero:keal-thas", name: "Keal-thas" },
-		{ id: "hero:alexstrasza", name: "Alexstrasza" },
+		{ id: "lol/hero", name: "All LoL" },
+		{ id: "hots/hero", name: "All HoTS" },
+		{ id: "lol/hero/singed", name: "Singed" },
+		{ id: "lol/hero/kha-zix", name: "Kha Zix" },
+		{ id: "hots/hero/malthael", name: "Malthael" },
+		{ id: "hots/hero/johanna", name: "Johanna" },
+		{ id: "hots/hero/keal-thas", name: "Keal-thas" },
+		{ id: "hots/hero/alexstrasza", name: "Alexstrasza" },
 	];
 	selectedGroupId = this.availableGroups[0].id;
 

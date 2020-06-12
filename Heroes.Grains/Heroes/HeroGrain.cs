@@ -60,8 +60,8 @@ namespace Heroes.Grains.Heroes
 				await Set(entity);
 			}
 
-			var hubGroup = _hubContext.Group($"hero:{_keyData.Id}");
-			var hubAllGroup = _hubContext.Group($"hero:all");
+			var hubGroup = _hubContext.Group($"{_keyData.Tenant}/hero/{_keyData.Id}");
+			var hubAllGroup = _hubContext.Group($"{_keyData.Tenant}/hero"); // all
 
 			var streamProvider = GetStreamProvider(Constants.STREAM_PROVIDER);
 			var stream = streamProvider.GetStream<Hero>(StreamConstants.HeroStream, $"hero:{_keyData.Id}");

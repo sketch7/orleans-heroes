@@ -7,6 +7,7 @@ import { Dictionary } from "@ssv/core";
 import { arrayToObject } from "../utils";
 import { HeroService } from "./hero.service";
 import { HeroCategory } from "./hero-category.model";
+import { HeroState, HeroStateModel } from "./hero.state";
 
 export namespace HeroCategoryActions {
 
@@ -39,9 +40,25 @@ export class HeroCategoryState {
 		return state.entities;
 	}
 
-	@Selector()
-	static getEntityList(state: HeroCategoryStateModel): HeroCategory[] {
-		return _.values(state.entities);
+	@Selector([HeroCategoryState, HeroState])
+	static getEntityList(state: HeroCategoryStateModel, heroState: HeroStateModel): HeroCategory[] | undefined {
+		if (_.isEmpty(heroState.entities)) {
+			return undefined;
+		}
+
+		const categories = _.values(state.entities);
+		return categories.reduce((cats, heroCategory) => {
+			if (!heroCategory.heroes) {
+				return cats;
+			}
+
+			const detailCategory: HeroCategory = {
+				...heroCategory,
+				heroes: heroCategory.heroes.map(hero => HeroState.getByKey(hero!.id)(heroState))
+			};
+			cats.push(detailCategory);
+			return cats;
+		}, [] as HeroCategory[]);
 	}
 
 	static getByKey(key: string) {
