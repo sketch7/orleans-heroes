@@ -1,10 +1,9 @@
-import * as _ from "lodash";
 import { Injectable } from "@angular/core";
 import { tap } from "rxjs/operators";
 import { State, StateContext, Action, Selector, createSelector } from "@ngxs/store";
 import { Dictionary } from "@ssv/core";
 
-import { arrayToObject } from "../utils";
+import { arrayToObject, join } from "../utils";
 import { HeroService } from "./hero.service";
 import { HeroCategory } from "./hero-category.model";
 import { HeroState, HeroStateModel } from "./hero.state";
@@ -42,23 +41,7 @@ export class HeroCategoryState {
 
 	@Selector([HeroCategoryState, HeroState])
 	static getEntityList(state: HeroCategoryStateModel, heroState: HeroStateModel): HeroCategory[] | undefined {
-		if (_.isEmpty(heroState.entities)) {
-			return undefined;
-		}
-
-		const categories = _.values(state.entities);
-		return categories.reduce((cats, heroCategory) => {
-			if (!heroCategory.heroes) {
-				return cats;
-			}
-
-			const detailCategory: HeroCategory = {
-				...heroCategory,
-				heroes: heroCategory.heroes.map(hero => HeroState.getByKey(hero!.id)(heroState))
-			};
-			cats.push(detailCategory);
-			return cats;
-		}, [] as HeroCategory[]);
+		return join(state.entities, heroState.entities, category => category.heroes, hero => hero!.id, "heroes");
 	}
 
 	static getByKey(key: string) {
