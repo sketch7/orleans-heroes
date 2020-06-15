@@ -50,7 +50,7 @@ namespace Heroes.Grains.HeroCategories
 		private async Task FetchFromRemote()
 		{
 			var heroCategories = await _heroDataClient.GetAllHeroCategory();
-			await Set(heroCategories.Select(x => x.Key).ToList());
+			await Set(heroCategories.Select(x => x.Id).ToList());
 		}
 	}
 }

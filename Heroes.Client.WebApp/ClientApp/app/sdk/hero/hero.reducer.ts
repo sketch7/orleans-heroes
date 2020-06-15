@@ -12,11 +12,11 @@ export function heroReducer(state: HeroState = INITIAL_STATE, action: Action): H
 
 		case HERO_ACTION_TYPE.getSuccess: {
 			const response: ActionPayload<Hero> = action as ActionPayload<Hero>;
-			return updateMapState<HeroState, Hero>(response.payload.key, state, response.payload);
+			return updateMapState<HeroState, Hero>(response.payload.id, state, response.payload);
 		}
 		case HERO_ACTION_TYPE.getAllSuccess: {
 			const response: ActionPayload<Hero[]> = action as ActionPayload<Hero[]>;
-			return updateAllMapState<HeroState, Hero>(state, response.payload, "key");
+			return updateAllMapState<HeroState, Hero>(state, response.payload, "id");
 		}
 	}
 

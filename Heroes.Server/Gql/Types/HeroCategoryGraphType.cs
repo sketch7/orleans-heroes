@@ -13,7 +13,7 @@ namespace Heroes.Server.Gql.Types
 			Name = "HeroCategory";
 			Description = "A Hero category grouping.";
 
-			Field(x => x.Key).Name("id").Description("Hero category unique key.");
+			Field(x => x.Id).Description("Hero category unique key.");
 			Field(x => x.Title).Description("Hero Category title.");
 			Field<ListGraphType<HeroGraphType>>("heroes", resolve: ctx => heroGrainClient.GetAllByRefs(ctx.Source.Heroes), description: "Heroes in category.");
 		}

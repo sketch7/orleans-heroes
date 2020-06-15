@@ -16,9 +16,9 @@ namespace Heroes.Contracts.Heroes
 	[DebuggerDisplay("{DebuggerDisplay,nq}")]
 	public class Hero
 	{
-		protected string DebuggerDisplay => $"Key: '{Key}', Name: '{Name}', Role: {Role}, Health: {Health}, Popularity: {Popularity}";
+		protected string DebuggerDisplay => $"Id: '{Id}', Name: '{Name}', Role: {Role}, Health: {Health}, Popularity: {Popularity}";
 
-		public string Key { get; set; }
+		public string Id { get; set; }
 		public string Name { get; set; }
 		public int Health { get; set; }
 		public int Popularity { get; set; }

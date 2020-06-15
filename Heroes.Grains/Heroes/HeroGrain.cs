@@ -21,12 +21,12 @@ namespace Heroes.Grains.Heroes
 	[DebuggerDisplay("{DebuggerDisplay,nq}")]
 	public struct HeroKeyData
 	{
-		private string DebuggerDisplay => $"Tenant: '{Tenant}', Key: '{Key}'";
+		private string DebuggerDisplay => $"Tenant: '{Tenant}', Id: '{Id}'";
 
-		public static string Template = "tenant/{tenant}/{key}";
+		public static string Template = "tenant/{tenant}/{id}";
 
 		public string Tenant { get; set; }
-		public string Key { get; set; }
+		public string Id { get; set; }
 	}
 
 	[StorageProvider(ProviderName = OrleansConstants.GrainMemoryStorage)]
@@ -52,7 +52,7 @@ namespace Heroes.Grains.Heroes
 
 			if (State.Entity == null)
 			{
-				var entity = await _heroDataClient.GetByKey(_keyData.Key);
+				var entity = await _heroDataClient.GetByKey(_keyData.Id);
 
 				if (entity == null)
 					return;
@@ -60,11 +60,11 @@ namespace Heroes.Grains.Heroes
 				await Set(entity);
 			}
 
-			var hubGroup = _hubContext.Group($"hero:{_keyData.Key}");
-			var hubAllGroup = _hubContext.Group($"hero:all");
+			var hubGroup = _hubContext.Group($"{_keyData.Tenant}/hero/{_keyData.Id}");
+			var hubAllGroup = _hubContext.Group($"{_keyData.Tenant}/hero"); // all
 
 			var streamProvider = GetStreamProvider(Constants.STREAM_PROVIDER);
-			var stream = streamProvider.GetStream<Hero>(StreamConstants.HeroStream, $"hero:{_keyData.Key}");
+			var stream = streamProvider.GetStream<Hero>(StreamConstants.HeroStream, $"hero:{_keyData.Id}");
 
 			RegisterTimer(async x =>
 			{

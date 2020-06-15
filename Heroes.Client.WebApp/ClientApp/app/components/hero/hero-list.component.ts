@@ -12,7 +12,7 @@ import { AppState } from "../../core/app.state";
 })
 export class HeroListComponent implements OnInit {
 
-	heroes$: Observable<Hero[]>;
+	heroes$!: Observable<Hero[]>;
 
 	constructor(
 		private store: NgRedux<AppState>,
@@ -28,7 +28,7 @@ export class HeroListComponent implements OnInit {
 	}
 
 	trackByHero(_index: number, hero: Hero): string {
-		return hero.key;
+		return hero.id;
 	}
 
 }

@@ -20,6 +20,24 @@ export namespace HeroActions {
 		}
 	}
 
+	export class Update {
+		static readonly type = "[Hero] Update";
+
+		constructor(
+			public payload: Hero
+		) {
+		}
+	}
+
+	export class UpdateAll {
+		static readonly type = "[Hero] UpdateAll";
+
+		constructor(
+			public payload: Hero[]
+		) {
+		}
+	}
+
 	export class Load {
 		static readonly type = "[Hero] Load";
 	}
@@ -126,12 +144,21 @@ export class HeroState {
 		);
 	}
 
-	@Action(HeroActions.Add)
+	@Action([HeroActions.Add, HeroActions.Update])
 	add(ctx: StateContext<HeroStateModel>, { payload: hero }: HeroActions.Add) {
 		const state = ctx.getState();
 
 		ctx.patchState({
-			entities: { ...state.entities, [hero.key]: hero }
+			entities: { ...state.entities, [hero.id]: hero }
+		});
+	}
+
+	@Action(HeroActions.UpdateAll)
+	updateAll(ctx: StateContext<HeroStateModel>, { payload: heroes }: HeroActions.UpdateAll) {
+		const state = ctx.getState();
+
+		ctx.patchState({
+			entities: { ...state.entities, ...arrayToObject(heroes) }
 		});
 	}
 

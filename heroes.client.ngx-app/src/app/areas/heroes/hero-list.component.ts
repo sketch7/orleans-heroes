@@ -12,7 +12,7 @@ export class HeroListComponent {
 	@Input() heroes: Hero[] | undefined;
 
 	trackByHero(_index: number, hero: Hero): string {
-		return hero.key;
+		return hero.id;
 	}
 
 }

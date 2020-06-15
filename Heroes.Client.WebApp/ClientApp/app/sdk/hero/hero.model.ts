@@ -4,7 +4,7 @@ export interface HeroState extends Dictionary<Hero> {
 }
 
 export interface Hero {
-	key: string;
+	id: string;
 	name: string;
 	role: HeroRoleType;
 	abilities: string[];

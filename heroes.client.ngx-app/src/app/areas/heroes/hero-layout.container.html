@@ -10,3 +10,13 @@
 	<h3 class="hero-layout__header">Recently viewed</h3>
 	<app-hero-list [heroes]="recentViewedHeroes"></app-hero-list>
 </aside>
+
+<h2>Hero Categories</h2>
+
+<ng-container *ngFor="let heroCategory of heroCategories">
+	<aside *ngIf="heroCategories?.length"
+		class="hero-layout__category">
+		<h3 class="hero-layout__header">{{heroCategory.title}}</h3>
+		<app-hero-list [heroes]="heroCategory.heroes"></app-hero-list>
+	</aside>
+</ng-container>

@@ -59,11 +59,11 @@ namespace Heroes.Grains
 		private readonly ILogger<MockHotsHeroDataClient> _logger;
 		private readonly List<Hero> _data = new List<Hero>
 		{
-			new Hero {Name = "Maiev", Key = "maiev", Role = HeroRoleType.Assassin, Abilities = new HashSet<string> { "savagery", "battle-roar", "bola-strike", "thrill-of-the-hunt"}},
-			new Hero {Name = "Alexstrasza", Key = "alexstrasza", Role = HeroRoleType.Support, Abilities = new HashSet<string> { "taste-their-fear", "void-spike", "leap", "void-assault"}},
-			new Hero {Name = "Malthael", Key = "malthael", Role = HeroRoleType.Assassin, Abilities = new HashSet<string> { "poison-trail", "mega-adhesive", "fling", "insanity-potion"}},
-			new Hero {Name = "Johanna", Key = "johanna", Role = HeroRoleType.Tank, Abilities = new HashSet<string> { "poison-trail", "mega-adhesive", "fling", "insanity-potion"}},
-			new Hero {Name = "Kael'Thas", Key = "keal-thas", Role = HeroRoleType.Assassin, Abilities = new HashSet<string> { "poison-trail", "mega-adhesive", "fling", "insanity-potion"}},
+			new Hero {Name = "Maiev", Id = "maiev", Role = HeroRoleType.Assassin, Abilities = new HashSet<string> { "savagery", "battle-roar", "bola-strike", "thrill-of-the-hunt"}},
+			new Hero {Name = "Alexstrasza", Id = "alexstrasza", Role = HeroRoleType.Support, Abilities = new HashSet<string> { "taste-their-fear", "void-spike", "leap", "void-assault"}},
+			new Hero {Name = "Malthael", Id = "malthael", Role = HeroRoleType.Assassin, Abilities = new HashSet<string> { "poison-trail", "mega-adhesive", "fling", "insanity-potion"}},
+			new Hero {Name = "Johanna", Id = "johanna", Role = HeroRoleType.Tank, Abilities = new HashSet<string> { "poison-trail", "mega-adhesive", "fling", "insanity-potion"}},
+			new Hero {Name = "Kael'Thas", Id = "keal-thas", Role = HeroRoleType.Assassin, Abilities = new HashSet<string> { "poison-trail", "mega-adhesive", "fling", "insanity-potion"}},
 		};
 
 		public Guid InstanceId { get; } = Guid.NewGuid();
@@ -85,7 +85,7 @@ namespace Heroes.Grains
 		public Task<Hero> GetByKey(string key)
 		{
 			_logger.Debug($"[{nameof(GetByKey)}] Fetching key: {key} from mock service", key);
-			return Task.FromResult(_data.FirstOrDefault(x => x.Key == key));
+			return Task.FromResult(_data.FirstOrDefault(x => x.Id == key));
 		}
 	}
 }

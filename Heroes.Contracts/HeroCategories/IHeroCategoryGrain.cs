@@ -14,9 +14,9 @@ namespace Heroes.Contracts.HeroCategories
 	[DebuggerDisplay("{DebuggerDisplay,nq}")]
 	public class HeroCategory
 	{
-		protected string DebuggerDisplay => $"Key: '{Key}', Title: '{Title}'";
+		protected string DebuggerDisplay => $"Id: '{Id}', Title: '{Title}'";
 
-		public string Key { get; set; }
+		public string Id { get; set; }
 		public string Title { get; set; }
 		public IList<string> Heroes { get; set; }
 	}
