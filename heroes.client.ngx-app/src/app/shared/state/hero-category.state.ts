@@ -56,6 +56,9 @@ export class HeroCategoryState {
 	get(ctx: StateContext<HeroCategoryStateModel>) {
 		return this.service.getAllHeroCategories().pipe(
 			tap(x => ctx.patchState({ entities: arrayToObject(x || []) })),
+			// map(categories => _.uniq(_.flatMap(categories, x => x.heroes))),
+			// tap(x => console.warn(">>>> heeeros", x)),
+			// tap(x => ctx.dispatch(new HeroActions.UpdateAll(x)))
 		);
 	}
 

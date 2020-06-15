@@ -104,6 +104,7 @@ export class HeroService {
 				...HeroCategory
 				heroes {
 					id
+					# ...HeroDetail
 				}
 			}
 		}
