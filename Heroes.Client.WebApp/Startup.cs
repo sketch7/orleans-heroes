@@ -22,6 +22,8 @@ namespace Heroes_Client_WebApp
 			//	options.LaunchWithDebugging = true;
 			//	options.DebuggingPort = 9229;
 			//});
+
+			// todo: check if need to be deleted
 			services.AddMvc();
 		}
 
