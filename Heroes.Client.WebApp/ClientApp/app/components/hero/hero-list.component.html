@@ -1,6 +1,0 @@
-<h1>Heroes</h1>
-<div>
-	<a *ngFor="let hero of (heroes$ | async); trackBy: trackByHero" [routerLink]="['/heroes', hero.id]">
-		{{hero.name}}
-	</a>
-</div>
