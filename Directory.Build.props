@@ -31,11 +31,11 @@
   <!-- Shared Package Versions -->
   <PropertyGroup>
     <!-- vendors -->
-    <OrleansVersion>2.4.4</OrleansVersion>
-    <SignalROrleansVersion>1.0.0-rc8</SignalROrleansVersion>
-    <!-- <SignalROrleansVersion>link</SignalROrleansVersion> -->
+    <OrleansVersion>3.2.0</OrleansVersion>
+     <SignalROrleansVersion>2.0.0-rc4</SignalROrleansVersion> 
+    <!--<SignalROrleansVersion>link</SignalROrleansVersion>-->
 
-    <MicrosoftExtensionsVersion>2.2.0</MicrosoftExtensionsVersion>
+    <MicrosoftExtensionsVersion>3.1.4</MicrosoftExtensionsVersion>
     <NewtonsoftJsonVersion>12.0.1</NewtonsoftJsonVersion>
   </PropertyGroup>
 </Project>
