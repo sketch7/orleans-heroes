@@ -8,11 +8,27 @@ import { ApolloBase } from "apollo-angular";
 import { AppApolloClient } from "../gql/apollo.client";
 import { AppGqlQuerySchema } from "../gql/gql.schema";
 import { HeroRoleType, Hero } from "./hero.model";
-
 @Injectable({
 	providedIn: "root"
 })
 export class HeroService {
+
+	fragments = {
+		heroDetail: (includeAbilities = true) => gql`
+			fragment HeroDetail on Hero {
+				id
+				name
+				role
+				abilities @include(if: ${includeAbilities})
+			}
+		`,
+		heroCategory: () => gql`
+			fragment HeroCategory on HeroCategory {
+				id
+				title
+			}
+		`,
+	};
 
 	private apollo: ApolloBase;
 	private list: Hero[] = [
@@ -58,19 +74,17 @@ export class HeroService {
 
 	// getAllHttp(): Observable<Hero[]> {
 	// 	return this.http.get<Hero[]>("http://localhost:62551/api/heroes")
-	// 		.do(x => console.log("HeroService :: http response", x));
 	// }
 
 	getAll(roleType?: HeroRoleType): Observable<Hero[] | undefined> {
 		console.log("HeroService :: getAll");
 		const query = gql`query getAllHeroes($role: HeroRole) {
 			heroes (role: $role) {
-				id
-				name
-				role
-				abilities
+				...HeroDetail
 			}
-		}`;
+		}
+		${this.fragments.heroDetail()}
+		`;
 
 		return this.apollo.query<AppGqlQuerySchema>({
 			query,
@@ -87,13 +101,14 @@ export class HeroService {
 		console.log("HeroService :: getAllHeroCategories");
 		const query = gql`query getAllHeroCategories {
 			heroCategories {
-				id
-				title
+				...HeroCategory
 				heroes {
 					id
 				}
 			}
-		}`;
+		}
+		${this.fragments.heroCategory()}
+		`;
 
 		return this.apollo.query<AppGqlQuerySchema>({
 			query,

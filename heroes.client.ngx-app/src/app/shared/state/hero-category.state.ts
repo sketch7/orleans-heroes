@@ -7,14 +7,7 @@ import { arrayToObject, join } from "../utils";
 import { HeroService } from "./hero.service";
 import { HeroCategory } from "./hero-category.model";
 import { HeroState, HeroStateModel } from "./hero.state";
-
-export namespace HeroCategoryActions {
-
-	export class Load {
-		static readonly type = "[Hero] Load";
-	}
-
-}
+import { HeroCategoryActions } from "./hero-category.action";
 
 export interface HeroCategoryStateModel {
 	entities: Dictionary<HeroCategory>;
