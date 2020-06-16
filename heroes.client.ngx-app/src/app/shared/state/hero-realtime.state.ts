@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 import { Injectable } from "@angular/core";
 import { switchMap, bufferTime, filter, mergeMap, tap, distinctUntilChanged, map, takeUntil } from "rxjs/operators";
-import { State, StateContext, Action, Selector, Store, Actions, ofActionSuccessful } from "@ngxs/store";
+import { State, StateContext, Action, Selector, Store, Actions, ofActionSuccessful, getActionTypeFromInstance } from "@ngxs/store";
 import { ConnectionStatus } from "@ssv/signalr-client";
 
 import { HeroHubClient } from "../real-time/hero.hubclient";
@@ -42,6 +42,13 @@ export class HeroRealtimeState {
 		).subscribe(status => store.dispatch(new HeroRealtimeActions.SetStatus(status)));
 
 		actions$.pipe(
+			ofActionSuccessful(HeroRealtimeActions.SetStatus),
+			map(x => x as HeroRealtimeActions.SetStatus),
+			filter(action => action.status === ConnectionStatus.connected),
+			switchMap(() => this.hubClient.addToGroup$("lol/hero")),
+		).subscribe();
+
+		actions$.pipe(
 			ofActionSuccessful(HeroRealtimeActions.Connect),
 			switchMap(() => this.hubClient.heroChanged$().pipe(
 				// tap(x => console.warn(">>>> hero changed", x)),
@@ -57,7 +64,6 @@ export class HeroRealtimeState {
 	@Action(HeroRealtimeActions.Connect)
 	connect(ctx: StateContext<HeroRealtimeStateModel>) {
 		return this.hubClient.get().connect().pipe(
-			switchMap(() => this.hubClient.addToGroup$("lol/hero")),
 			tap(() => ctx.patchState({ connected: true })),
 		);
 	}
