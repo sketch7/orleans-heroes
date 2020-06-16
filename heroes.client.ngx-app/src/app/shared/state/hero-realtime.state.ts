@@ -1,12 +1,12 @@
 import * as _ from "lodash";
 import { Injectable } from "@angular/core";
-import { switchMap, bufferTime, filter, mergeMap, tap, distinctUntilChanged, map } from "rxjs/operators";
-import { State, StateContext, Action, Selector, Store } from "@ngxs/store";
+import { switchMap, bufferTime, filter, mergeMap, tap, distinctUntilChanged, map, takeUntil } from "rxjs/operators";
+import { State, StateContext, Action, Selector, Store, Actions, ofActionSuccessful } from "@ngxs/store";
+import { ConnectionStatus } from "@ssv/signalr-client";
 
 import { HeroHubClient } from "../real-time/hero.hubclient";
 import { HeroRealtimeActions } from "./hero-realtime.action";
 import { HeroActions } from "./hero.action";
-import { ConnectionStatus } from "@ssv/signalr-client";
 
 export interface HeroRealtimeStateModel {
 	/** Determines whether the connection should be connected or not. (desired) */
@@ -33,12 +33,25 @@ export class HeroRealtimeState {
 
 	constructor(
 		store: Store,
+		actions$: Actions,
 		private hubClient: HeroHubClient,
 	) {
 		hubClient.get().connectionState$.pipe(
 			map(x => x.status),
 			distinctUntilChanged(),
 		).subscribe(status => store.dispatch(new HeroRealtimeActions.SetStatus(status)));
+
+		actions$.pipe(
+			ofActionSuccessful(HeroRealtimeActions.Connect),
+			switchMap(() => this.hubClient.heroChanged$().pipe(
+				// tap(x => console.warn(">>>> hero changed", x)),
+				bufferTime(1000),
+				filter(x => !_.isEmpty(x)),
+				mergeMap(heroes => store.dispatch(new HeroActions.UpdateAll(heroes))),
+				takeUntil(actions$.pipe(ofActionSuccessful(HeroRealtimeActions.Disconnect))),
+				// mergeMap(hero => store.dispatch(new HeroActions.Update(hero))),
+			)),
+		).subscribe();
 	}
 
 	@Action(HeroRealtimeActions.Connect)
@@ -59,18 +72,6 @@ export class HeroRealtimeState {
 	@Action(HeroRealtimeActions.SetStatus)
 	setStatus(ctx: StateContext<HeroRealtimeStateModel>, { status }: HeroRealtimeActions.SetStatus) {
 		ctx.patchState({ status });
-	}
-
-	@Action(HeroRealtimeActions.Connect)
-	heroChanged(ctx: StateContext<HeroRealtimeStateModel>) {
-		// todo: imp https://stackoverflow.com/questions/62394853/ngxs-continuous-triggered-effects
-		return this.hubClient.heroChanged$().pipe(
-			// tap(x => console.warn(">>>> hero changed", x)),
-			bufferTime(1000),
-			filter(x => !_.isEmpty(x)),
-			mergeMap(heroes => ctx.dispatch(new HeroActions.UpdateAll(heroes))),
-			// mergeMap(hero => store.dispatch(new HeroActions.Update(hero))),
-		);
 	}
 
 }
