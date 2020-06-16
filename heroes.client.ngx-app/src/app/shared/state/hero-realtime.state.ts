@@ -1,7 +1,7 @@
 import * as _ from "lodash";
-import { Injectable } from "@angular/core";
 import { switchMap, bufferTime, filter, mergeMap, tap, distinctUntilChanged, map, takeUntil } from "rxjs/operators";
-import { State, StateContext, Action, Selector, Store, Actions, ofActionSuccessful, getActionTypeFromInstance } from "@ngxs/store";
+import { Injectable } from "@angular/core";
+import { State, StateContext, Action, Selector, Store, Actions, ofActionSuccessful } from "@ngxs/store";
 import { ConnectionStatus } from "@ssv/signalr-client";
 
 import { HeroHubClient } from "../real-time/hero.hubclient";
