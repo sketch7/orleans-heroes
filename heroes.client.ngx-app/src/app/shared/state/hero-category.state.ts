@@ -7,14 +7,7 @@ import { arrayToObject, join } from "../utils";
 import { HeroService } from "./hero.service";
 import { HeroCategory } from "./hero-category.model";
 import { HeroState, HeroStateModel } from "./hero.state";
-
-export namespace HeroCategoryActions {
-
-	export class Load {
-		static readonly type = "[Hero] Load";
-	}
-
-}
+import { HeroCategoryActions } from "./hero-category.action";
 
 export interface HeroCategoryStateModel {
 	entities: Dictionary<HeroCategory>;
@@ -63,6 +56,9 @@ export class HeroCategoryState {
 	get(ctx: StateContext<HeroCategoryStateModel>) {
 		return this.service.getAllHeroCategories().pipe(
 			tap(x => ctx.patchState({ entities: arrayToObject(x || []) })),
+			// map(categories => _.uniq(_.flatMap(categories, x => x.heroes))),
+			// tap(x => console.warn(">>>> heeeros", x)),
+			// tap(x => ctx.dispatch(new HeroActions.UpdateAll(x)))
 		);
 	}
 

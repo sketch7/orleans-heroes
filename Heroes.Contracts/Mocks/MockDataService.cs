@@ -25,7 +25,7 @@ namespace Heroes.Contracts.Mocks
 		private static readonly List<HeroCategory> HeroCategories = new List<HeroCategory>
 		{
 			new HeroCategory { Id = "featured", Title = "Featured", Heroes = new List<string> { "kha-zix", "aatrox" } },
-			new HeroCategory { Id = "recommended", Title = "Recommended", Heroes = new List<string> { "garen","ryze" } },
+			new HeroCategory { Id = "recommended", Title = "Recommended", Heroes = new List<string> { "garen","ryze", "aatrox" } },
 		};
 
 		public static List<Hero> GetHeroes()

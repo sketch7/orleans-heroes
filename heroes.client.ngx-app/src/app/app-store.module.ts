@@ -5,11 +5,11 @@ import { NgxsLoggerPluginModule } from "@ngxs/logger-plugin";
 import { NgxsStoragePluginModule } from "@ngxs/storage-plugin";
 
 import { environment } from "../environments/environment";
-import { HeroState, HeroCategoryState } from "./shared";
+import { HERO_STATE } from "./shared";
 
 @NgModule({
 	imports: [
-		NgxsModule.forRoot([HeroState, HeroCategoryState], {
+		NgxsModule.forRoot([...HERO_STATE], {
 			developmentMode: !environment.production,
 			selectorOptions: {
 				injectContainerState: false,

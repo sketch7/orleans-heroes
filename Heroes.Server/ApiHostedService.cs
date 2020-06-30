@@ -1,6 +1,7 @@
 ﻿using Grace.AspNetCore.Hosting;
 using Grace.DependencyInjection;
 using Heroes.Core;
+using Heroes.Core.Hosting;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orleans;
 using Serilog;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
@@ -42,6 +44,7 @@ namespace Heroes.Server
 			_logger = logger;
 			logger.LogInformation("Initializing api {appName} ({version}) [{env}] on port {apiPort}...",
 				appInfo.Name, appInfo.Version, appInfo.Environment, options.Value.Port);
+			ConsoleTitleBuilder.Append(() => $"(Api port: {options.Value.Port} | pid: {Process.GetCurrentProcess().Id})");
 
 			_host = WebHost.CreateDefaultBuilder()
 				.UseGrace(new InjectionScopeConfiguration
@@ -67,11 +70,12 @@ namespace Heroes.Server
 				.Build();
 		}
 
-		public Task StartAsync(CancellationToken cancellationToken)
+		public async Task StartAsync(CancellationToken cancellationToken)
 		{
 			_logger.LogInformation("App started successfully {appName} ({version}) [{env}]",
 				_appInfo.Name, _appInfo.Version, _appInfo.Environment);
-			return _host.StartAsync(cancellationToken);
+			await _host.StartAsync(cancellationToken);
+			ConsoleTitleBuilder.Append("- Api status: running 🚀");
 		}
 
 		public Task StopAsync(CancellationToken cancellationToken) => _host.StopAsync(cancellationToken);

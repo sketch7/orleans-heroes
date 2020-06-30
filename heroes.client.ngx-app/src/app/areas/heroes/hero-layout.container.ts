@@ -1,10 +1,10 @@
 import * as _ from "lodash";
-import { Subject } from "rxjs";
-import { tap, takeUntil, mergeMap, switchMap, bufferTime, filter } from "rxjs/operators";
+import { Subject, Observable } from "rxjs";
+import { tap, takeUntil } from "rxjs/operators";
 import { Component, OnDestroy, ChangeDetectorRef } from "@angular/core";
 import { Store } from "@ngxs/store";
 
-import { HeroActions, HeroState, Hero, HeroCategory, HeroHubClient, HeroCategoryState } from "../../shared";
+import { HeroActions, HeroState, Hero, HeroCategory, HeroCategoryState, HeroCategoryActions, HeroRealtimeActions } from "../../shared";
 
 @Component({
 	selector: "app-hero-layout-container",
@@ -19,49 +19,49 @@ export class HeroLayoutContainer implements OnDestroy {
 	private readonly _destroy$ = new Subject<void>();
 
 	constructor(
-		store: Store,
-		hubClient: HeroHubClient,
 		cdr: ChangeDetectorRef,
+		private store: Store,
 	) {
-		hubClient.get().connect().pipe(
-			takeUntil(this._destroy$),
-			switchMap(() => hubClient.addToGroup$("lol/hero")),
-		).subscribe();
-
-		// todo: move to state?
-		hubClient.heroChanged$().pipe(
-			// tap(x => console.warn(">>>> hero changed", x)),
-			bufferTime(500),
-			filter(x => !_.isEmpty(x)),
-			mergeMap(heroes => store.dispatch(new HeroActions.UpdateAll(heroes))),
-			// mergeMap(hero => store.dispatch(new HeroActions.Update(hero))),
-			tap(() => cdr.markForCheck()),
-		).subscribe();
-
-		store.dispatch(new HeroActions.Load()).pipe(
+		const connect$ = store.dispatch(new HeroRealtimeActions.Connect()).pipe(
+			tap(x => console.debug(">>>> connected!", x)),
+			takeUntil(this._destroy$)
+		);
+		const heroLoad$ = store.dispatch(new HeroActions.Load()).pipe(
 			tap(x => console.debug(">>>> heroes loaded!", x)),
 			takeUntil(this._destroy$)
-		).subscribe();
+		);
 
-		store.select(HeroState.getPopular(3)).pipe(
+		const heroCategoryLoad$ = store.dispatch(new HeroCategoryActions.Load()).pipe(
+			tap(x => console.debug(">>>> hero cateogries loaded!", x)),
+			takeUntil(this._destroy$)
+		);
+
+		const popularHeroes$ = store.select(HeroState.getPopular(3)).pipe(
 			tap(heroes => this.popularHeroes = heroes),
+			tap(() => cdr.markForCheck()),
 			takeUntil(this._destroy$)
-		).subscribe();
+		);
 
-		store.select(HeroState.getRecentlyViewed).pipe(
+		const recentlyViewedHeroes$ = store.select(HeroState.getRecentlyViewed).pipe(
 			tap(heroes => this.recentViewedHeroes = heroes),
+			tap(() => cdr.markForCheck()),
 			takeUntil(this._destroy$)
-		).subscribe();
+		);
 
-		store.select(HeroCategoryState.getEntityList).pipe(
+		const heroCategories$ = store.select(HeroCategoryState.getEntityList).pipe(
 			tap(heroCategories => this.heroCategories = heroCategories),
+			tap(() => cdr.markForCheck()),
 			takeUntil(this._destroy$)
-		).subscribe();
+		);
+
+		[connect$, heroLoad$, heroCategoryLoad$, popularHeroes$, recentlyViewedHeroes$, heroCategories$]
+			.forEach((x: Observable<any>) => x.subscribe());
 	}
 
 	ngOnDestroy(): void {
 		this._destroy$.next();
 		this._destroy$.complete();
+		this.store.dispatch(new HeroRealtimeActions.Disconnect());
 	}
 
 }
