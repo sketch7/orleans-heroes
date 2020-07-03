@@ -1,0 +1,44 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "paths": {
+      "@angular/*": [
+        "./node_modules/@angular/*"
+      ],
+      "rxjs": [
+        "../node_modules/rxjs"
+      ],
+      "rxjs/*": [
+        "../node_modules/rxjs/*"
+      ],
+      // "@ssv/signalr-client":  ["../../../signalr-client/src/index.ts"]
+      // "@ssv/ngx.command": ["../../@ssv.ngx.command/src/index.ts"]
+    },
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
+    "declaration": false,
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "module": "es2020",
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "target": "es2015",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "lib": [
+      "es2018",
+      "dom",
+      "esnext.asynciterable"
+    ],
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "strict": true,
+  },
+  "angularCompilerOptions": {
+    "fullTemplateTypeCheck": true,
+    "strictInjectionParameters": true,
+    "disableTypeScriptVersionCheck": true
+  }
+}
