@@ -38,7 +38,7 @@ export class ProjectsComponent {
 			title: "angular skeleton app",
 			tag: "angular",
 			url: "https://github.com/sketch7/angular-skeleton-app",
-			description: "Angular 5.x navigation skeleton project with styling which get you started faster.",
+			description: "Angular 10.x navigation skeleton project with styling which get you started faster.",
 		},
 		{
 			key: "ng2-heroes",
