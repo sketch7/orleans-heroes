@@ -4,9 +4,9 @@
 ## Technologies
 
 ### Server
-- .NET Core 2.2
+- .NET Core 3.1
+- Microsoft Orleans 3.2
 - SignalR 2
-- Microsoft Orleans 2.4.4
 - GraphQL & GraphiQL
 
 ### Client
