@@ -6,6 +6,9 @@
     "node_modules/codelyzer"
   ],
   "rules": {
+    "deprecation": {
+      "severity": "warning"
+    },
     "import-blacklist": [
       true,
       "rxjs/Rx"

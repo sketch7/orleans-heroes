@@ -1,44 +1,17 @@
+/*
+  This is a "Solution Style" tsconfig.json file, and is used by editors and TypeScript’s language server to improve development experience.
+  It is not intended to be used to perform a compilation.
+
+  To learn more about this file see: https://angular.io/config/solution-tsconfig.
+*/
 {
-  "compileOnSave": false,
-  "compilerOptions": {
-    "baseUrl": "./src",
-    "paths": {
-      "@angular/*": [
-        "./node_modules/@angular/*"
-      ],
-      "rxjs": [
-        "../node_modules/rxjs"
-      ],
-      "rxjs/*": [
-        "../node_modules/rxjs/*"
-      ],
-      // "@ssv/signalr-client":  ["../../../signalr-client/src/index.ts"]
-      // "@ssv/ngx.command": ["../../@ssv.ngx.command/src/index.ts"]
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
     },
-    "outDir": "./dist/out-tsc",
-    "sourceMap": true,
-    "declaration": false,
-    "downlevelIteration": true,
-    "experimentalDecorators": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "importHelpers": true,
-    "target": "es2015",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "lib": [
-      "es2018",
-      "dom",
-      "esnext.asynciterable"
-    ],
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "strict": true,
-  },
-  "angularCompilerOptions": {
-    "fullTemplateTypeCheck": true,
-    "strictInjectionParameters": true,
-    "disableTypeScriptVersionCheck": true
-  }
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ]
 }

@@ -1,8 +1,8 @@
 # Angular Skeleton App
-Angular 8.x navigation skeleton project with styling which get you started faster.
+Angular 10.x navigation skeleton project with styling which get you started faster.
 
 ## What does it have?
- - Angular CLI 8.x template
+ - Angular CLI 10.x template
  - SCSS for styling
  - Font Awesome and Bootstrap 4.x (no javascript, just styles)
  - Navigation/layout
