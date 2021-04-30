@@ -13,7 +13,6 @@ namespace Heroes.Server.Gql
 			services.AddGraphQL(options =>
 				{
 					options.EnableMetrics = true;
-					options.ExposeExceptions = true;
 				})
 				.AddNewtonsoftJson() // or use AddSystemTextJson for .NET Core 3+
 				.AddUserContextBuilder(httpContext => new GraphQLUserContext { User = httpContext.User });

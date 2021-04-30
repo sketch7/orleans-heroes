@@ -4,14 +4,17 @@
 ## Technologies
 
 ### Server
-- .NET Core 3.1
-- Microsoft Orleans 3.2
-- SignalR 2
+- .NET Core 5.0
+- Microsoft Orleans 3.4.2
+- SignalR Core 5
+- [Microsoft Orleans SignalR Backplane by Sketch7 3.x](https://github.com/sketch7/SignalR.Orleans)
 - GraphQL & GraphiQL
 
 ### Client
 - Angular 10.x
 - TypeScript
+- [Sketch7 - Signalr Client 3.x](https://github.com/sketch7/signalr-client)
+
 *Based on https://github.com/sketch7/angular-skeleton-app*
 
 
