@@ -25,17 +25,18 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <!-- Shared Package Versions -->
   <PropertyGroup>
     <!-- vendors -->
-    <OrleansVersion>3.2.0</OrleansVersion>
-     <SignalROrleansVersion>2.0.0-rc5</SignalROrleansVersion> 
+    <OrleansVersion>3.4.2</OrleansVersion>
+     <SignalROrleansVersion>3.0.0-dev114</SignalROrleansVersion> 
     <!-- <SignalROrleansVersion>link</SignalROrleansVersion> -->
 
-    <MicrosoftExtensionsVersion>3.1.4</MicrosoftExtensionsVersion>
-    <NewtonsoftJsonVersion>12.0.1</NewtonsoftJsonVersion>
+    <MicrosoftExtensionsVersion>5.0.0</MicrosoftExtensionsVersion>
+    <MicrosoftAspnetCoreVersion>5.0.5</MicrosoftAspnetCoreVersion>
+    <NewtonsoftJsonVersion>13.0.1</NewtonsoftJsonVersion>
   </PropertyGroup>
 </Project>
