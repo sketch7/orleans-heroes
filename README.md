@@ -6,7 +6,8 @@
 ### Server
 - .NET Core 5.0
 - Microsoft Orleans 3.4.2
-- SignalR 5
+- SignalR Core 5
+- [Microsoft Orleans SignalR Backplane by Sketch7 3.x](https://github.com/sketch7/SignalR.Orleans)
 - GraphQL & GraphiQL
 
 ### Client
