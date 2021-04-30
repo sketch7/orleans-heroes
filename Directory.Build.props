@@ -32,7 +32,7 @@
   <PropertyGroup>
     <!-- vendors -->
     <OrleansVersion>3.4.2</OrleansVersion>
-     <SignalROrleansVersion>3.0.0-dev114</SignalROrleansVersion> 
+     <SignalROrleansVersion>3.0.0</SignalROrleansVersion> 
     <!-- <SignalROrleansVersion>link</SignalROrleansVersion> -->
 
     <MicrosoftExtensionsVersion>5.0.0</MicrosoftExtensionsVersion>
