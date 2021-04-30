@@ -12,6 +12,8 @@
 ### Client
 - Angular 10.x
 - TypeScript
+- [Sketch7 - Signalr Client 3.x](https://github.com/sketch7/signalr-client)
+
 *Based on https://github.com/sketch7/angular-skeleton-app*
 
 
