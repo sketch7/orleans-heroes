@@ -1,5 +1,10 @@
 # Todo
 
+- Update .NET 6
+- Update Orleans
+- Update C#10
+- Configure Global Usings
+- Update Angular 14 (or 12.2)
 - Create management hero screen - create/edit
 - Implement `PlayerHero` grain and remove HP from hero e.g. `{ hero: "khazix", hp: 100, name: "Chiko" }` - with SignalR send changes on `PlayerHero` not `Hero`
 - UI Imp
