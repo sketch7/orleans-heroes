@@ -4,9 +4,9 @@
 ## Technologies
 
 ### Server
-- .NET Core 5.0
-- Microsoft Orleans 3.4.2
-- SignalR Core 5
+- .NET 6.0
+- Microsoft Orleans 3.6.2
+- SignalR
 - [Microsoft Orleans SignalR Backplane by Sketch7 3.x](https://github.com/sketch7/SignalR.Orleans)
 - GraphQL & GraphiQL
 
