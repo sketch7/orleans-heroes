@@ -20,10 +20,9 @@
     <PackageReference Include="Grace" Version="$(GraceVersion)" />
     <PackageReference Include="Grace.AspNetCore.Hosting" Version="$(GraceAspNetCoreHostingVersion)" />
     <PackageReference Include="Grace.DependencyInjection.Extensions" Version="$(GraceAspNetCoreHostingVersion)" />
-    <PackageReference Include="graphiql" Version="2.0.0" />
-    <PackageReference Include="GraphQL" Version="$(GraphQLVersion)" />
-    <PackageReference Include="GraphQL.Server.Transports.AspNetCore.NewtonsoftJson" Version="5.0.2" />
-    <PackageReference Include="GraphQL.Server.Ui.Playground" Version="5.0.2" />
+    <PackageReference Include="GraphQL.Server.All" Version="$(GraphQLVersion)" />
+    <PackageReference Include="GraphQL.DataLoader" Version="$(GraphQLVersion)" />
+    <PackageReference Include="GraphQL.NewtonsoftJson" Version="$(GraphQLVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(MicrosoftAspnetCoreVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(MicrosoftAspnetCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(MicrosoftExtensionsVersion)" />

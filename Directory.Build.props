@@ -46,6 +46,6 @@
     <NewtonsoftJsonVersion>13.0.1</NewtonsoftJsonVersion>
     <GraceVersion>7.2.0</GraceVersion>
     <GraceAspNetCoreHostingVersion>7.1.0</GraceAspNetCoreHostingVersion>
-    <GraphQLVersion>4.5.0</GraphQLVersion>
+    <GraphQLVersion>7.1.1</GraphQLVersion>
   </PropertyGroup>
 </Project>
