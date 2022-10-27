@@ -1,4 +1,9 @@
 <Project>
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
   <!-- Set the repository root into a variable -->
   <PropertyGroup>
     <SourceRoot>$(MSBuildThisFileDirectory)</SourceRoot>
@@ -8,7 +13,7 @@
   <PropertyGroup>
     <Authors>Clayton Lautier, Stephen Lautier</Authors>
     <Owners>Clayton Lautier, Stephen Lautier</Owners>
-    <Product>Orleans Sample</Product>
+    <Product>Orleans SignalR Sample</Product>
     <RepositoryUrl>https://github.com/sketch7/orleans-heroes</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseUrl>https://github.com/sketch7/orleans-heroes#license</PackageLicenseUrl>
@@ -21,22 +26,26 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <NoWarn>$(NoWarn);1701;1702;1705;1591</NoWarn>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>10.0</LangVersion>
+    <!-- <Nullable>enable</Nullable> -->
+    <!-- <ImplicitUsings>enable</ImplicitUsings> -->
   </PropertyGroup>
 
-  <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-  </PropertyGroup>
 
   <!-- Shared Package Versions -->
   <PropertyGroup>
+    <!-- framework -->
+    <MicrosoftExtensionsVersion>6.0.*</MicrosoftExtensionsVersion>
+    <MicrosoftAspnetCoreVersion>6.0.*</MicrosoftAspnetCoreVersion>
+
     <!-- vendors -->
-    <OrleansVersion>3.4.2</OrleansVersion>
-     <SignalROrleansVersion>3.0.0</SignalROrleansVersion> 
+    <OrleansVersion>3.6.2</OrleansVersion>
+    <SignalROrleansVersion>3.1.0</SignalROrleansVersion> 
     <!-- <SignalROrleansVersion>link</SignalROrleansVersion> -->
 
-    <MicrosoftExtensionsVersion>5.0.0</MicrosoftExtensionsVersion>
-    <MicrosoftAspnetCoreVersion>5.0.5</MicrosoftAspnetCoreVersion>
     <NewtonsoftJsonVersion>13.0.1</NewtonsoftJsonVersion>
+    <GraceVersion>7.2.0</GraceVersion>
+    <GraceAspNetCoreHostingVersion>7.1.0</GraceAspNetCoreHostingVersion>
+    <GraphQLVersion>4.5.0</GraphQLVersion>
   </PropertyGroup>
 </Project>
