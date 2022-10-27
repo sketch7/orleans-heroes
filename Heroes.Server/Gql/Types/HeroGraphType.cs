@@ -1,20 +1,23 @@
-﻿using GraphQL.Types;
-using Heroes.Contracts.Heroes;
+﻿using Heroes.Contracts.Heroes;
 
-namespace Heroes.Server.Gql.Types
+namespace Heroes.Server.Gql.Types;
+
+public class HeroGraphType : ObjectGraphType<Hero>
 {
-	public class HeroGraphType : ObjectGraphType<Hero>
+	public HeroGraphType()
 	{
-		public HeroGraphType()
-		{
-			Name = "Hero";
-			Description = "A Hero character with unique abilities to play with.";
+		Name = "Hero";
+		Description = "A Hero character with unique abilities to play with.";
 
-			Field(x => x.Id).Description("Hero unique key.");
-			Field(x => x.Name).Description("Hero name.");
-			Field(x => x.Popularity).Description("Hero popularity.");
-			Field<HeroRoleGraphType>("role", "Hero role type e.g. assassin");
-			Field<ListGraphType<StringGraphType>>("abilities", resolve: ctx => ctx.Source.Abilities, description: "Hero abilities.");
-		}
+		Field(x => x.Id).Description("Hero unique key.");
+		Field(x => x.Name).Description("Hero name.");
+		Field(x => x.Popularity).Description("Hero popularity.");
+
+		// todo: update
+		Field<HeroRoleGraphType>("role", "Hero role type e.g. assassin");
+		Field<ListGraphType<StringGraphType>, HashSet<string>>("abilities")
+			.Resolve(ctx => ctx.Source.Abilities)
+			.Description("Hero abilities.")
+			;
 	}
 }

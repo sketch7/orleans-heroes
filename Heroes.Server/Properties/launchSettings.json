@@ -2,10 +2,13 @@
   "profiles": {
     "Silo Local": {
       "commandName": "Project",
+      "launchBrowser": false,
+      "launchUrl": "info",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         // "DOCKER": "true"
-      }
+      },
+      "applicationUrl": "http://localhost:6600"
     }
   }
 }

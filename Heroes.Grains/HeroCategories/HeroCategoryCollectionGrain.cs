@@ -3,54 +3,50 @@ using Heroes.Contracts.HeroCategories;
 using Heroes.Core.Orleans;
 using Microsoft.Extensions.Logging;
 using Orleans.Providers;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace Heroes.Grains.HeroCategories
+namespace Heroes.Grains.HeroCategories;
+
+public class HeroCategoryCollectionState
 {
-	public class HeroCategoryCollectionState
+	public HashSet<string> HeroCategoryKeys { get; set; }
+}
+
+[StorageProvider(ProviderName = OrleansConstants.GrainMemoryStorage)]
+public class HeroCategoryCollectionGrain : AppGrain<HeroCategoryCollectionState>, IHeroCategoryCollectionGrain
+{
+	private readonly IHeroDataClient _heroDataClient;
+	private TenantKeyData _keyData;
+
+	public HeroCategoryCollectionGrain(
+		ILogger<HeroCategoryCollectionGrain> logger,
+		IHeroDataClient heroDataClient
+	) : base(logger)
 	{
-		public HashSet<string> HeroCategoryKeys { get; set; }
+		_heroDataClient = heroDataClient;
 	}
 
-	[StorageProvider(ProviderName = OrleansConstants.GrainMemoryStorage)]
-	public class HeroCategoryCollectionGrain : AppGrain<HeroCategoryCollectionState>, IHeroCategoryCollectionGrain
+	public override async Task OnActivateAsync()
 	{
-		private readonly IHeroDataClient _heroDataClient;
-		private TenantKeyData _keyData;
+		await base.OnActivateAsync();
 
-		public HeroCategoryCollectionGrain(
-			ILogger<HeroCategoryCollectionGrain> logger,
-			IHeroDataClient heroDataClient
-		) : base(logger)
-		{
-			_heroDataClient = heroDataClient;
-		}
+		_keyData = this.ParseKey<TenantKeyData>(TenantKeyData.Template);
 
-		public override async Task OnActivateAsync()
-		{
-			await base.OnActivateAsync();
+		if (State.HeroCategoryKeys == null)
+			await FetchFromRemote();
+	}
 
-			_keyData = this.ParseKey<TenantKeyData>(TenantKeyData.Template);
+	public async Task Set(List<string> keys)
+	{
+		State.HeroCategoryKeys = new HashSet<string>(keys);
+		await WriteStateAsync();
+	}
 
-			if (State.HeroCategoryKeys == null)
-				await FetchFromRemote();
-		}
+	public Task<List<string>> GetAll()
+		=> Task.FromResult(State.HeroCategoryKeys.ToList());
 
-		public async Task Set(List<string> keys)
-		{
-			State.HeroCategoryKeys = new HashSet<string>(keys);
-			await WriteStateAsync();
-		}
-
-		public Task<List<string>> GetAll()
-			=> Task.FromResult(State.HeroCategoryKeys.ToList());
-
-		private async Task FetchFromRemote()
-		{
-			var heroCategories = await _heroDataClient.GetAllHeroCategory();
-			await Set(heroCategories.Select(x => x.Id).ToList());
-		}
+	private async Task FetchFromRemote()
+	{
+		var heroCategories = await _heroDataClient.GetAllHeroCategory();
+		await Set(heroCategories.Select(x => x.Id).ToList());
 	}
 }

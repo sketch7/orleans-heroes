@@ -1,10 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿namespace Heroes.Contracts.UserNotifications;
 
-namespace Heroes.Contracts.UserNotifications
+public interface IUserNotificationHub
 {
-	public interface IUserNotificationHub
-	{
-		Task Broadcast(UserNotification item);
-		Task MessageCount(int count);
-	}
+	Task Broadcast(UserNotification item);
+	Task MessageCount(int count);
 }

@@ -6,15 +6,14 @@ using Heroes.GrainClients.Heroes;
 using Heroes.GrainClients.Statistics;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Heroes.GrainClients
+namespace Heroes.GrainClients;
+
+public static class GrainClientsServiceCollectionExtensions
 {
-	public static class GrainClientsServiceCollectionExtensions
+	public static void AddAppClients(this IServiceCollection services)
 	{
-		public static void AddAppClients(this IServiceCollection services)
-		{
-			services.AddSingleton<IHeroCategoryGrainClient, HeroCategoryGrainClient>();
-			services.AddSingleton<IHeroGrainClient, HeroGrainClient>();
-			services.AddSingleton<IHeroStatsGrainClient, HeroStatsGrainClient>();
-		}
+		services.AddSingleton<IHeroCategoryGrainClient, HeroCategoryGrainClient>();
+		services.AddSingleton<IHeroGrainClient, HeroGrainClient>();
+		services.AddSingleton<IHeroStatsGrainClient, HeroStatsGrainClient>();
 	}
 }

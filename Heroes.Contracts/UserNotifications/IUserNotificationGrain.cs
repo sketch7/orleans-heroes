@@ -1,11 +1,7 @@
-﻿using Orleans;
-using System.Threading.Tasks;
+﻿namespace Heroes.Contracts.UserNotifications;
 
-namespace Heroes.Contracts.UserNotifications
+public interface IUserNotificationGrain : IGrainWithStringKey
 {
-	public interface IUserNotificationGrain : IGrainWithStringKey
-	{
-		Task Set(UserNotification item);
-		Task<UserNotification> Get();
-	}
+	Task Set(UserNotification item);
+	Task<UserNotification> Get();
 }

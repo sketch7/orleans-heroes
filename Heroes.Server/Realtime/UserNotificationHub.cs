@@ -1,9 +1,8 @@
 ﻿using Heroes.Contracts.UserNotifications;
 using Microsoft.AspNetCore.SignalR;
 
-namespace Heroes.Server.Realtime
+namespace Heroes.Server.Realtime;
+
+public class UserNotificationHub : Hub<IUserNotificationHub>
 {
-	public class UserNotificationHub : Hub<IUserNotificationHub>
-	{
-	}
 }

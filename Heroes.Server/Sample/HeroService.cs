@@ -1,49 +1,45 @@
 ﻿using Heroes.Contracts.Heroes;
 using Heroes.Contracts.Mocks;
-using Heroes.Core;
-using System;
-using System.Collections.Generic;
 
-namespace Heroes.Server.Sample
+namespace Heroes.Server.Sample;
+
+public interface IHeroService
 {
-	public interface IHeroService
+	Hero AddHero();
+	IObservable<Hero> AddedHero();
+	List<Hero> Heroes();
+}
+
+// todo: either fix or remove
+public class HeroService : IHeroService
+{
+	//private readonly ISubject<Hero> _messageStream = new ReplaySubject<Hero>(1);
+
+	private readonly List<Hero> _heroes = new List<Hero>();
+
+	public HeroService()
 	{
-		Hero AddHero();
-		IObservable<Hero> AddedHero();
-		List<Hero> Heroes();
+		//Observable.Interval(TimeSpan.FromSeconds(5)).Subscribe(x => AddHero());
 	}
 
-	// todo: either fix or remove
-	public class HeroService : IHeroService
+	public Hero AddHero()
 	{
-		//private readonly ISubject<Hero> _messageStream = new ReplaySubject<Hero>(1);
+		Console.WriteLine(">>> Hero::Adding Hero");
+		var hero = MockDataService.GetHeroes().RandomElement();
+		_heroes.Add(hero);
+		//_messageStream.OnNext(hero);
 
-		private readonly List<Hero> _heroes = new List<Hero>();
+		return hero;
+	}
 
-		public HeroService()
-		{
-			//Observable.Interval(TimeSpan.FromSeconds(5)).Subscribe(x => AddHero());
-		}
+	public IObservable<Hero> AddedHero()
+	{
+		return null;
+		//return _messageStream.AsObservable();
+	}
 
-		public Hero AddHero()
-		{
-			Console.WriteLine(">>> Hero::Adding Hero");
-			var hero = MockDataService.GetHeroes().RandomElement();
-			_heroes.Add(hero);
-			//_messageStream.OnNext(hero);
-
-			return hero;
-		}
-
-		public IObservable<Hero> AddedHero()
-		{
-			return null;
-			//return _messageStream.AsObservable();
-		}
-
-		public List<Hero> Heroes()
-		{
-			return _heroes;
-		}
+	public List<Hero> Heroes()
+	{
+		return _heroes;
 	}
 }
