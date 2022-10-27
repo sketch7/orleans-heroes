@@ -1,11 +1,8 @@
-using System.Collections.Generic;
+namespace Heroes.Core.Tenancy;
 
-namespace Heroes.Core.Tenancy
+public interface ITenantRegistry<out TTenant>
+	where TTenant : class, ITenant
 {
-	public interface ITenantRegistry<out TTenant>
-		where TTenant : class, ITenant
-	{
-		TTenant Get(string tenant);
-		IEnumerable<TTenant> GetAll();
-	}
+	TTenant Get(string tenant);
+	IEnumerable<TTenant> GetAll();
 }

@@ -1,19 +1,17 @@
-﻿using GraphQL.Types;
-using Heroes.Contracts.Stats;
+﻿using Heroes.Contracts.Stats;
 
-namespace Heroes.Server.Gql.Types
+namespace Heroes.Server.Gql.Types;
+
+public class HeroStatsGraphType : ObjectGraphType<HeroStats>
 {
-	public class HeroStatsGraphType : ObjectGraphType<HeroStats>
+	public HeroStatsGraphType()
 	{
-		public HeroStatsGraphType()
-		{
-			Name = "HeroStats";
-			Description = "View all hero stats";
+		Name = "HeroStats";
+		Description = "View all hero stats";
 
-			Field(x => x.HeroId).Description("Hero unique id.");
-			Field(x => x.WinRate).Description("hero win rates.");
-			Field(x => x.BanRate).Description("hero ban rates.");
-			Field(x => x.TotalGames).Description("Total games using this hero.");
-		}
+		Field(x => x.HeroId).Description("Hero unique id.");
+		Field(x => x.WinRate).Description("hero win rates.");
+		Field(x => x.BanRate).Description("hero ban rates.");
+		Field(x => x.TotalGames).Description("Total games using this hero.");
 	}
 }

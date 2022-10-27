@@ -1,16 +1,11 @@
-﻿using GraphQL.Types;
-using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿namespace Heroes.Server.Gql;
 
-namespace Heroes.Server.Gql
+public class AppSchema : Schema
 {
-	public class AppSchema : Schema
+	public AppSchema(IServiceProvider provider)
+		: base(provider)
 	{
-		public AppSchema(IServiceProvider provider)
-			: base(provider)
-		{
-			Query = provider.GetRequiredService<AppGraphQuery>();
-			Mutation = provider.GetRequiredService<AppGraphSubscription>();
-		}
+		Query = provider.GetRequiredService<AppGraphQuery>();
+		Mutation = provider.GetRequiredService<AppGraphSubscription>();
 	}
 }

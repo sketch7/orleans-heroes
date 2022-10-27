@@ -17,6 +17,8 @@ indent_style = space
 indent_size = 4
 indent_style = tab
 tab_width = 4
+max_line_length = 140
+trim_trailing_whitespace = true
 
 # New line preferences
 end_of_line = crlf
@@ -114,6 +116,8 @@ csharp_style_unused_value_expression_statement_preference = discard_variable:sil
 # 'using' directive preferences
 csharp_using_directive_placement = outside_namespace:silent
 
+csharp_style_namespace_declarations = file_scoped:warning
+
 #### C# Formatting Rules ####
 
 # New line preferences
@@ -124,6 +128,8 @@ csharp_new_line_before_members_in_anonymous_types = true
 csharp_new_line_before_members_in_object_initializers = true
 csharp_new_line_before_open_brace = all
 csharp_new_line_between_query_expression_clauses = true
+csharp_keep_existing_initializer_arrangement = true
+csharp_place_simple_initializer_on_single_line = true
 
 # Indentation preferences
 csharp_indent_block_contents = true

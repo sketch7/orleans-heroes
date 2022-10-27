@@ -1,14 +1,13 @@
 ﻿using System.Diagnostics;
 
-namespace Heroes.Grains
+namespace Heroes.Grains;
+
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
+public struct TenantKeyData
 {
-	[DebuggerDisplay("{DebuggerDisplay,nq}")]
-	public struct TenantKeyData
-	{
-		private string DebuggerDisplay => $"Tenant: '{Tenant}'";
+	private string DebuggerDisplay => $"Tenant: '{Tenant}'";
 
-		public static string Template = "tenant/{tenant}";
+	public static string Template = "tenant/{tenant}";
 
-		public string Tenant { get; set; }
-	}
+	public string Tenant { get; set; }
 }

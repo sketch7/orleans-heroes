@@ -1,7 +1,6 @@
-namespace Heroes.Core.Tenancy
+namespace Heroes.Core.Tenancy;
+
+public interface ITenant
 {
-	public interface ITenant
-	{
-		string Key { get; set; }
-	}
+	string Key { get; set; }
 }

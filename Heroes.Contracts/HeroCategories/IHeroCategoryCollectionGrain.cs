@@ -1,12 +1,6 @@
-﻿using Heroes.Core.Orleans;
-using Orleans;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿namespace Heroes.Contracts.HeroCategories;
 
-namespace Heroes.Contracts.HeroCategories
+public interface IHeroCategoryCollectionGrain : IGrainWithStringKey, IAppGrainContract
 {
-	public interface IHeroCategoryCollectionGrain : IGrainWithStringKey, IAppGrainContract
-	{
-		Task<List<string>> GetAll();
-	}
+	Task<List<string>> GetAll();
 }

@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 
-namespace Heroes.Server.Gql.Core
+namespace Heroes.Server.Gql.Core;
+
+public class GraphQLUserContext : Dictionary<string, object>
 {
-	public class GraphQLUserContext : Dictionary<string, object>
-	{
-		public ClaimsPrincipal User { get; set; }
-	}
+	public ClaimsPrincipal User { get; set; }
 }
