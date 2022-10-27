@@ -10,12 +10,12 @@ namespace Heroes.Server.Gql.Types
 			Name = "HeroRole";
 			Description = "Hero role type.";
 
-			AddValue("assassin", "self descriptive", (int)HeroRoleType.Assassin);
-			AddValue("fighter", "self descriptive", (int)HeroRoleType.Fighter);
-			AddValue("mage", "self descriptive", (int)HeroRoleType.Mage);
-			AddValue("support", "self descriptive", (int)HeroRoleType.Support);
-			AddValue("tank", "self descriptive", (int)HeroRoleType.Tank);
-			AddValue("marksman", "self descriptive", (int)HeroRoleType.Marksman);
+			Add("assassin", (int)HeroRoleType.Assassin, "self descriptive");
+			Add("fighter", (int)HeroRoleType.Fighter, "self descriptive");
+			Add("mage", (int)HeroRoleType.Mage, "self descriptive");
+			Add("support", (int)HeroRoleType.Support, "self descriptive");
+			Add("tank", (int)HeroRoleType.Tank, "self descriptive");
+			Add("marksman", (int)HeroRoleType.Marksman, "self descriptive");
 		}
 	}
 }
