@@ -13,8 +13,10 @@ public class HeroGraphType : ObjectGraphType<Hero>
 		Field(x => x.Name).Description("Hero name.");
 		Field(x => x.Popularity).Description("Hero popularity.");
 
-		// todo: update
-		Field<HeroRoleGraphType>("role", "Hero role type e.g. assassin");
+		Field<HeroRoleGraphType>("role")
+			.Description("Hero role type e.g. assassin")
+			;
+
 		Field<ListGraphType<StringGraphType>, HashSet<string>>("abilities")
 			.Resolve(ctx => ctx.Source.Abilities)
 			.Description("Hero abilities.")
