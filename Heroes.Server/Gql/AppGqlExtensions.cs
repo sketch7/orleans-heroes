@@ -11,8 +11,10 @@ public static class AppGqlExtensions
 	{
 		services.AddGraphQL(builder => builder
 			.AddNewtonsoftJson()
+			//.AddSystemTextJson()
 			.AddDataLoader()
-			.AddAutoSchema<AppSchema>()
+			//.AddAutoSchema<AppGraphQuery>()
+			.AddSchema<AppSchema>()
 			.AddExecutionStrategySelector<GraceDefaultExecutionStrategySelector>()
 			.AddUserContextBuilder(httpContext => new GraphQLUserContext { User = httpContext.User })
 		);
