@@ -42,7 +42,7 @@
     "font-awesome": "^4.7.0",
     "graphql": "^15.2.0",
     "graphql-tag": "^2.10.3",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.2"
