@@ -26,6 +26,11 @@
                 "src/assets/styles"
               ]
             },
+            "allowedCommonJsDependencies": [
+              "lodash",
+              "graphql-tag",
+              "zen-observable"
+            ],
             "tsConfig": "tsconfig.app.json",
             "aot": true,
             "assets": [

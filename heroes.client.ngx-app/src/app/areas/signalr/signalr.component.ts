@@ -1,7 +1,8 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from "@angular/core";
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, ChangeDetectionStrategy, NgZone } from "@angular/core";
 import { Dictionary } from "@ssv/core";
 import { HubConnection, ConnectionState, VERSION } from "@ssv/signalr-client";
 import { Subscription } from "rxjs";
+import { map, tap } from "rxjs/operators";
 
 import { HeroHub, HeroHubClient, Hero } from "../../shared";
 
@@ -14,6 +15,7 @@ export interface Group {
 	selector: "app-signalr-sample",
 	templateUrl: "./signalr.component.html",
 	styleUrls: ["./signalr.component.scss"],
+	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SignalrComponent implements OnInit, OnDestroy {
 
@@ -51,6 +53,7 @@ export class SignalrComponent implements OnInit, OnDestroy {
 	constructor(
 		private hubClient: HeroHubClient,
 		private cdr: ChangeDetectorRef,
+		private ngZone: NgZone
 	) {
 		this.hubConnection = this.hubClient.get();
 	}
@@ -59,10 +62,12 @@ export class SignalrComponent implements OnInit, OnDestroy {
 		this.connectionState$$ = this.hubConnection.connectionState$.subscribe(x => {
 			console.log(`${this.source} :: Status Changed :: ${JSON.stringify(x)}`);
 			this.connectionState = x;
+			this.cdr.markForCheck();
 		});
 
 		this.subscribe();
 		this.connect();
+		// this.disconnect();
 	}
 
 	ngOnDestroy(): void {
@@ -77,23 +82,34 @@ export class SignalrComponent implements OnInit, OnDestroy {
 
 		this.onSend$$ = this.hubClient.send$().subscribe((val: string) => {
 			console.log(`${this.source} send :: data received >>>`, val);
-		});
-
-		this.heroChange$$ = this.hubClient.heroChanged$().subscribe(heroChange => {
-			console.log(`${this.source} send :: data received >>>`, heroChange);
-			let hero = this.heroesState[heroChange.id];
-			if (hero) {
-				hero = { ...hero, ...heroChange };
-			} else {
-				hero = heroChange;
-			}
-
-			this.heroesState[hero.id] = hero;
-			this.heroes = Object.values(this.heroesState);
 			this.cdr.markForCheck();
 		});
+
+		this.heroChange$$ = this.ngZone.run(() => this.hubClient.heroChanged$()).pipe(
+			tap(x => console.log(`${this.source} send :: data received >>>`, x)),
+			map(heroChange => {
+				let hero = this.heroesState[heroChange.id];
+				if (hero) {
+					hero = { ...hero, ...heroChange };
+				} else {
+					hero = heroChange;
+				}
+				return hero;
+			}),
+			tap(hero => {
+				this.heroesState[hero.id] = hero;
+				this.heroes = Object.values(this.heroesState);
+			}),
+			tap(() => this.ngZone.run(() => this.cdr.markForCheck())), // with signalr 6.x is not working without zone
+			// tap(() => this.cdr.markForCheck()),
+		).subscribe();
 		// this.kha$$ = this.hubConnection.stream<Hero>("GetUpdates", "kha-zix")
 		// 	.subscribe(x => console.log(`${this.source} stream :: kha`, x));
+	}
+
+	connectDisconnect() {
+		this.connect();
+		this.disconnect();
 	}
 
 	connect() {
@@ -137,6 +153,7 @@ export class SignalrComponent implements OnInit, OnDestroy {
 		this.kha$$.unsubscribe();
 		this.singed$$.unsubscribe();
 		this.heroChange$$.unsubscribe();
+		this.cdr.markForCheck();
 	}
 
 }
