@@ -62,6 +62,7 @@ export class SignalrComponent implements OnInit, OnDestroy {
 		this.connectionState$$ = this.hubConnection.connectionState$.subscribe(x => {
 			console.log(`${this.source} :: Status Changed :: ${JSON.stringify(x)}`);
 			this.connectionState = x;
+			this.cdr.markForCheck();
 		});
 
 		this.subscribe();
@@ -81,6 +82,7 @@ export class SignalrComponent implements OnInit, OnDestroy {
 
 		this.onSend$$ = this.hubClient.send$().subscribe((val: string) => {
 			console.log(`${this.source} send :: data received >>>`, val);
+			this.cdr.markForCheck();
 		});
 
 		this.heroChange$$ = this.ngZone.run(() => this.hubClient.heroChanged$()).pipe(
@@ -151,6 +153,7 @@ export class SignalrComponent implements OnInit, OnDestroy {
 		this.kha$$.unsubscribe();
 		this.singed$$.unsubscribe();
 		this.heroChange$$.unsubscribe();
+		this.cdr.markForCheck();
 	}
 
 }
