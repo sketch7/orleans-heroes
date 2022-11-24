@@ -16,12 +16,15 @@ export class HeroHubClient {
 	private connection: HubConnection<HeroHub>;
 
 	constructor(
-		private hubFactory: HubConnectionFactory
+		private hubFactory: HubConnectionFactory,
 	) {
 		this.hubFactory.create(
 			{
 				key: connectionKey,
 				endpointUri: `${environment.apiRemoteBaseUrl}/real-time/hero`,
+				// configureSignalRHubConnection: hub => {
+				// 	hub.keepAliveIntervalInMilliseconds = 2000
+				// }
 			}
 		);
 		this.connection = this.get();
