@@ -1,7 +1,7 @@
 <Project>
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
   </PropertyGroup>
 
   <!-- Set the repository root into a variable -->
@@ -26,7 +26,7 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <NoWarn>$(NoWarn);1701;1702;1705;1591</NoWarn>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <LangVersion>10.0</LangVersion>
+    <LangVersion>11.0</LangVersion>
     <!-- <Nullable>enable</Nullable> -->
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
@@ -35,17 +35,17 @@
   <!-- Shared Package Versions -->
   <PropertyGroup>
     <!-- framework -->
-    <MicrosoftExtensionsVersion>6.0.*</MicrosoftExtensionsVersion>
-    <MicrosoftAspnetCoreVersion>6.0.*</MicrosoftAspnetCoreVersion>
+    <MicrosoftExtensionsVersion>7.0.*</MicrosoftExtensionsVersion>
+    <MicrosoftAspnetCoreVersion>7.0.*</MicrosoftAspnetCoreVersion>
 
     <!-- vendors -->
-    <OrleansVersion>3.6.2</OrleansVersion>
-    <SignalROrleansVersion>3.1.0</SignalROrleansVersion> 
+    <OrleansVersion>3.7.1</OrleansVersion>
+    <SignalROrleansVersion>4.0.4</SignalROrleansVersion>
     <!-- <SignalROrleansVersion>link</SignalROrleansVersion> -->
 
-    <NewtonsoftJsonVersion>13.0.1</NewtonsoftJsonVersion>
+    <NewtonsoftJsonVersion>13.0.3</NewtonsoftJsonVersion>
     <GraceVersion>7.2.0</GraceVersion>
     <GraceAspNetCoreHostingVersion>7.1.0</GraceAspNetCoreHostingVersion>
-    <GraphQLVersion>7.1.1</GraphQLVersion>
+    <GraphQLVersion>7.5.0</GraphQLVersion>
   </PropertyGroup>
 </Project>
