@@ -6,16 +6,15 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Providers;
 using Orleans.Runtime;
-// TODO: Re-enable when SignalR.Orleans supports Orleans 9.x
-//using SignalR.Orleans.Core;
+
+using SignalR.Orleans.Core;
 
 namespace Heroes.Grains.UserNotifications;
 
 [StorageProvider(ProviderName = OrleansConstants.GrainMemoryStorage)]
 public class UserNotificationGrain : AppGrain<UserNotificationState>, IUserNotificationGrain
 {
-	// TODO: Re-enable when SignalR.Orleans supports Orleans 9.x
-	//private HubContext<IUserNotificationHub> _hubContext;
+	private HubContext<IUserNotificationHub> _hubContext;
 
 	public UserNotificationGrain(
 		ILogger<UserNotificationGrain> logger
@@ -36,9 +35,9 @@ public class UserNotificationGrain : AppGrain<UserNotificationState>, IUserNotif
 	public override async Task OnActivateAsync(CancellationToken cancellationToken)
 	{
 		await base.OnActivateAsync(cancellationToken);
-		// TODO: Re-enable when SignalR.Orleans supports Orleans 9.x
-		//_hubContext = GrainFactory.GetHub<IUserNotificationHub>();
-		//var hubUser = _hubContext.User(PrimaryKey);
+
+		_hubContext = GrainFactory.GetHub<IUserNotificationHub>();
+		var hubUser = _hubContext.User(PrimaryKey);
 		var item = new UserNotification
 		{
 			MessageCount = 0
@@ -55,8 +54,7 @@ public class UserNotificationGrain : AppGrain<UserNotificationState>, IUserNotif
 				MessageCount = item.MessageCount
 			};
 
-			// TODO: Re-enable when SignalR.Orleans supports Orleans 9.x
-			//await hubUser.Send("Broadcast", userNotification);
+			await hubUser.Send("Broadcast", userNotification);
 		}, State, new GrainTimerCreationOptions { DueTime = TimeSpan.FromSeconds(2), Period = TimeSpan.FromSeconds(3), Interleave = true });
 	}
 }

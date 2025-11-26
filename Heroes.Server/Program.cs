@@ -2,11 +2,14 @@ using Grace.DependencyInjection;
 using Grace.DependencyInjection.Extensions;
 using Heroes.Contracts;
 using Heroes.Core.Tenancy;
-using Heroes.Grains.Heroes;
 using Heroes.Server.Infrastructure;
-using Orleans;
-using Orleans.Hosting;
-using Orleans.Runtime;
+using Heroes.Server.Realtime;
+using Heroes.Server.Sample;
+using Heroes.GrainClients;
+using Heroes.Server.Gql;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Serilog;
 using System.Net.Sockets;
 
@@ -16,19 +19,8 @@ public class Program
 {
 	public static Task Main(string[] args)
 	{
-		var hostBuilder = new HostBuilder();
-		// TODO: Grace DI is incompatible with Orleans 9.x - need to use default provider or fix Grace integration
-		// var graceConfig = new InjectionScopeConfiguration
-		// {
-		// 	Behaviors =
-		// 	{
-		// 		AllowInstanceAndFactoryToReturnNull = true
-		// 	}
-		// };
-
 		IAppInfo appInfo = null;
-		hostBuilder
-			//.UseGrace(graceConfig)
+		var hostBuilder = Host.CreateDefaultBuilder(args)
 			.ConfigureHostConfiguration(cfg =>
 			{
 				cfg.SetBasePath(Directory.GetCurrentDirectory())
@@ -128,13 +120,70 @@ public class Program
 					;
 
 			})
-			.ConfigureServices((ctx, services) =>
+			.ConfigureWebHostDefaults(webBuilder =>
 			{
-				//services.AddHostedService<ApiHostedService>();
+				webBuilder
+					.UseUrls("http://localhost:6600")
+					.ConfigureServices((context, services) =>
+					{
+						services.AddSingleton<IHeroService, HeroService>();
+						services.AddCustomAuthentication();
+						services.AddSignalR()
+							.AddJsonProtocol(opts =>
+							{
+								opts.PayloadSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+								opts.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+							})
+							.AddOrleans();
+
+						services.AddCors(o => o.AddPolicy("TempCorsPolicy", builder =>
+						{
+							builder
+								.SetIsOriginAllowed((host) => true)
+								.AllowAnyMethod()
+								.AllowAnyHeader()
+								.AllowCredentials();
+						}));
+
+						services.Configure<KestrelServerOptions>(options =>
+						{
+							options.AllowSynchronousIO = true;
+						});
+
+						services.AddAppClients();
+						services.AddAppGraphQL();
+						services.AddControllers().AddNewtonsoftJson();
+					})
+					.Configure((context, app) =>
+					{
+						var env = context.HostingEnvironment;
+
+						app.UseCors("TempCorsPolicy");
+						app.UseGraphQL("/graphql");
+						app.UseGraphQLPlayground("/", new()
+						{
+							GraphQLEndPoint = "/graphql",
+							SubscriptionsEndPoint = "/graphql",
+						});
+
+						if (env.IsDevelopment())
+						{
+							app.UseDeveloperExceptionPage();
+						}
+
+						app.UseRouting();
+						app.UseAuthorization();
+						app.UseEndpoints(endpoints =>
+						{
+							endpoints.MapHub<HeroHub>("/real-time/hero");
+							endpoints.MapHub<UserNotificationHub>("/userNotifications");
+							endpoints.MapControllers();
+						});
+					});
 			})
 			;
 
-		return hostBuilder.RunConsoleAsync();
+		return hostBuilder.Build().RunAsync();
 	}
 
 	private static void ConfigureServices(IInjectionScope scope)

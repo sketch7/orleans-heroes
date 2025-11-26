@@ -1,4 +1,4 @@
-﻿using Grace.DependencyInjection;
+﻿﻿using Grace.DependencyInjection;
 using Heroes.GrainClients;
 using Heroes.Server.Gql;
 using Heroes.Server.Infrastructure;
@@ -46,8 +46,7 @@ public class ApiStartup
 		services.AddCors(o => o.AddPolicy("TempCorsPolicy", builder =>
 		{
 			builder
-				// .SetIsOriginAllowed((host) => true)
-				.WithOrigins("http://localhost:4200")
+				.SetIsOriginAllowed((host) => true) // Allow any origin including file://
 				.AllowAnyMethod()
 				.AllowAnyHeader()
 				.AllowCredentials()

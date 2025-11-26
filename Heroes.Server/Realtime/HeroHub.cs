@@ -6,8 +6,7 @@ using Microsoft.AspNetCore.SignalR;
 using Orleans;
 using Orleans.Runtime;
 using Orleans.Streams;
-// TODO: Re-enable when SignalR.Orleans supports Orleans 9.x
-//using SignalR.Orleans;
+using SignalR.Orleans;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Channels;
@@ -94,5 +93,8 @@ public class HeroHub : Hub<IHeroHub>
 	}
 
 	public Task<string> Echo(string message)
+		=> Task.FromResult($"hello {message}");
+
+	public Task<string> EchoGroup(HashSet<string> message)
 		=> Task.FromResult($"hello {message}");
 }

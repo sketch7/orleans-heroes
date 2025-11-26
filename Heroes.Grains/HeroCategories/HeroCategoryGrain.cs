@@ -1,4 +1,4 @@
-﻿using Heroes.Contracts;
+﻿﻿using Heroes.Contracts;
 using Heroes.Contracts.HeroCategories;
 using Heroes.Core.Orleans;
 using Heroes.Grains.Heroes;
@@ -44,6 +44,9 @@ public class HeroCategoryGrain : AppGrain<HeroCategoryState>, IHeroCategoryGrain
 	{
 		await base.OnActivateAsync(cancellationToken);
 		_keyData = this.ParseKey<HeroCategoryKeyData>(HeroCategoryKeyData.Template);
+
+		// Set tenant in RequestContext for tenant-aware services
+		Orleans.Runtime.RequestContext.Set("tenant", _keyData.Tenant);
 
 		if (State.Entity == null)
 		{

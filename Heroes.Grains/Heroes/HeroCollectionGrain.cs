@@ -33,6 +33,9 @@ public class HeroCollectionGrain : AppGrain<HeroCollectionState>, IHeroCollectio
 
 		_keyData = this.ParseKey<TenantKeyData>(TenantKeyData.Template);
 
+		// Set tenant in RequestContext for tenant-aware services
+		Orleans.Runtime.RequestContext.Set("tenant", _keyData.Tenant);
+
 		if (State.HeroKeys == null)
 			await FetchFromRemote();
 	}

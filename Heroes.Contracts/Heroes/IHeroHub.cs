@@ -7,4 +7,6 @@ public interface IHeroHub
 	Task HeroChanged(Hero hero);
 	Task StreamUnsubscribe(string methodName, string id);
 	Task AddToGroup(string name);
+
+	Task<string> EchoGroup(HashSet<string> message);
 }

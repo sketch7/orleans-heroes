@@ -1,4 +1,4 @@
-﻿using Heroes.Contracts;
+﻿﻿using Heroes.Contracts;
 using Orleans;
 using Orleans.Runtime;
 
@@ -22,12 +22,36 @@ public class WarmupStartupTask : IStartupTask
 	{
 		foreach (var tenant in _appTenantRegistry.GetAll())
 		{
-			var grain = _grainFactory.GetHeroCollectionGrain(tenant.Key);
-			await grain.Activate();
+			if (cancellationToken.IsCancellationRequested)
+				break;
 
-			var heroes = await grain.GetAll();
-			foreach (var heroKey in heroes)
-				await _grainFactory.GetHeroGrain(tenant.Key, heroKey).Activate();
+			try
+			{
+				var grain = _grainFactory.GetHeroCollectionGrain(tenant.Key);
+				await grain.Activate();
+
+				var heroes = await grain.GetAll();
+				foreach (var heroKey in heroes)
+				{
+					if (cancellationToken.IsCancellationRequested)
+						break;
+
+					try
+					{
+						await _grainFactory.GetHeroGrain(tenant.Key, heroKey).Activate();
+					}
+					catch (Exception ex)
+					{
+						// Log but don't fail the entire warmup if one hero fails
+						Console.WriteLine($"Failed to activate hero {heroKey} for tenant {tenant.Key}: {ex.Message}");
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				// Log but don't fail the entire warmup if one tenant fails
+				Console.WriteLine($"Failed to warmup tenant {tenant.Key}: {ex.Message}");
+			}
 		}
 	}
 }
