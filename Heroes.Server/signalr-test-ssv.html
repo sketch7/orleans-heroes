@@ -5,7 +5,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport"
 		content="width=device-width, initial-scale=1.0">
-	<title>Hero Hub SignalR Client</title>
+	<title>Hero Hub SignalR Client (SSV)</title>
 	<style>
 		body {
 			font-family: Arial, sans-serif;
@@ -105,7 +105,7 @@
 
 <body>
 	<div class="container">
-		<h1>🦸 Hero Hub SignalR Client</h1>
+		<h1>🦸 Hero Hub SignalR Client (SSV)</h1>
 
 		<div
 			style="background-color: #fff3cd; border: 1px solid #ffc107; padding: 10px; margin: 10px 0; border-radius: 4px;">
@@ -114,6 +114,7 @@
 				<li>Make sure Heroes.Server is running on <code>http://localhost:6600</code></li>
 				<li>CORS has been configured to allow all origins</li>
 				<li>Open this file in a browser and click "Connect"</li>
+				<li>Using <code>@ssv/signalr-client</code> library</li>
 			</ol>
 		</div>
 
@@ -168,8 +169,9 @@
 	</div>
 
 	<script src="https://unpkg.com/@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
+	<script src="https://unpkg.com/@ssv/signalr-client@latest/dist/signalr-client.umd.js"></script>
 	<script>
-		let connection = null;
+		let hubClient = null;
 		const hubUrl = 'http://localhost:6600/real-time/hero';
 
 		function addMessage(message, isHeroUpdate = false) {
@@ -202,48 +204,51 @@
 
 		async function connect() {
 			try {
-				connection = new signalR.HubConnectionBuilder()
+				// Create HubClient using @ssv/signalr-client
+				// The UMD bundle exposes the library as SignalRClient
+				const { HubConnectionFactory } = window.SignalRClient || window.ssv || {};
+				if (!HubConnectionFactory) {
+					throw new Error('SignalRClient library not loaded. Check the script tag.');
+				}
+
+				hubClient = new HubConnectionFactory()
 					.withUrl(hubUrl, {
 						skipNegotiation: false,
 						transport: signalR.HttpTransportType.WebSockets | signalR.HttpTransportType.LongPolling
 					})
 					.withAutomaticReconnect()
 					.configureLogging(signalR.LogLevel.Information)
-					.build();
-
-				// Register handlers for server-to-client messages
-				connection.on('Send', (message) => {
+					.create();				// Register handlers for server-to-client messages
+				hubClient.on('Send', (message) => {
 					addMessage(`📨 Send: ${message}`);
 				});
 
-				connection.on('Broadcast', (hero) => {
+				hubClient.on('Broadcast', (hero) => {
 					addMessage(`📢 Broadcast Hero: ${JSON.stringify(hero, null, 2)}`, true);
 				});
 
-				connection.on('HeroChanged', (hero) => {
+				hubClient.on('HeroChanged', (hero) => {
 					addMessage(`🔄 Hero Changed: ${JSON.stringify(hero, null, 2)}`, true);
 				});
 
-				connection.onreconnecting((error) => {
-					addMessage(`⚠️ Reconnecting: ${error}`);
-				});
-
-				connection.onreconnected((connectionId) => {
-					addMessage(`✅ Reconnected! Connection ID: ${connectionId}`);
-				});
-
-				connection.onclose((error) => {
-					updateStatus(false);
-					if (error) {
-						addMessage(`❌ Connection closed with error: ${error}`);
-					} else {
-						addMessage('Connection closed');
+				// Listen to state changes
+				hubClient.state$.subscribe((state) => {
+					addMessage(`🔌 Connection state: ${state}`);
+					if (state === 'connected') {
+						updateStatus(true);
+						addMessage(`✅ Connected! Connection ID: ${hubClient.connection.connectionId}`);
+					} else if (state === 'disconnected') {
+						updateStatus(false);
 					}
 				});
 
-				await connection.start();
-				updateStatus(true);
-				addMessage(`✅ Connected! Connection ID: ${connection.connectionId}`);
+				// Listen to connection errors
+				hubClient.error$.subscribe((error) => {
+					addMessage(`❌ Connection error: ${error.message || error}`);
+					console.error('Full error:', error);
+				});
+
+				await hubClient.connect();
 
 			} catch (err) {
 				updateStatus(false);
@@ -254,9 +259,9 @@
 		}
 
 		async function disconnect() {
-			if (connection) {
+			if (hubClient) {
 				try {
-					await connection.stop();
+					await hubClient.disconnect();
 					updateStatus(false);
 					addMessage('Disconnected');
 				} catch (err) {
@@ -271,7 +276,7 @@
 			const message = input.value || 'Hello SignalR!';
 
 			try {
-				const response = await connection.invoke('Echo', message);
+				const response = await hubClient.invoke('Echo', message);
 				addMessage(`🔊 Echo response: ${response}`);
 				input.value = '';
 			} catch (err) {
@@ -285,8 +290,8 @@
 			const message = input.value || ['Hello', 'SignalR!'];
 
 			try {
-				const response = await connection.send('EchoGroup', message);
-				addMessage(`🔊 Echo response: ${response}`);
+				await hubClient.send('EchoGroup', message);
+				addMessage(`🔊 Sent echo group message`);
 				input.value = '';
 			} catch (err) {
 				addMessage(`❌ Error sending echo: ${err}`);
@@ -299,7 +304,7 @@
 			const groupName = input.value || 'heroes';
 
 			try {
-				await connection.invoke('AddToGroup', groupName);
+				await hubClient.invoke('AddToGroup', groupName);
 				addMessage(`👥 Joined group: ${groupName}`);
 			} catch (err) {
 				addMessage(`❌ Error joining group: ${err}`);
@@ -313,7 +318,7 @@
 
 			try {
 				// This uses the streaming method
-				const stream = await connection.stream('GetUpdates', heroId);
+				const stream = hubClient.stream('GetUpdates', heroId);
 				addMessage(`📡 Subscribed to hero updates for ID: ${heroId}`);
 
 				stream.subscribe({
