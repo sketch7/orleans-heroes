@@ -1,0 +1,42 @@
+<h1>SignalR</h1>
+<small>@ssv/signalr-client: v{{ signalrVersion }}</small>
+<p>
+  Current user <strong>{{ currentUser }}</strong
+  >.
+</p>
+<p>connection status: {{ connectionState | json }}</p>
+<div class="btn-group" role="group">
+  <button class="btn btn-success" (click)="connect()">connect</button>
+  <button class="btn btn-danger" (click)="disconnect()">disconnect</button>
+  <button class="btn btn-danger" (click)="connectDisconnect()">connect+disconnect</button>
+</div>
+<br />
+<div class="btn-group" role="group">
+  <button class="btn btn-secondary" (click)="send()">send</button>
+  <button class="btn btn-secondary" (click)="invoke()">invoke</button>
+</div>
+<br />
+
+<div class="btn-group" role="group">
+  <button class="btn btn-secondary" (click)="setData()">setData</button>
+</div>
+<br />
+<div class="btn-group" role="group">
+  <button class="btn btn-warning" (click)="subscribe()">subscribe</button>
+  <button class="btn btn-danger" (click)="dispose()">dispose</button>
+</div>
+<div>
+  <select [(value)]="selectedGroupId">
+    @for (group of availableGroups; track group.id) {
+    <option>{{ group.name }}</option>
+    }
+  </select>
+  <button class="btn btn-warning" (click)="subscribeToGroup()">Subscribe to Group</button>
+</div>
+<div>
+  <ul>
+    @for (hero of heroes; track hero.id) {
+    <li>{{`${hero.name} - ${hero.health}`}}</li>
+    }
+  </ul>
+</div>
