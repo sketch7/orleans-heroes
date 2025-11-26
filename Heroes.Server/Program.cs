@@ -17,13 +17,14 @@ public class Program
 	public static Task Main(string[] args)
 	{
 		var hostBuilder = new HostBuilder();
-		var graceConfig = new InjectionScopeConfiguration
-		{
-			Behaviors =
-			{
-				AllowInstanceAndFactoryToReturnNull = true
-			}
-		};
+		// TODO: Grace DI is incompatible with Orleans 9.x - need to use default provider or fix Grace integration
+		// var graceConfig = new InjectionScopeConfiguration
+		// {
+		// 	Behaviors =
+		// 	{
+		// 		AllowInstanceAndFactoryToReturnNull = true
+		// 	}
+		// };
 
 		IAppInfo appInfo = null;
 		hostBuilder
@@ -34,7 +35,8 @@ public class Program
 					.AddEnvironmentVariables("ASPNETCORE_") // todo: change from ASPNETCORE_?
 					.AddCommandLine(args);
 			})
-			.UseServiceProviderFactory(new GraceServiceProviderFactory(graceConfig))
+			// Temporarily disabled Grace - Orleans 9.x requires default service provider
+			//.UseServiceProviderFactory(new GraceServiceProviderFactory(graceConfig))
 			.ConfigureServices((ctx, services) =>
 			{
 				appInfo = new AppInfo(ctx.Configuration); // rebuild it so we ensure we have latest all configs
@@ -42,11 +44,12 @@ public class Program
 
 				services.AddSingleton(appInfo);
 				services.AddSingleton<IAppTenantRegistry, AppTenantRegistry>();
-				services.Configure<ApiHostedServiceOptions>(options =>
-				{
-					options.Port = GetAvailablePort(6600, 6699);
-					//options.PathString = "/health";
-				});
+				services.AddAppGrains(); // Register grain dependencies
+										 // services.Configure<ApiHostedServiceOptions>(options =>
+										 // {
+										 // 	options.Port = GetAvailablePort(6600, 6699);
+										 // 	//options.PathString = "/health";
+										 // });
 
 				services.Configure<ConsoleLifetimeOptions>(options =>
 				{
@@ -88,6 +91,12 @@ public class Program
 			.UseOrleans((ctx, builder) =>
 			{
 				builder
+					.ConfigureServices(services =>
+					{
+						services.AddAppGrains(); // Register grain dependencies in Orleans silo
+					})
+					.AddMemoryStreams(OrleansConstants.STREAM_PROVIDER)
+					.AddMemoryGrainStorage("PubSubStore")
 					.UseAppConfiguration(new AppSiloBuilderContext
 					{
 						AppInfo = appInfo,
@@ -99,9 +108,6 @@ public class Program
 							// StorageProviderType = StorageProviderType.Redis
 						}
 					})
-					.ConfigureApplicationParts(parts => parts
-						.AddApplicationPart(typeof(HeroGrain).Assembly).WithReferences()
-					)
 					.AddIncomingGrainCallFilter<LoggingIncomingCallFilter>()
 					//.AddOutgoingGrainCallFilter<LoggingOutgoingCallFilter>()
 					.AddStartupTask<WarmupStartupTask>()
@@ -110,6 +116,13 @@ public class Program
 						cfg.Configure((siloBuilder, signalrBuilderConfig) =>
 						{
 							siloBuilder.UseStorage(signalrBuilderConfig.StorageProvider, appInfo, storeName: "SignalR");
+							// siloBuilder.ConfigureStorageProvider(
+							// 	microSvcBuilderContext,
+							// 	siloConfigBuilder,
+							// 	opts.StorageProvider,
+							// 	storageConfigBuilder => storageConfigBuilder
+							// 		.WithStoreName("SignalR")
+							// );
 						});
 					})
 					;
@@ -117,7 +130,7 @@ public class Program
 			})
 			.ConfigureServices((ctx, services) =>
 			{
-				services.AddHostedService<ApiHostedService>();
+				//services.AddHostedService<ApiHostedService>();
 			})
 			;
 

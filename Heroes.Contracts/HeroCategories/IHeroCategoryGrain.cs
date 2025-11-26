@@ -5,12 +5,15 @@ public interface IHeroCategoryGrain : IGrainWithStringKey, IAppGrainContract
 	Task<HeroCategory> Get();
 }
 
-[DebuggerDisplay("{DebuggerDisplay,nq}")]
+[GenerateSerializer, DebuggerDisplay("{DebuggerDisplay,nq}")]
 public class HeroCategory
 {
 	protected string DebuggerDisplay => $"Id: '{Id}', Title: '{Title}'";
 
+	[Id(0)]
 	public string Id { get; set; }
+	[Id(1)]
 	public string Title { get; set; }
+	[Id(2)]
 	public IList<string> Heroes { get; set; }
 }

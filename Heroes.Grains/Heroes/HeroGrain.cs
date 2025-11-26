@@ -5,14 +5,18 @@ using Heroes.Core.Utils;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Providers;
-using SignalR.Orleans;
-using SignalR.Orleans.Core;
+using Orleans.Streams;
+// TODO: Re-enable when SignalR.Orleans supports Orleans 9.x
+//using SignalR.Orleans;
+//using SignalR.Orleans.Core;
 using System.Diagnostics;
 
 namespace Heroes.Grains.Heroes;
 
+[GenerateSerializer]
 public class HeroState
 {
+	[Id(0)]
 	public Hero Entity { get; set; }
 }
 
@@ -32,7 +36,8 @@ public class HeroGrain : AppGrain<HeroState>, IHeroGrain
 {
 	private readonly IHeroDataClient _heroDataClient;
 	private HeroKeyData _keyData;
-	private HubContext<IHeroHub> _hubContext;
+	// TODO: Re-enable when SignalR.Orleans supports Orleans 9.x
+	//private HubContext<IHeroHub> _hubContext;
 
 	public HeroGrain(
 		ILogger<HeroGrain> logger,
@@ -42,10 +47,11 @@ public class HeroGrain : AppGrain<HeroState>, IHeroGrain
 		_heroDataClient = heroDataClient;
 	}
 
-	public override async Task OnActivateAsync()
+	public override async Task OnActivateAsync(CancellationToken cancellationToken)
 	{
-		await base.OnActivateAsync();
-		_hubContext = GrainFactory.GetHub<IHeroHub>();
+		await base.OnActivateAsync(cancellationToken);
+		// TODO: Re-enable when SignalR.Orleans supports Orleans 9.x
+		//_hubContext = GrainFactory.GetHub<IHeroHub>();
 		_keyData = this.ParseKey<HeroKeyData>(HeroKeyData.Template);
 
 		if (State.Entity == null)
@@ -58,23 +64,25 @@ public class HeroGrain : AppGrain<HeroState>, IHeroGrain
 			await Set(entity);
 		}
 
-		var hubGroup = _hubContext.Group($"{_keyData.Tenant}/hero/{_keyData.Id}");
-		var hubAllGroup = _hubContext.Group($"{_keyData.Tenant}/hero"); // all
+		// TODO: Re-enable when SignalR.Orleans supports Orleans 9.x
+		//var hubGroup = _hubContext.Group($"{_keyData.Tenant}/hero/{_keyData.Id}");
+		//var hubAllGroup = _hubContext.Group($"{_keyData.Tenant}/hero"); // all
 
-		var streamProvider = GetStreamProvider(Constants.STREAM_PROVIDER);
-		var stream = streamProvider.GetStream<Hero>(StreamConstants.HeroStream, $"hero:{_keyData.Id}");
+		var streamProvider = this.GetStreamProvider(OrleansConstants.STREAM_PROVIDER);
+		var stream = streamProvider.GetStream<Hero>(StreamConstants.HeroStream.ToString(), $"hero:{_keyData.Id}");
 
-		RegisterTimer(async x =>
-		{
-			State.Entity.Health = RandomUtils.GenerateNumber(1, 100);
+		this.RegisterGrainTimer(async x =>
+			{
+				State.Entity.Health = RandomUtils.GenerateNumber(1, 100);
 
-			await Task.WhenAll(
-				Set(State.Entity),
-				stream.OnNextAsync(State.Entity),
-				hubGroup.Send("HeroChanged", State.Entity),
-				hubAllGroup.Send("HeroChanged", State.Entity)
-			);
-		}, State, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(3));
+				// TODO: Re-enable when SignalR.Orleans supports Orleans 9.x
+				await Task.WhenAll(
+					Set(State.Entity),
+					stream.OnNextAsync(State.Entity)
+				//hubGroup.Send("HeroChanged", State.Entity),
+				//hubAllGroup.Send("HeroChanged", State.Entity)
+				);
+			}, State, new GrainTimerCreationOptions { DueTime = TimeSpan.FromSeconds(2), Period = TimeSpan.FromSeconds(3), Interleave = true });
 	}
 
 	public Task<Hero> Get() => Task.FromResult(State.Entity);

@@ -8,8 +8,10 @@ using System.Diagnostics;
 
 namespace Heroes.Grains.HeroCategories;
 
+[GenerateSerializer]
 public class HeroCategoryState
 {
+	[Id(0)]
 	public HeroCategory Entity { get; set; }
 }
 
@@ -38,9 +40,9 @@ public class HeroCategoryGrain : AppGrain<HeroCategoryState>, IHeroCategoryGrain
 		_heroDataClient = heroDataClient;
 	}
 
-	public override async Task OnActivateAsync()
+	public override async Task OnActivateAsync(CancellationToken cancellationToken)
 	{
-		await base.OnActivateAsync();
+		await base.OnActivateAsync(cancellationToken);
 		_keyData = this.ParseKey<HeroCategoryKeyData>(HeroCategoryKeyData.Template);
 
 		if (State.Entity == null)

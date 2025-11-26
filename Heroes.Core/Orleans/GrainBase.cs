@@ -71,7 +71,7 @@ public abstract class AppGrain<TState> : Grain<TState>, IAppGrain
 
 	public virtual Task Activate() => Task.CompletedTask;
 
-	public override Task OnActivateAsync()
+	public override Task OnActivateAsync(CancellationToken cancellationToken)
 	{
 		if (!_primaryKey.IsNullOrEmpty())
 			Logger.LogCritical("[{grain}] Grain PrimaryKey was set before activation! Make sure to null PrimaryKey on deactivation!", Source);
@@ -80,9 +80,9 @@ public abstract class AppGrain<TState> : Grain<TState>, IAppGrain
 		return Task.CompletedTask;
 	}
 
-	public override Task OnDeactivateAsync()
+	public override Task OnDeactivateAsync(DeactivationReason reason, CancellationToken cancellationToken)
 	{
-		Logger.LogInformation("[{grain}] deactivated for key: {grainPrimaryKey}", Source, PrimaryKey);
+		Logger.LogInformation("[{grain}] deactivated for key: {grainPrimaryKey} (reason: {reason})", Source, PrimaryKey, reason);
 		return Task.CompletedTask;
 	}
 
@@ -105,7 +105,7 @@ public abstract class AppGrain : Grain, IAppGrain
 
 	public virtual Task Activate() => Task.CompletedTask;
 
-	public override Task OnActivateAsync()
+	public override Task OnActivateAsync(CancellationToken cancellationToken)
 	{
 		if (!_primaryKey.IsNullOrEmpty())
 			Logger.LogCritical("[{grain}] Grain PrimaryKey was set before activation! Make sure to null PrimaryKey on deactivation!", Source);
@@ -114,9 +114,9 @@ public abstract class AppGrain : Grain, IAppGrain
 		return Task.CompletedTask;
 	}
 
-	public override Task OnDeactivateAsync()
+	public override Task OnDeactivateAsync(DeactivationReason reason, CancellationToken cancellationToken)
 	{
-		Logger.LogInformation("[{grain}] deactivated for key: {grainPrimaryKey}", Source, PrimaryKey);
+		Logger.LogInformation("[{grain}] deactivated for key: {grainPrimaryKey} (reason: {reason})", Source, PrimaryKey, reason);
 		return Task.CompletedTask;
 	}
 }

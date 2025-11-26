@@ -52,11 +52,17 @@ public static class SiloBuilderExtensions
 			});
 
 		if (context.HostBuilderContext.HostingEnvironment.IsDevelopment())
+		{
 			siloHost.UseDevelopment(context);
-		if (appInfo.IsDockerized)
-			siloHost.UseDockerSwarm(context);
-		else
 			siloHost.UseDevelopmentClustering(context);
+		}
+		// if (appInfo.IsDockerized)
+		// 	siloHost.UseDockerSwarm(context);
+		else
+		{
+			// Production clustering would go here
+			siloHost.UseDevelopmentClustering(context);
+		}
 
 		return siloHost;
 	}
@@ -125,20 +131,20 @@ public static class SiloBuilderExtensions
 		};
 	}
 
-	// todo: remove
-	private static ISiloBuilder UseDockerSwarm(this ISiloBuilder siloHost, AppSiloBuilderContext context)
-	{
-		var siloPort = context.SiloOptions.SiloPort;
-
-		var ips = Dns.GetHostAddresses(Dns.GetHostName());
-		var defaultIpV4 = ips.First(x => x.AddressFamily == AddressFamily.InterNetwork);
-
-		return siloHost
-			.ConfigureEndpoints(
-				defaultIpV4,
-				siloPort,
-				context.SiloOptions.GatewayPort,
-				listenOnAnyHostAddress: true
-			);
-	}
+	// // todo: remove
+	// private static ISiloBuilder UseDockerSwarm(this ISiloBuilder siloHost, AppSiloBuilderContext context)
+	// {
+	// 	var siloPort = context.SiloOptions.SiloPort;
+	//
+	// 	var ips = Dns.GetHostAddresses(Dns.GetHostName());
+	// 	var defaultIpV4 = ips.First(x => x.AddressFamily == AddressFamily.InterNetwork);
+	//
+	// 	return siloHost
+	// 		.ConfigureEndpoints(
+	// 			defaultIpV4,
+	// 			siloPort,
+	// 			context.SiloOptions.GatewayPort,
+	// 			listenOnAnyHostAddress: true
+	// 		);
+	// }
 }

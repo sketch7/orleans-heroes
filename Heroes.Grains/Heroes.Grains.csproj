@@ -10,10 +10,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="$(OrleansVersion)" />
-    <PackageReference Include="Microsoft.Orleans.CodeGenerator.MSBuild" Version="$(OrleansVersion)" PrivateAssets="all">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="Microsoft.Orleans.Sdk" Version="$(OrleansVersion)" />
+    <PackageReference Include="Microsoft.Orleans.Streaming" Version="$(OrleansVersion)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(SignalROrleansVersion)' == 'link'">
@@ -23,5 +21,6 @@
   <ItemGroup Condition="'$(SignalROrleansVersion)' != 'link'">
     <PackageReference Include="Sketch7.SignalR.Orleans" Version="$(SignalROrleansVersion)" />
   </ItemGroup>
+
 
 </Project>

@@ -6,13 +6,17 @@ public interface IHeroStatsGrain : IGrainWithStringKey
 	Task Set(HeroStats hero);
 }
 
-[DebuggerDisplay("${DebuggerDisplay, nq}")]
+[GenerateSerializer, DebuggerDisplay("${DebuggerDisplay, nq}")]
 public class HeroStats
 {
 	protected string DebuggerDisplay => $"HeroId: '{HeroId}', WinRate: {WinRate}, BanRate: {BanRate}, TotalGames: {TotalGames}";
+	[Id(0)]
 	public string HeroId { get; set; }
+	[Id(1)]
 	public decimal WinRate { get; set; }
+	[Id(2)]
 	public decimal BanRate { get; set; }
+	[Id(3)]
 	public int TotalGames { get; set; }
 
 	public override string ToString() => DebuggerDisplay;
