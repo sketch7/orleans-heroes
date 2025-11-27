@@ -1,7 +1,10 @@
 # NgClient
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.1.
-
+```bash
+# regen
+ng new ng-client --ai-config copilot --package-manager pnpm --style tailwind --directory apps/ng-client
+```
 ## Development server
 
 To start a local development server, run:

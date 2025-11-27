@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, inject, signal, computed, DestroyRef } from "@angular/core";
-import { toSignal } from "@angular/core/rxjs-interop";
+import { Component, ChangeDetectionStrategy, inject, signal, computed, DestroyRef } from "@angular/core";
+import { takeUntilDestroyed, toSignal } from "@angular/core/rxjs-interop";
 import { VERSION } from "@ssv/signalr-client";
 import { Subscription, map, tap } from "rxjs";
 
@@ -44,22 +44,20 @@ export class SignalrComponent {
   readonly isConnected = signal(false);
   readonly selectedGroupId = signal(this.availableGroups[0].id);
 
-  private source = "SignalrComponent ::";
+  #source = "SignalrComponent ::";
 
-  private hubConnection$$ = Subscription.EMPTY;
-  private onSend$$ = Subscription.EMPTY;
-
-  private kha$$ = Subscription.EMPTY;
-  private singed$$ = Subscription.EMPTY;
-  private heroChange$$ = Subscription.EMPTY;
-  private connectionState$$ = Subscription.EMPTY;
+  #onSend$$ = Subscription.EMPTY;
+  #kha$$ = Subscription.EMPTY;
+  #singed$$ = Subscription.EMPTY;
+  #heroChange$$ = Subscription.EMPTY;
 
   constructor() {
     this.hubConnection = this.#hubClient.get();
 
-
-    this.connectionState$$ = this.hubConnection.connectionState$.subscribe(x => {
-      console.log(`${this.source} :: Status Changed :: ${JSON.stringify(x)}`);
+    this.hubConnection.connectionState$.pipe(
+      takeUntilDestroyed(),
+    ).subscribe(x => {
+      console.log(`${this.#source} :: Status Changed :: ${JSON.stringify(x)}`);
     });
 
     this.subscribe();
@@ -67,23 +65,23 @@ export class SignalrComponent {
     // this.disconnect();
 
     this.#destroyRef.onDestroy(() => {
-      this.connectionState$$.unsubscribe();
-      this.hubConnection$$.unsubscribe();
       this.dispose();
     });
 
   }
 
   subscribe() {
-    // this.singed$$ = this.hubConnection.stream<Hero>("GetUpdates", "singed")
+    // this.#singed$$ = this.hubConnection.stream<Hero>("GetUpdates", "singed")
     // 	.subscribe(x => console.log(`${this.source} stream :: singed`, x));
 
-    this.onSend$$ = this.#hubClient.send$().subscribe((val: string) => {
-      console.log(`${this.source} send :: data received >>>`, val);
+    this.#hubClient.send$().pipe(
+      takeUntilDestroyed(this.#destroyRef)
+    ).subscribe((val: string) => {
+      console.log(`${this.#source} send :: data received >>>`, val);
     });
 
-    this.heroChange$$ = this.#hubClient.heroChanged$().pipe(
-      tap(x => console.log(`${this.source} send :: data received >>>`, x)),
+    this.#heroChange$$ = this.#hubClient.heroChanged$().pipe(
+      tap(x => console.log(`${this.#source} send :: data received >>>`, x)),
       map(heroChange => {
         const currentState = this.heroesState();
         let hero = currentState[heroChange.id];
@@ -100,8 +98,9 @@ export class SignalrComponent {
           [hero.id]: hero
         }));
       }),
+      takeUntilDestroyed(this.#destroyRef),
     ).subscribe();
-    // this.kha$$ = this.hubConnection.stream<Hero>("GetUpdates", "kha-zix")
+    // this.#kha$$ = this.hubConnection.stream<Hero>("GetUpdates", "kha-zix")
     // 	.subscribe(x => console.log(`${this.source} stream :: kha`, x));
   }
 
@@ -111,11 +110,13 @@ export class SignalrComponent {
   }
 
   connect() {
-    this.hubConnection$$ = this.hubConnection.connect(() => {
+    this.hubConnection.connect(() => {
       console.log("setting data..");
       return { token: "cla-key" };
-    }).subscribe(() => {
-      console.log(`${this.source} connected!!`);
+    }).pipe(
+      takeUntilDestroyed(this.#destroyRef)
+    ).subscribe(() => {
+      console.log(`${this.#source} connected!!`);
     });
   }
 
@@ -133,7 +134,7 @@ export class SignalrComponent {
 
   invoke() {
     this.hubConnection.invoke("Echo", "fucking builds")
-      .subscribe(x => console.log(`${this.source} invoke :: result`, x));
+      .subscribe(x => console.log(`${this.#source} invoke :: result`, x));
   }
 
   setData() {
@@ -141,20 +142,16 @@ export class SignalrComponent {
     this.hubConnection.setData(() => ({ token: "cla-key", test: "hello1" }));
   }
 
-  trackByHero(_index: number, hero: Hero): string {
-    return `${hero.id}`;
-  }
-
   disconnect() {
     this.hubConnection.disconnect().subscribe();
   }
 
   dispose() {
-    console.log(`${this.source} disposing...`);
-    this.onSend$$.unsubscribe();
-    this.kha$$.unsubscribe();
-    this.singed$$.unsubscribe();
-    this.heroChange$$.unsubscribe();
+    console.log(`${this.#source} disposing...`);
+    this.#onSend$$.unsubscribe();
+    this.#kha$$.unsubscribe();
+    this.#singed$$.unsubscribe();
+    this.#heroChange$$.unsubscribe();
   }
 
 }
