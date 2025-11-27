@@ -35,8 +35,8 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(SignalROrleansVersion)' == 'link'">
-    <ProjectReference Include="..\..\SignalR.Orleans\src\SignalR.Orleans\SignalR.Orleans.csproj" />
-    <ProjectReference Include="..\..\SignalR.Orleans\src\SignalR.Orleans.AspNet\SignalR.Orleans.AspNet.csproj" />
+    <ProjectReference Include="$(SignalrOrleansBaseLinkPath)\src\SignalR.Orleans\SignalR.Orleans.csproj" />
+    <ProjectReference Include="$(SignalrOrleansBaseLinkPath)\src\SignalR.Orleans.AspNet\SignalR.Orleans.AspNet.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(SignalROrleansVersion)' != 'link'">

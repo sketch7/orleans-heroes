@@ -34,14 +34,15 @@
 
   <!-- Shared Package Versions -->
   <PropertyGroup>
+    <SignalrOrleansBaseLinkPath>..\..\Sketch7.SignalR.Orleans</SignalrOrleansBaseLinkPath>
     <!-- framework -->
     <MicrosoftExtensionsVersion>10.0.*</MicrosoftExtensionsVersion>
     <MicrosoftAspnetCoreVersion>10.0.*</MicrosoftAspnetCoreVersion>
 
     <!-- vendors -->
     <OrleansVersion>9.2.1</OrleansVersion>
-<!--    <SignalROrleansVersion>8.0.0</SignalROrleansVersion>-->
-     <SignalROrleansVersion>link</SignalROrleansVersion> 
+    <!--    <SignalROrleansVersion>8.0.0</SignalROrleansVersion>-->
+    <SignalROrleansVersion>link</SignalROrleansVersion>
 
     <NewtonsoftJsonVersion>13.0.3</NewtonsoftJsonVersion>
     <GraceVersion>8.0.0-stla.2</GraceVersion>
