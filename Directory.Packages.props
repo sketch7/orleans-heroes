@@ -17,7 +17,6 @@
     <GraphQLVersion>7.5.0</GraphQLVersion>
   </PropertyGroup>
 
-
   <ItemGroup>
     <!-- Orleans packages -->
     <PackageVersion Include="Microsoft.Orleans.Sdk" Version="$(OrleansVersion)" />
