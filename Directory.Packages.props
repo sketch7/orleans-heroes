@@ -1,0 +1,72 @@
+<Project>
+  <!-- Enable Central Package Management -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+
+    <SignalrOrleansBaseLinkPath>..\..\Sketch7.SignalR.Orleans</SignalrOrleansBaseLinkPath>
+    <!-- framework -->
+    <MicrosoftExtensionsVersion>10.0.0</MicrosoftExtensionsVersion>
+    <MicrosoftAspnetCoreVersion>10.0.0</MicrosoftAspnetCoreVersion>
+
+    <!-- vendors -->
+    <OrleansVersion>9.2.1</OrleansVersion>
+    <SignalROrleansVersion>link</SignalROrleansVersion>
+    <NewtonsoftJsonVersion>13.0.3</NewtonsoftJsonVersion>
+    <GraceVersion>8.0.0-stla.2</GraceVersion>
+    <GraceAspNetCoreHostingVersion>8.0.0-stla.2</GraceAspNetCoreHostingVersion>
+    <GraphQLVersion>7.5.0</GraphQLVersion>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <!-- Orleans packages -->
+    <PackageVersion Include="Microsoft.Orleans.Sdk" Version="$(OrleansVersion)" />
+    <PackageVersion Include="Microsoft.Orleans.Client" Version="$(OrleansVersion)" />
+    <PackageVersion Include="Microsoft.Orleans.Server" Version="$(OrleansVersion)" />
+    <PackageVersion Include="Microsoft.Orleans.Streaming" Version="$(OrleansVersion)" />
+
+    <!-- Microsoft.Extensions packages -->
+    <PackageVersion Include="Microsoft.Extensions.Configuration" Version="$(MicrosoftExtensionsVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="$(MicrosoftExtensionsVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.CommandLine" Version="$(MicrosoftExtensionsVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="$(MicrosoftExtensionsVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.FileExtensions" Version="$(MicrosoftExtensionsVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="$(MicrosoftExtensionsVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="$(MicrosoftExtensionsVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(MicrosoftExtensionsVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="$(MicrosoftExtensionsVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.Logging" Version="$(MicrosoftExtensionsVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="$(MicrosoftExtensionsVersion)" />
+    <PackageVersion Include="System.Threading.Channels" Version="$(MicrosoftExtensionsVersion)" />
+
+    <!-- ASP.NET Core packages -->
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(MicrosoftAspnetCoreVersion)" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(MicrosoftAspnetCoreVersion)" />
+
+    <!-- Grace DI packages -->
+    <PackageVersion Include="Grace" Version="$(GraceVersion)" />
+    <PackageVersion Include="Grace.AspNetCore.Hosting" Version="$(GraceAspNetCoreHostingVersion)" />
+    <PackageVersion Include="Grace.DependencyInjection.Extensions" Version="$(GraceAspNetCoreHostingVersion)" />
+
+    <!-- GraphQL packages -->
+    <PackageVersion Include="GraphQL.Server.All" Version="$(GraphQLVersion)" />
+    <PackageVersion Include="GraphQL.DataLoader" Version="$(GraphQLVersion)" />
+    <PackageVersion Include="GraphQL.NewtonsoftJson" Version="$(GraphQLVersion)" />
+
+    <!-- Serilog packages -->
+    <PackageVersion Include="Serilog" Version="4.3.0" />
+    <PackageVersion Include="Serilog.AspNetCore" Version="9.0.0" />
+    <PackageVersion Include="Serilog.Extensions.Hosting" Version="9.0.0" />
+    <PackageVersion Include="Serilog.Enrichers.Demystify" Version="1.0.0-dev-00019" />
+    <PackageVersion Include="Serilog.Enrichers.Environment" Version="3.0.1" />
+    <PackageVersion Include="Serilog.Extensions.Logging" Version="10.0.0" />
+    <PackageVersion Include="Serilog.Settings.Configuration" Version="9.0.0" />
+    <PackageVersion Include="Serilog.Sinks.Console" Version="6.1.1" />
+
+    <!-- Other packages -->
+    <PackageVersion Include="Newtonsoft.Json" Version="$(NewtonsoftJsonVersion)" />
+    <PackageVersion Include="Humanizer.Core" Version="3.0.1" />
+    <PackageVersion Include="System.Reactive.Linq" Version="6.1.0" />
+    <PackageVersion Include="Sucrose.Orleans.Persistence.Redis" Version="3.0.1" />
+  </ItemGroup>
+</Project>

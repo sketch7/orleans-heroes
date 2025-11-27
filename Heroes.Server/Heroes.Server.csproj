@@ -5,33 +5,33 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Grace" Version="$(GraceVersion)" />
-    <PackageReference Include="Grace.AspNetCore.Hosting" Version="$(GraceAspNetCoreHostingVersion)" />
-    <PackageReference Include="Grace.DependencyInjection.Extensions" Version="$(GraceAspNetCoreHostingVersion)" />
-    <PackageReference Include="GraphQL.Server.All" Version="$(GraphQLVersion)" />
-    <PackageReference Include="GraphQL.DataLoader" Version="$(GraphQLVersion)" />
-    <PackageReference Include="GraphQL.NewtonsoftJson" Version="$(GraphQLVersion)" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(MicrosoftAspnetCoreVersion)" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(MicrosoftAspnetCoreVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(MicrosoftExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="$(MicrosoftExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="$(MicrosoftExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="$(MicrosoftExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="$(MicrosoftExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(MicrosoftExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(MicrosoftExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="$(MicrosoftExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Orleans.Server" Version="$(OrleansVersion)" />
-    <PackageReference Include="Microsoft.Orleans.Streaming" Version="$(OrleansVersion)" />
-    <PackageReference Include="Serilog" Version="4.3.0" />
-    <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
-    <PackageReference Include="Serilog.Extensions.Hosting" Version="9.0.0" />
-    <PackageReference Include="Serilog.Enrichers.Demystify" Version="1.0.0-dev-00019" />
-    <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
-    <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
-    <PackageReference Include="Serilog.Settings.Configuration" Version="9.0.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
-    <PackageReference Include="Sucrose.Orleans.Persistence.Redis" Version="3.0.1" />
+    <PackageReference Include="Grace" />
+    <PackageReference Include="Grace.AspNetCore.Hosting" />
+    <PackageReference Include="Grace.DependencyInjection.Extensions" />
+    <PackageReference Include="GraphQL.Server.All" />
+    <PackageReference Include="GraphQL.DataLoader" />
+    <PackageReference Include="GraphQL.NewtonsoftJson" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Microsoft.Extensions.Logging" />
+    <PackageReference Include="Microsoft.Orleans.Server" />
+    <PackageReference Include="Microsoft.Orleans.Streaming" />
+    <PackageReference Include="Serilog" />
+    <PackageReference Include="Serilog.AspNetCore" />
+    <PackageReference Include="Serilog.Extensions.Hosting" />
+    <PackageReference Include="Serilog.Enrichers.Demystify" />
+    <PackageReference Include="Serilog.Enrichers.Environment" />
+    <PackageReference Include="Serilog.Extensions.Logging" />
+    <PackageReference Include="Serilog.Settings.Configuration" />
+    <PackageReference Include="Serilog.Sinks.Console" />
+    <PackageReference Include="Sucrose.Orleans.Persistence.Redis" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(SignalROrleansVersion)' == 'link'">

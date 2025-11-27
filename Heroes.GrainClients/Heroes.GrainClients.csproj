@@ -6,7 +6,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Orleans.Client" Version="$(OrleansVersion)" />
+    <PackageReference Include="Microsoft.Orleans.Client" />
   </ItemGroup>
 
 </Project>
