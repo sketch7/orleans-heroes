@@ -3,10 +3,7 @@ using Heroes.Contracts.Heroes;
 using Heroes.Core.Extensions;
 using Heroes.Server.Realtime.Core;
 using Microsoft.AspNetCore.SignalR;
-using Orleans;
-using Orleans.Runtime;
 using Orleans.Streams;
-using SignalR.Orleans;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Channels;
@@ -79,6 +76,14 @@ public class HeroHub : Hub<IHeroHub>
 
 	public async Task AddToGroup(string name)
 		=> await Groups.AddToGroupAsync(Context.ConnectionId, name);
+
+	public async Task AddToGroups(HashSet<string> groups)
+	{
+		foreach (var group in groups)
+		{
+			await Groups.AddToGroupAsync(Context.ConnectionId, group);
+		}
+	}
 
 	public async Task StreamUnsubscribe(string methodName, string id)
 	{
