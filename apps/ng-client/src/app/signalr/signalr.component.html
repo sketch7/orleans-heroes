@@ -14,7 +14,7 @@
         <span
           class="font-semibold text-gray-900 dark:text-white px-3 py-1 bg-blue-100 dark:bg-blue-900 rounded-full"
         >
-          {{ currentUser }}
+          {{ currentUser() }}
         </span>
       </div>
 
@@ -23,12 +23,12 @@
         <span
           class="font-mono text-xs px-3 py-1 rounded-full"
           [class]="
-            connectionState?.status === 'connected'
+            connectionState()?.status === 'connected'
               ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
               : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
           "
         >
-          {{ connectionState?.status || 'disconnected' }}
+          {{ connectionState()?.status || 'disconnected' }}
         </span>
       </div>
     </div>
@@ -119,7 +119,8 @@
           </label>
           <select
             id="group-select"
-            [(value)]="selectedGroupId"
+            [value]="selectedGroupId()"
+            (change)="selectedGroupId.set($any($event.target).value)"
             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
           >
             @for (group of availableGroups; track group.id) {
@@ -149,11 +150,11 @@
     <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
       Heroes
       <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
-        ({{ heroes.length }} active)
+        ({{ heroes().length }} active)
       </span>
     </h2>
 
-    @if (heroes.length === 0) {
+    @if (heroes().length === 0) {
     <div class="text-center py-8 text-gray-500 dark:text-gray-400">
       <svg
         class="mx-auto h-12 w-12 mb-3 opacity-50"
@@ -172,7 +173,7 @@
     </div>
     } @else {
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-      @for (hero of heroes; track hero.id) {
+      @for (hero of heroes(); track hero.id) {
       <div
         class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:shadow-md transition-shadow duration-200"
       >

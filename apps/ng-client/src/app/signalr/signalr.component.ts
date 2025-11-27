@@ -1,9 +1,9 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, ChangeDetectionStrategy, NgZone, inject } from "@angular/core";
-import { HubConnection, ConnectionState, VERSION } from "@ssv/signalr-client";
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, inject, signal, computed, DestroyRef } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
+import { VERSION } from "@ssv/signalr-client";
 import { Subscription, map, tap } from "rxjs";
 
-import { Hero, HeroHub, HeroHubClient } from "./hero.hubclient";
-import { JsonPipe } from "@angular/common";
+import { Hero, HeroHubClient } from "./hero.hubclient";
 
 export interface Group {
   id: string;
@@ -15,21 +15,20 @@ export interface Group {
   templateUrl: "./signalr.component.html",
   styleUrls: ["./signalr.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [JsonPipe],
+  // imports: [JsonPipe],
 })
-export class SignalrComponent implements OnInit, OnDestroy {
+export class SignalrComponent {
 
+  readonly signalrVersion = VERSION;
+
+  readonly #destroyRef = inject(DestroyRef);
   readonly #hubClient = inject(HeroHubClient);
 
+  readonly hubConnection = this.#hubClient.get();
+  readonly connectionState = toSignal(this.hubConnection.connectionState$)
 
-  heroesState: Record<string, Hero> = {};
-  heroes: Hero[] = [];
-  currentUser = "Anonymous";
-  isConnected = false;
-  connectionState: ConnectionState | undefined;
-  signalrVersion = VERSION;
 
-  availableGroups: Group[] = [
+  readonly availableGroups: Group[] = [
     { id: "lol/hero", name: "All LoL" },
     { id: "hots/hero", name: "All HoTS" },
     { id: "lol/hero/singed", name: "Singed" },
@@ -39,9 +38,11 @@ export class SignalrComponent implements OnInit, OnDestroy {
     { id: "hots/hero/keal-thas", name: "Keal-thas" },
     { id: "hots/hero/alexstrasza", name: "Alexstrasza" },
   ];
-  selectedGroupId = this.availableGroups[0].id;
-
-  private hubConnection!: HubConnection<HeroHub>;
+  readonly heroesState = signal<Record<string, Hero>>({});
+  readonly heroes = computed(() => Object.values(this.heroesState()));
+  readonly currentUser = signal("Anonymous");
+  readonly isConnected = signal(false);
+  readonly selectedGroupId = signal(this.availableGroups[0].id);
 
   private source = "SignalrComponent ::";
 
@@ -53,46 +54,39 @@ export class SignalrComponent implements OnInit, OnDestroy {
   private heroChange$$ = Subscription.EMPTY;
   private connectionState$$ = Subscription.EMPTY;
 
+  constructor() {
+    this.hubConnection = this.#hubClient.get();
 
-  constructor(
-    private hubClient: HeroHubClient,
-    private cdr: ChangeDetectorRef,
-    private ngZone: NgZone
-  ) {
-    this.hubConnection = this.hubClient.get();
-  }
 
-  ngOnInit(): void {
     this.connectionState$$ = this.hubConnection.connectionState$.subscribe(x => {
       console.log(`${this.source} :: Status Changed :: ${JSON.stringify(x)}`);
-      this.connectionState = x;
-      this.cdr.markForCheck();
     });
 
     this.subscribe();
     this.connect();
     // this.disconnect();
-  }
 
-  ngOnDestroy(): void {
-    this.connectionState$$.unsubscribe();
-    this.hubConnection$$.unsubscribe();
-    this.dispose();
+    this.#destroyRef.onDestroy(() => {
+      this.connectionState$$.unsubscribe();
+      this.hubConnection$$.unsubscribe();
+      this.dispose();
+    });
+
   }
 
   subscribe() {
     // this.singed$$ = this.hubConnection.stream<Hero>("GetUpdates", "singed")
     // 	.subscribe(x => console.log(`${this.source} stream :: singed`, x));
 
-    this.onSend$$ = this.hubClient.send$().subscribe((val: string) => {
+    this.onSend$$ = this.#hubClient.send$().subscribe((val: string) => {
       console.log(`${this.source} send :: data received >>>`, val);
-      this.cdr.markForCheck();
     });
 
-    this.heroChange$$ = this.ngZone.run(() => this.hubClient.heroChanged$()).pipe(
+    this.heroChange$$ = this.#hubClient.heroChanged$().pipe(
       tap(x => console.log(`${this.source} send :: data received >>>`, x)),
       map(heroChange => {
-        let hero = this.heroesState[heroChange.id];
+        const currentState = this.heroesState();
+        let hero = currentState[heroChange.id];
         if (hero) {
           hero = { ...hero, ...heroChange };
         } else {
@@ -101,11 +95,11 @@ export class SignalrComponent implements OnInit, OnDestroy {
         return hero;
       }),
       tap(hero => {
-        this.heroesState[hero.id] = hero;
-        this.heroes = Object.values(this.heroesState);
+        this.heroesState.update(state => ({
+          ...state,
+          [hero.id]: hero
+        }));
       }),
-      tap(() => this.ngZone.run(() => this.cdr.markForCheck())), // with signalr 6.x is not working without zone
-      // tap(() => this.cdr.markForCheck()),
     ).subscribe();
     // this.kha$$ = this.hubConnection.stream<Hero>("GetUpdates", "kha-zix")
     // 	.subscribe(x => console.log(`${this.source} stream :: kha`, x));
@@ -130,11 +124,11 @@ export class SignalrComponent implements OnInit, OnDestroy {
   }
 
   subscribeToGroup() {
-    this.hubClient.addToGroup$(this.selectedGroupId);
+    this.#hubClient.addToGroup$(this.selectedGroupId());
   }
 
   subscribeToGroups() {
-    this.hubClient.addToGroups$(["lol/hero", "hots/hero"]);
+    this.#hubClient.addToGroups$(["lol/hero", "hots/hero"]);
   }
 
   invoke() {
@@ -161,7 +155,6 @@ export class SignalrComponent implements OnInit, OnDestroy {
     this.kha$$.unsubscribe();
     this.singed$$.unsubscribe();
     this.heroChange$$.unsubscribe();
-    this.cdr.markForCheck();
   }
 
 }
