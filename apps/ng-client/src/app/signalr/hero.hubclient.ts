@@ -26,6 +26,7 @@ export interface HeroHub {
   GetUpdates: string;
   HeroChanged: string;
   AddToGroup: string;
+  AddToGroups: string[];
   Echo: number;
 }
 
@@ -67,6 +68,10 @@ export class HeroHubClient {
 
   addToGroup$(groupId: string): Observable<void> {
     return this.connection.send("AddToGroup", groupId);
+  }
+
+  addToGroups$(groups: string[]): Observable<void> {
+    return this.connection.send("AddToGroups", groups);
   }
 
 }

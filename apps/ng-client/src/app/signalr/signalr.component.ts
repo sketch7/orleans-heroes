@@ -133,6 +133,10 @@ export class SignalrComponent implements OnInit, OnDestroy {
     this.hubClient.addToGroup$(this.selectedGroupId);
   }
 
+  subscribeToGroups() {
+    this.hubClient.addToGroups$(["lol/hero", "hots/hero"]);
+  }
+
   invoke() {
     this.hubConnection.invoke("Echo", "fucking builds")
       .subscribe(x => console.log(`${this.source} invoke :: result`, x));
