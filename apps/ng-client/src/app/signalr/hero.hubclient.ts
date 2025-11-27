@@ -12,14 +12,13 @@ export interface Hero {
   health?: number;
 }
 
-export enum HeroRoleType {
-  assassin = "assassin",
-  fighter = "fighter",
-  mage = "mage",
-  support = "support",
-  tank = "tank",
-  marksman = "marksman",
-}
+export type HeroRoleType =
+  | "assassin"
+  | "fighter"
+  | "mage"
+  | "support"
+  | "tank"
+  | "marksman";
 
 export interface HeroHub {
   Send: string;
