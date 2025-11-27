@@ -1,5 +1,5 @@
 import { Observable } from "rxjs";
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { HubConnectionFactory, HubConnection } from "@ssv/signalr-client";
 
 export interface Hero {
@@ -37,12 +37,11 @@ const connectionKey = "hero";
 })
 export class HeroHubClient {
 
-  private connection: HubConnection<HeroHub>;
+  readonly connection: HubConnection<HeroHub>;
 
-  constructor(
-    private hubFactory: HubConnectionFactory,
-  ) {
-    this.hubFactory.create(
+  constructor() {
+    const hubFactory = inject(HubConnectionFactory);
+    hubFactory.create(
       {
         key: connectionKey,
         endpointUri: `http://localhost:6600/real-time/hero`,
@@ -51,12 +50,10 @@ export class HeroHubClient {
         // }
       }
     );
-    this.connection = this.get();
+    this.connection = hubFactory.get<HeroHub>(connectionKey);
   }
 
-  get(): HubConnection<HeroHub> {
-    return this.hubFactory.get<HeroHub>(connectionKey);
-  }
+  get(): HubConnection<HeroHub> { return this.connection; }
 
   send$(): Observable<string> {
     return this.connection.on<string>("Send");
