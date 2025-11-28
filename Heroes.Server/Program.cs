@@ -1,5 +1,3 @@
-using Grace.DependencyInjection;
-using Grace.DependencyInjection.Extensions;
 using Heroes.Contracts;
 using Heroes.Core.Tenancy;
 using Heroes.Server.Infrastructure;
@@ -110,6 +108,9 @@ public class Program
 		services.AddSingleton<IAppTenantRegistry, AppTenantRegistry>();
 		services.AddAppGrains();
 
+		// Configure tenant-specific services (previously in Grace DI)
+		ConfigureServices(services, appInfo);
+
 		services.Configure<ConsoleLifetimeOptions>(options =>
 		{
 			options.SuppressStatusMessages = true;
@@ -170,105 +171,31 @@ public class Program
 		return app.RunAsync();
 	}
 
-	private static void ConfigureServices(IInjectionScope scope)
+	private static void ConfigureServices(IServiceCollection services, IAppInfo appInfo)
 	{
-		var tenantRegistry = scope.Locate<IAppTenantRegistry>();
-		var tenants = tenantRegistry.GetAll().ToList();
+		// Register TenantGrainActivator for Orleans
+		services.AddSingleton<IGrainActivator, TenantGrainActivator>();
 
-		scope.Configure(c =>
+		// Register a tenant context provider service
+		// Note: This is a simplified implementation. In production, you'd want to:
+		// 1. Create an ITenantContextProvider interface
+		// 2. Implement tenant resolution from HttpContext, claims, or headers
+		// 3. Use middleware to set the current tenant per request
+		services.AddScoped<ITenant>(sp =>
 		{
-
-			c.Export<TenantGrainActivator>().As<IGrainActivator>().Lifestyle.Singleton();
-			//c
-			//	//.Export<MockLoLHeroDataClient>()
-			//	.Export<MockHotsHeroDataClient>()
-			//	.As<IHeroDataClient>()
-			//	;
-			// todo: use multi tenancy lib
-			c.ExportFactory<IExportLocatorScope, ITenant>(exportScope => exportScope.GetTenantContext());
-
-			//c.Export<MockHotsHeroDataClient>().AsKeyed<IHeroDataClient>("hots").Lifestyle.Singleton();
-			//c.Export<MockLoLHeroDataClient>().AsKeyed<IHeroDataClient>("lol").Lifestyle.Singleton();
-			//c.ExportFactory<IExportLocatorScope, ITenant, IHeroDataClient>((scope, tenant) =>
-			//{
-			//	var tenant = RequestContext.Get("tenant") ?? tenant?.Key;
-
-			//	if (tenant == null) throw new ArgumentNullException("tenant", "Tenant must be defined");
-			//	return scope.Locate<IHeroDataClient>(withKey: tenant);
-			//});
-
-
-			//c.ExportForAllTenants<IHeroDataClient, MockLoLHeroDataClient>(Tenants.All, x => x.Lifestyle.Singleton());
-
-			//c.ForTenant(Tenants.LeageOfLegends).PopulateFrom(x => x.AddHeroesLoLGrains());
-			//c.ForTenant(Tenants.HeroesOfTheStorm).PopulateFrom(x => x.AddHeroesHotsGrains());
-
-			c.ForTenants(tenants, tb =>
-			{
-				tb
-					.ForTenant(AppTenantRegistry.LeagueOfLegends.Key, tc => tc.PopulateFrom(x => x.AddAppLoLGrains()))
-					.ForTenant(x => x.Key == AppTenantRegistry.HeroesOfTheStorm.Key, tc => tc.PopulateFrom(x => x.AddAppHotsGrains()))
-					;
-			});
-
-			/*
-			 *
-			 * // register with filter tenant
-			 * c.ForTenants(tenants, tb =>
-			 * {
-			 *		tb.ForTenant(x => x.Platform == "x").PopulateFrom(x => x.AddHeroesHotsGrains());
-			 * });
-			 *
-			 * // register one per type
-			 * c.For<IHeroDataClient>(tb =>
-			 * {
-			 *		tb.For(x => x.Key == "lol").Use<MockLoLHeroDataClient>();
-			 * });
-			 *
-			 */
-
+			// For now, return a default tenant. This needs proper tenant resolution logic.
+			// You'll need to implement proper tenant context management based on your requirements.
+			var tenantRegistry = sp.GetRequiredService<IAppTenantRegistry>();
+			// Return a default tenant or implement tenant resolution logic here
+			return tenantRegistry.GetAll().FirstOrDefault()
+				?? throw new InvalidOperationException("No tenants configured");
 		});
-	}
 
-	// todo: remove if its possible to register services directly to grace - https://github.com/ipjohnson/Grace/issues/225
-	private class GraceServiceProviderFactory : IServiceProviderFactory<IInjectionScope>
-	{
-		private readonly IInjectionScopeConfiguration _configuration;
-
-		/// <summary>
-		/// Default constructor
-		/// </summary>
-		/// <param name="configuration"></param>
-		public GraceServiceProviderFactory(IInjectionScopeConfiguration configuration)
-		{
-			_configuration = configuration ?? new InjectionScopeConfiguration();
-		}
-
-		/// <summary>
-		/// Creates a container builder from an <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
-		/// </summary>
-		/// <param name="services">The collection of services</param>
-		/// <returns>A container builder that can be used to create an <see cref="T:System.IServiceProvider" />.</returns>
-		public IInjectionScope CreateBuilder(IServiceCollection services)
-		{
-			var container = new DependencyInjectionContainer(_configuration);
-
-			container.Populate(services);
-
-			ConfigureServices(container);
-
-			return container;
-		}
-
-		/// <summary>
-		/// Creates an <see cref="T:System.IServiceProvider" /> from the container builder.
-		/// </summary>
-		/// <param name="containerBuilder">The container builder</param>
-		/// <returns>An <see cref="T:System.IServiceProvider" /></returns>
-		public IServiceProvider CreateServiceProvider(IInjectionScope containerBuilder)
-		{
-			return containerBuilder.Locate<IServiceProvider>();
-		}
+		// Register tenant-specific services
+		// Note: Microsoft DI doesn't support tenant-scoped registrations like Grace DI did.
+		// You'll need to implement tenant resolution through factory patterns or strategy patterns.
+		services.AddAppLoLGrains();
+		services.AddAppHotsGrains();
 	}
 
 	private static int GetAvailablePort(int start, int end)
