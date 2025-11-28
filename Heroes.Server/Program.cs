@@ -5,14 +5,10 @@ using Heroes.Server.Realtime;
 using Heroes.Server.Sample;
 using Heroes.GrainClients;
 using Heroes.Server.Gql;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Serilog;
 using System.Net.Sockets;
-using Microsoft.Extensions.Configuration;
-using Orleans;
-using Orleans.Configuration;
 
 namespace Heroes.Server;
 
@@ -20,37 +16,35 @@ public class Program
 {
 	public static Task Main(string[] args)
 	{
-		IAppInfo appInfo = null;
-
 		var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 		{
 			Args = args,
 			ContentRootPath = Directory.GetCurrentDirectory()
 		});
 
-		// Configuration
-		var shortEnvName = AppInfo.MapEnvironmentName(builder.Environment.EnvironmentName);
+	// Configuration
+	var shortEnvName = AppInfo.MapEnvironmentName(builder.Environment.EnvironmentName);
+	builder.Configuration
+		.AddJsonFile("appsettings.json", optional: true)
+		.AddJsonFile($"appsettings.{shortEnvName}.json", optional: true)
+		.AddJsonFile("app-info.json", optional: true)
+		.AddEnvironmentVariables()
+		.AddCommandLine(args);
+
+	// Build interim AppInfo to determine dockerization and finalize config
+	var appInfo = new AppInfo(builder.Configuration);
+	if (appInfo.IsDockerized)
+	{
+		builder.Configuration.Sources.Clear();
 		builder.Configuration
 			.AddJsonFile("appsettings.json", optional: true)
 			.AddJsonFile($"appsettings.{shortEnvName}.json", optional: true)
+			.AddJsonFile("appsettings.dev-docker.json", optional: true)
 			.AddJsonFile("app-info.json", optional: true)
 			.AddEnvironmentVariables()
 			.AddCommandLine(args);
-
-		// Build interim AppInfo to determine dockerization and finalize config
-		appInfo = new AppInfo(((IConfigurationBuilder)builder.Configuration).Build());
-		if (appInfo.IsDockerized)
-		{
-			builder.Configuration.Sources.Clear();
-			builder.Configuration
-				.AddJsonFile("appsettings.json", optional: true)
-				.AddJsonFile($"appsettings.{shortEnvName}.json", optional: true)
-				.AddJsonFile("appsettings.dev-docker.json", optional: true)
-				.AddJsonFile("app-info.json", optional: true)
-				.AddEnvironmentVariables()
-				.AddCommandLine(args);
-			appInfo = new AppInfo(((IConfigurationBuilder)builder.Configuration).Build());
-		}
+		appInfo = new AppInfo(builder.Configuration);
+	}
 
 		Console.Title = $"{appInfo.Name} - {appInfo.Environment}";
 
@@ -70,10 +64,6 @@ public class Program
 		builder.Host.UseOrleans((ctx, siloBuilder) =>
 		{
 			siloBuilder
-				.ConfigureServices(services =>
-				{
-					services.AddAppGrains(); // Register grain dependencies in Orleans silo
-				})
 				.AddMemoryStreams(OrleansConstants.STREAM_PROVIDER)
 				.AddMemoryGrainStorage("PubSubStore")
 				.UseAppConfiguration(new AppSiloBuilderContext
@@ -97,6 +87,10 @@ public class Program
 						siloBuilderInner.UseStorage(signalrBuilderConfig.StorageProvider, appInfo, storeName: "SignalR");
 					});
 				})
+				.ConfigureServices(services =>
+				{
+					services.AddAppGrains(); // Register grain dependencies in Orleans silo
+				})
 				;
 		});
 
@@ -108,8 +102,8 @@ public class Program
 		services.AddSingleton<IAppTenantRegistry, AppTenantRegistry>();
 		services.AddAppGrains();
 
-		// Configure tenant-specific services (previously in Grace DI)
-		ConfigureServices(services, appInfo);
+	// Configure tenant-specific services (previously in Grace DI)
+	ConfigureServices(services);
 
 		services.Configure<ConsoleLifetimeOptions>(options =>
 		{
@@ -126,19 +120,19 @@ public class Program
 			})
 			.AddOrleans();
 
-		services.AddCors(o => o.AddPolicy("TempCorsPolicy", corsBuilder =>
-		{
-			corsBuilder
-				.SetIsOriginAllowed((host) => true)
-				.AllowAnyMethod()
-				.AllowAnyHeader()
-				.AllowCredentials();
-		}));
+	services.AddCors(o => o.AddPolicy("TempCorsPolicy", corsBuilder =>
+	{
+		corsBuilder
+			.SetIsOriginAllowed(_ => true)
+			.AllowAnyMethod()
+			.AllowAnyHeader()
+			.AllowCredentials();
+	}));
 
-		services.Configure<KestrelServerOptions>(options =>
-		{
-			options.AllowSynchronousIO = true;
-		});
+		// services.Configure<KestrelServerOptions>(options =>
+		// {
+		// 	options.AllowSynchronousIO = true;
+		// });
 
 		services.AddAppClients();
 		services.AddAppGraphQL();
@@ -171,7 +165,7 @@ public class Program
 		return app.RunAsync();
 	}
 
-	private static void ConfigureServices(IServiceCollection services, IAppInfo appInfo)
+	private static void ConfigureServices(IServiceCollection services)
 	{
 		// Register TenantGrainActivator for Orleans
 		services.AddSingleton<IGrainActivator, TenantGrainActivator>();

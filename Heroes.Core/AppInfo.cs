@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿﻿using Microsoft.Extensions.Configuration;
 
 namespace Heroes.Core;
 
@@ -90,7 +90,6 @@ public class AppInfo : IAppInfo
 	{
 		if (environment == null) throw new ArgumentNullException(nameof(environment));
 
-		EnvironmentMapping.TryGetValue(environment, out var env);
-		return env;
+		return EnvironmentMapping.TryGetValue(environment, out var env) ? env : environment.ToLowerInvariant();
 	}
 }
