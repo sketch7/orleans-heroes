@@ -44,6 +44,15 @@ testem.log
 /typings
 __screenshots__/
 
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
 # MSTest test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
@@ -220,3 +229,7 @@ tmp/
 **/wwwroot/dist/
 **/*/wwwroot/index.html
 _artifact
+
+# System Files
+.DS_Store
+Thumbs.db
