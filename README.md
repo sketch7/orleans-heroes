@@ -4,10 +4,10 @@
 ## Technologies
 
 ### Server
-- .NET 7.0
-- Microsoft Orleans 3.7.1
+- .NET 10.0
+- Microsoft Orleans 9.2.1
 - SignalR
-- [Microsoft Orleans SignalR Backplane by Sketch7 3.x](https://github.com/sketch7/SignalR.Orleans)
+- [Microsoft Orleans SignalR Backplane by Sketch7 8.x](https://github.com/sketch7/SignalR.Orleans)
 - GraphQL & GraphiQL
 
 ### Client

@@ -2,11 +2,14 @@ using Grace.DependencyInjection;
 using Grace.DependencyInjection.Extensions;
 using Heroes.Contracts;
 using Heroes.Core.Tenancy;
-using Heroes.Grains.Heroes;
 using Heroes.Server.Infrastructure;
-using Orleans;
-using Orleans.Hosting;
-using Orleans.Runtime;
+using Heroes.Server.Realtime;
+using Heroes.Server.Sample;
+using Heroes.GrainClients;
+using Heroes.Server.Gql;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Serilog;
 using System.Net.Sockets;
 
@@ -16,25 +19,16 @@ public class Program
 {
 	public static Task Main(string[] args)
 	{
-		var hostBuilder = new HostBuilder();
-		var graceConfig = new InjectionScopeConfiguration
-		{
-			Behaviors =
-			{
-				AllowInstanceAndFactoryToReturnNull = true
-			}
-		};
-
 		IAppInfo appInfo = null;
-		hostBuilder
-			//.UseGrace(graceConfig)
+		var hostBuilder = Host.CreateDefaultBuilder(args)
 			.ConfigureHostConfiguration(cfg =>
 			{
 				cfg.SetBasePath(Directory.GetCurrentDirectory())
 					.AddEnvironmentVariables("ASPNETCORE_") // todo: change from ASPNETCORE_?
 					.AddCommandLine(args);
 			})
-			.UseServiceProviderFactory(new GraceServiceProviderFactory(graceConfig))
+			// Temporarily disabled Grace - Orleans 9.x requires default service provider
+			//.UseServiceProviderFactory(new GraceServiceProviderFactory(graceConfig))
 			.ConfigureServices((ctx, services) =>
 			{
 				appInfo = new AppInfo(ctx.Configuration); // rebuild it so we ensure we have latest all configs
@@ -42,11 +36,12 @@ public class Program
 
 				services.AddSingleton(appInfo);
 				services.AddSingleton<IAppTenantRegistry, AppTenantRegistry>();
-				services.Configure<ApiHostedServiceOptions>(options =>
-				{
-					options.Port = GetAvailablePort(6600, 6699);
-					//options.PathString = "/health";
-				});
+				services.AddAppGrains(); // Register grain dependencies
+										 // services.Configure<ApiHostedServiceOptions>(options =>
+										 // {
+										 // 	options.Port = GetAvailablePort(6600, 6699);
+										 // 	//options.PathString = "/health";
+										 // });
 
 				services.Configure<ConsoleLifetimeOptions>(options =>
 				{
@@ -88,6 +83,12 @@ public class Program
 			.UseOrleans((ctx, builder) =>
 			{
 				builder
+					.ConfigureServices(services =>
+					{
+						services.AddAppGrains(); // Register grain dependencies in Orleans silo
+					})
+					.AddMemoryStreams(OrleansConstants.STREAM_PROVIDER)
+					.AddMemoryGrainStorage("PubSubStore")
 					.UseAppConfiguration(new AppSiloBuilderContext
 					{
 						AppInfo = appInfo,
@@ -99,9 +100,6 @@ public class Program
 							// StorageProviderType = StorageProviderType.Redis
 						}
 					})
-					.ConfigureApplicationParts(parts => parts
-						.AddApplicationPart(typeof(HeroGrain).Assembly).WithReferences()
-					)
 					.AddIncomingGrainCallFilter<LoggingIncomingCallFilter>()
 					//.AddOutgoingGrainCallFilter<LoggingOutgoingCallFilter>()
 					.AddStartupTask<WarmupStartupTask>()
@@ -110,18 +108,82 @@ public class Program
 						cfg.Configure((siloBuilder, signalrBuilderConfig) =>
 						{
 							siloBuilder.UseStorage(signalrBuilderConfig.StorageProvider, appInfo, storeName: "SignalR");
+							// siloBuilder.ConfigureStorageProvider(
+							// 	microSvcBuilderContext,
+							// 	siloConfigBuilder,
+							// 	opts.StorageProvider,
+							// 	storageConfigBuilder => storageConfigBuilder
+							// 		.WithStoreName("SignalR")
+							// );
 						});
 					})
 					;
 
 			})
-			.ConfigureServices((ctx, services) =>
+			.ConfigureWebHostDefaults(webBuilder =>
 			{
-				services.AddHostedService<ApiHostedService>();
+				webBuilder
+					.UseUrls("http://localhost:6600")
+					.ConfigureServices((context, services) =>
+					{
+						services.AddSingleton<IHeroService, HeroService>();
+						services.AddCustomAuthentication();
+						services.AddSignalR()
+							.AddJsonProtocol(opts =>
+							{
+								opts.PayloadSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+								opts.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+							})
+							.AddOrleans();
+
+						services.AddCors(o => o.AddPolicy("TempCorsPolicy", builder =>
+						{
+							builder
+								.SetIsOriginAllowed((host) => true)
+								.AllowAnyMethod()
+								.AllowAnyHeader()
+								.AllowCredentials();
+						}));
+
+						services.Configure<KestrelServerOptions>(options =>
+						{
+							options.AllowSynchronousIO = true;
+						});
+
+						services.AddAppClients();
+						services.AddAppGraphQL();
+						services.AddControllers().AddNewtonsoftJson();
+					})
+					.Configure((context, app) =>
+					{
+						var env = context.HostingEnvironment;
+
+						app.UseCors("TempCorsPolicy");
+						app.UseGraphQL("/graphql");
+						app.UseGraphQLPlayground("/", new()
+						{
+							GraphQLEndPoint = "/graphql",
+							SubscriptionsEndPoint = "/graphql",
+						});
+
+						if (env.IsDevelopment())
+						{
+							app.UseDeveloperExceptionPage();
+						}
+
+						app.UseRouting();
+						app.UseAuthorization();
+						app.UseEndpoints(endpoints =>
+						{
+							endpoints.MapHub<HeroHub>("/real-time/hero");
+							endpoints.MapHub<UserNotificationHub>("/userNotifications");
+							endpoints.MapControllers();
+						});
+					});
 			})
 			;
 
-		return hostBuilder.RunConsoleAsync();
+		return hostBuilder.Build().RunAsync();
 	}
 
 	private static void ConfigureServices(IInjectionScope scope)

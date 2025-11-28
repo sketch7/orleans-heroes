@@ -6,8 +6,10 @@ using Orleans.Providers;
 
 namespace Heroes.Grains.Heroes;
 
+[GenerateSerializer]
 public class HeroCollectionState
 {
+	[Id(0)]
 	public Dictionary<string, HeroRoleType> HeroKeys { get; set; }
 }
 
@@ -25,11 +27,14 @@ public class HeroCollectionGrain : AppGrain<HeroCollectionState>, IHeroCollectio
 		_heroDataClient = heroDataClient;
 	}
 
-	public override async Task OnActivateAsync()
+	public override async Task OnActivateAsync(CancellationToken cancellationToken)
 	{
-		await base.OnActivateAsync();
+		await base.OnActivateAsync(cancellationToken);
 
 		_keyData = this.ParseKey<TenantKeyData>(TenantKeyData.Template);
+
+		// Set tenant in RequestContext for tenant-aware services
+		Orleans.Runtime.RequestContext.Set("tenant", _keyData.Tenant);
 
 		if (State.HeroKeys == null)
 			await FetchFromRemote();

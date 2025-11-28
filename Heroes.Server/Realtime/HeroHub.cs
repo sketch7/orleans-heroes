@@ -3,10 +3,7 @@ using Heroes.Contracts.Heroes;
 using Heroes.Core.Extensions;
 using Heroes.Server.Realtime.Core;
 using Microsoft.AspNetCore.SignalR;
-using Orleans;
-using Orleans.Runtime;
 using Orleans.Streams;
-using SignalR.Orleans;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Channels;
@@ -41,13 +38,13 @@ public class HeroHub : Hub<IHeroHub>
 			await loggedInUser.Send($"logged in user => {Context.User.Identity.Name} -> ConnectionId: {Context.ConnectionId}");
 		}
 
-		var streamProvider = _clusterClient.GetStreamProvider(Constants.STREAM_PROVIDER);
+		var streamProvider = _clusterClient.GetStreamProvider(OrleansConstants.STREAM_PROVIDER);
 		Context.Items.Add(HeroStreamProviderKey, streamProvider);
 	}
 
 	public override async Task OnDisconnectedAsync(Exception ex)
 	{
-		_logger.Info("User disconnected {connectionId}", Context.ConnectionId);
+		_logger.LogInformation("User disconnected {connectionId}", Context.ConnectionId);
 		await Clients.All.Send($"{Context.ConnectionId} left");
 	}
 
@@ -56,14 +53,14 @@ public class HeroHub : Hub<IHeroHub>
 		// todo: this method need to be fixed
 		Context.Items.TryGetValue(HeroStreamProviderKey, out var streamProviderObj);
 		var streamProvider = (IStreamProvider)streamProviderObj;
-		var stream = streamProvider.GetStream<Hero>(StreamConstants.HeroStream, $"hero:{id}");
+		var stream = streamProvider.GetStream<Hero>(StreamConstants.HeroStream.ToString(), $"hero:{id}");
 		var heroSubject = new Subject<Hero>();
 
 		Task.Run(async () =>
 		{
 			var heroStream = await stream.SubscribeAsync(async (action, st) =>
 			{
-				_logger.Info("Stream [hero.health] triggered {action}", action);
+				_logger.LogInformation("Stream [hero.health] triggered {action}", action);
 				await Clients.All.Send("msg ->");
 				heroSubject.OnNext(action);
 			});
@@ -80,6 +77,14 @@ public class HeroHub : Hub<IHeroHub>
 	public async Task AddToGroup(string name)
 		=> await Groups.AddToGroupAsync(Context.ConnectionId, name);
 
+	public async Task AddToGroups(HashSet<string> groups)
+	{
+		foreach (var group in groups)
+		{
+			await Groups.AddToGroupAsync(Context.ConnectionId, group);
+		}
+	}
+
 	public async Task StreamUnsubscribe(string methodName, string id)
 	{
 		var key = $"{methodName}:{id}";
@@ -93,5 +98,8 @@ public class HeroHub : Hub<IHeroHub>
 	}
 
 	public Task<string> Echo(string message)
+		=> Task.FromResult($"hello {message}");
+
+	public Task<string> EchoGroup(HashSet<string> message)
 		=> Task.FromResult($"hello {message}");
 }

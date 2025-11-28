@@ -1,0 +1,19 @@
+<Solution>
+	<Folder Name="/external-libs/">
+		<Project Path="../Sketch7.SignalR.Orleans/src/SignalR.Orleans.AspNet/SignalR.Orleans.AspNet.csproj" />
+		<Project Path="../Sketch7.SignalR.Orleans/src/SignalR.Orleans/SignalR.Orleans.csproj" />
+	</Folder>
+	<Folder Name="/src/">
+		<Project Path="Heroes.Contracts/Heroes.Contracts.csproj" />
+		<Project Path="Heroes.Core/Heroes.Core.csproj" />
+		<Project Path="Heroes.GrainClients/Heroes.GrainClients.csproj" />
+		<Project Path="Heroes.Grains/Heroes.Grains.csproj" />
+		<Project Path="Heroes.Server/Heroes.Server.csproj" />
+	</Folder>
+	<Folder Name="/tools/">
+		<File Path="app-info.json" />
+		<File Path="Directory.Build.props" />
+		<File Path="NuGet.Config" />
+		<File Path="readme.md" />
+	</Folder>
+</Solution>

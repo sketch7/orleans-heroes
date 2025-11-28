@@ -5,6 +5,7 @@ public static class OrleansConstants
 	public const string GrainPersistenceStorage = "Persistence";
 	public const string GrainMemoryStorage = "MemoryStore";
 	public const string PubSubStore = "PubSubStore";
+	public const string STREAM_PROVIDER = "StreamProvider";
 }
 
 public static class StreamConstants

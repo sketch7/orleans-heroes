@@ -5,7 +5,6 @@
 *.suo
 *.user
 *.userosscache
-*.sln.docstates
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -24,6 +23,35 @@ bld/
 
 # Visual Studo 2015 cache/options directory
 .vs/
+
+# Node
+/node_modules
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Miscellaneous
+**/.angular/cache/
+.nx/cache
+.nx/workspace-data
+.sass-cache/
+.eslintcache
+
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings
+__screenshots__/
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
@@ -160,9 +188,6 @@ ClientBin/
 *.dbproj.schemaview
 *.pfx
 *.publishsettings
-node_modules/
-bower_components/
-jspm_packages/
 
 # RIA/Silverlight projects
 Generated_Code/
@@ -204,3 +229,7 @@ tmp/
 **/wwwroot/dist/
 **/*/wwwroot/index.html
 _artifact
+
+# System Files
+.DS_Store
+Thumbs.db

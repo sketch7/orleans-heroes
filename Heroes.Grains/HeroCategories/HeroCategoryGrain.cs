@@ -1,4 +1,4 @@
-﻿using Heroes.Contracts;
+﻿﻿using Heroes.Contracts;
 using Heroes.Contracts.HeroCategories;
 using Heroes.Core.Orleans;
 using Heroes.Grains.Heroes;
@@ -8,8 +8,10 @@ using System.Diagnostics;
 
 namespace Heroes.Grains.HeroCategories;
 
+[GenerateSerializer]
 public class HeroCategoryState
 {
+	[Id(0)]
 	public HeroCategory Entity { get; set; }
 }
 
@@ -38,10 +40,13 @@ public class HeroCategoryGrain : AppGrain<HeroCategoryState>, IHeroCategoryGrain
 		_heroDataClient = heroDataClient;
 	}
 
-	public override async Task OnActivateAsync()
+	public override async Task OnActivateAsync(CancellationToken cancellationToken)
 	{
-		await base.OnActivateAsync();
+		await base.OnActivateAsync(cancellationToken);
 		_keyData = this.ParseKey<HeroCategoryKeyData>(HeroCategoryKeyData.Template);
+
+		// Set tenant in RequestContext for tenant-aware services
+		Orleans.Runtime.RequestContext.Set("tenant", _keyData.Tenant);
 
 		if (State.Entity == null)
 		{

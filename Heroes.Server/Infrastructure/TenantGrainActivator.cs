@@ -11,8 +11,9 @@ namespace Heroes.Server.Infrastructure;
 /// <summary>
 /// <see cref="IGrainActivator"/> that uses type activation to create grains.
 /// </summary>
-public class TenantGrainActivator : DefaultGrainActivator
+public class TenantGrainActivator : IGrainActivator
 {
+	private readonly IServiceProvider _serviceProvider;
 	private readonly IAppTenantRegistry _appTenantRegistry;
 	private readonly ILogger<TenantGrainActivator> _logger;
 	private const string TenantGroupKey = "brand";
@@ -22,40 +23,41 @@ public class TenantGrainActivator : DefaultGrainActivator
 		IServiceProvider serviceProvider,
 		IAppTenantRegistry appTenantRegistry,
 		ILogger<TenantGrainActivator> logger
-	) : base(serviceProvider)
+	)
 	{
+		_serviceProvider = serviceProvider;
 		_appTenantRegistry = appTenantRegistry;
 		_logger = logger;
 	}
 
-	public override object Create(IGrainActivationContext context)
+	public object CreateInstance(IGrainContext context)
 	{
-		if (context.GrainIdentity.PrimaryKeyString == null)
+		var grainType = context.GrainInstance?.GetType() ?? typeof(object);
+
+		if (context.GrainId.Key.ToString() == null)
 			try
 			{
-				return base.Create(context);
+				return ActivatorUtilities.CreateInstance(_serviceProvider, grainType, context);
 			}
 			catch (LocateException ex)
 			{
-				var type = context.GrainType.GetDemystifiedName();
+				var type = grainType.GetDemystifiedName();
 				_logger.LogError(ex, "Grain does not have a tenant grain primary key. PrimaryKey: {grainPrimaryKey}, grain: {grain}",
-					context.GrainInstance?.GetPrimaryKeyAny(),
+					context.GrainId.Key,
 					type
 				);
 				throw;
 			}
 
 		var scope = context.ActivationServices.GetRequiredService<IExportLocatorScope>();
-		var tenant = _appTenantRegistry.GetByPrimaryKey(context.GrainIdentity.PrimaryKeyString);
-
-		//if (tenant == null && Const.OwnedNamespaces.Any(context.GrainType.Namespace.Contains))
-		//{
-		//	if (!SharedTenantGrains.TryGetValue(context.GrainType, out var ignoreTenantWarning))
-		//	{
-		//		var sharedTenant = context.GrainType.GetAttribute<SharedTenantAttribute>();
-		//		ignoreTenantWarning = sharedTenant != null;
-		//		SharedTenantGrains[context.GrainType] = ignoreTenantWarning;
-		//	}
+		var tenant = _appTenantRegistry.GetByPrimaryKey(context.GrainId.Key.ToString());        //if (tenant == null && Const.OwnedNamespaces.Any(context.GrainType.Namespace.Contains))
+																								//{
+																								//	if (!SharedTenantGrains.TryGetValue(context.GrainType, out var ignoreTenantWarning))
+																								//	{
+																								//		var sharedTenant = context.GrainType.GetAttribute<SharedTenantAttribute>();
+																								//		ignoreTenantWarning = sharedTenant != null;
+																								//		SharedTenantGrains[context.GrainType] = ignoreTenantWarning;
+																								//	}
 
 		//	if (!ignoreTenantWarning)
 		//	{
@@ -69,6 +71,15 @@ public class TenantGrainActivator : DefaultGrainActivator
 
 		scope.SetTenantContext(tenant);
 
-		return base.Create(context);
+		return ActivatorUtilities.CreateInstance(_serviceProvider, grainType, context);
+	}
+
+	public ValueTask DisposeInstance(IGrainContext context, object grain)
+	{
+		if (grain is IDisposable disposable)
+		{
+			disposable.Dispose();
+		}
+		return ValueTask.CompletedTask;
 	}
 }

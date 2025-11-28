@@ -1,4 +1,4 @@
-﻿using Heroes.Contracts;
+﻿﻿using Heroes.Contracts;
 using Heroes.Contracts.HeroCategories;
 using Heroes.Core.Orleans;
 using Microsoft.Extensions.Logging;
@@ -6,8 +6,10 @@ using Orleans.Providers;
 
 namespace Heroes.Grains.HeroCategories;
 
+[GenerateSerializer]
 public class HeroCategoryCollectionState
 {
+	[Id(0)]
 	public HashSet<string> HeroCategoryKeys { get; set; }
 }
 
@@ -25,11 +27,14 @@ public class HeroCategoryCollectionGrain : AppGrain<HeroCategoryCollectionState>
 		_heroDataClient = heroDataClient;
 	}
 
-	public override async Task OnActivateAsync()
+	public override async Task OnActivateAsync(CancellationToken cancellationToken)
 	{
-		await base.OnActivateAsync();
+		await base.OnActivateAsync(cancellationToken);
 
 		_keyData = this.ParseKey<TenantKeyData>(TenantKeyData.Template);
+
+		// Set tenant in RequestContext for tenant-aware services
+		Orleans.Runtime.RequestContext.Set("tenant", _keyData.Tenant);
 
 		if (State.HeroCategoryKeys == null)
 			await FetchFromRemote();

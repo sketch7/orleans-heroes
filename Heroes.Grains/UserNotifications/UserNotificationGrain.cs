@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Providers;
 using Orleans.Runtime;
+
 using SignalR.Orleans.Core;
 
 namespace Heroes.Grains.UserNotifications;
@@ -23,7 +24,7 @@ public class UserNotificationGrain : AppGrain<UserNotificationState>, IUserNotif
 
 	public async Task Set(UserNotification item)
 	{
-		Logger.Info("updating grain state - {item}", item);
+		Logger.LogInformation("updating grain state - {Item}", item);
 		State.UserNotification = item;
 		await WriteStateAsync();
 	}
@@ -31,9 +32,10 @@ public class UserNotificationGrain : AppGrain<UserNotificationState>, IUserNotif
 	public Task<UserNotification> Get() => Task.FromResult(State.UserNotification);
 
 
-	public override async Task OnActivateAsync()
+	public override async Task OnActivateAsync(CancellationToken cancellationToken)
 	{
-		await base.OnActivateAsync();
+		await base.OnActivateAsync(cancellationToken);
+
 		_hubContext = GrainFactory.GetHub<IUserNotificationHub>();
 		var hubUser = _hubContext.User(PrimaryKey);
 		var item = new UserNotification
@@ -42,7 +44,7 @@ public class UserNotificationGrain : AppGrain<UserNotificationState>, IUserNotif
 		};
 		await Set(item);
 
-		RegisterTimer(async x =>
+		this.RegisterGrainTimer(async x =>
 		{
 			State.UserNotification.MessageCount = RandomUtils.GenerateNumber(1, 100);
 			await Set(State.UserNotification);
@@ -53,6 +55,6 @@ public class UserNotificationGrain : AppGrain<UserNotificationState>, IUserNotif
 			};
 
 			await hubUser.Send("Broadcast", userNotification);
-		}, State, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(3));
+		}, State, new GrainTimerCreationOptions { DueTime = TimeSpan.FromSeconds(2), Period = TimeSpan.FromSeconds(3), Interleave = true });
 	}
 }

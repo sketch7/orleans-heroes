@@ -1,4 +1,4 @@
-﻿using Heroes.Contracts.HeroCategories;
+﻿﻿using Heroes.Contracts.HeroCategories;
 using Heroes.Contracts.Heroes;
 using Heroes.Contracts.Mocks;
 using Microsoft.Extensions.Logging;
@@ -14,6 +14,40 @@ public interface IHeroDataClient
 	Task<List<HeroCategory>> GetAllHeroCategory();
 }
 
+public class TenantAwareHeroDataClient : IHeroDataClient
+{
+	private readonly MockLoLHeroDataClient _lolClient;
+	private readonly MockHotsHeroDataClient _hotsClient;
+
+	public TenantAwareHeroDataClient(MockLoLHeroDataClient lolClient, MockHotsHeroDataClient hotsClient)
+	{
+		_lolClient = lolClient;
+		_hotsClient = hotsClient;
+	}
+
+	private IHeroDataClient GetClientForCurrentTenant()
+	{
+		// Try to get tenant from Orleans RequestContext
+		var tenant = RequestContext.Get("tenant") as string;
+
+		// Route to appropriate client based on tenant
+		return tenant switch
+		{
+			"hots" => _hotsClient,
+			"lol" => _lolClient,
+			_ => _lolClient // default to LoL
+		};
+	}
+
+	public Task<Hero> GetByKey(string key) => GetClientForCurrentTenant().GetByKey(key);
+
+	public Task<List<Hero>> GetAll() => GetClientForCurrentTenant().GetAll();
+
+	public Task<HeroCategory> GetHeroCategoryByKey(string key) => GetClientForCurrentTenant().GetHeroCategoryByKey(key);
+
+	public Task<List<HeroCategory>> GetAllHeroCategory() => GetClientForCurrentTenant().GetAllHeroCategory();
+}
+
 public class MockLoLHeroDataClient : IHeroDataClient
 {
 	private readonly ILogger<MockLoLHeroDataClient> _logger;
@@ -27,25 +61,25 @@ public class MockLoLHeroDataClient : IHeroDataClient
 
 	public Task<List<Hero>> GetAll()
 	{
-		_logger.Debug($"[{nameof(GetAll)}] Fetch from mock service");
+		_logger.LogDebug("[{Method}] Fetch from mock service", nameof(GetAll));
 		return Task.FromResult(MockDataService.GetHeroes().ToList());
 	}
 
 	public Task<Hero> GetByKey(string key)
 	{
-		_logger.Debug($"[{nameof(GetByKey)}] Fetching key: {key} from mock service", key);
+		_logger.LogDebug("[{Method}] Fetching key: {Key} from mock service", nameof(GetByKey), key);
 		return Task.FromResult(MockDataService.GetById(key));
 	}
 
 	public Task<HeroCategory> GetHeroCategoryByKey(string key)
 	{
-		_logger.Debug($"[{nameof(GetHeroCategoryByKey)}] Fetching key: {key} from mock service", key);
+		_logger.LogDebug("[{Method}] Fetching key: {Key} from mock service", nameof(GetHeroCategoryByKey), key);
 		return Task.FromResult(MockDataService.GetHeroCategoryById(key));
 	}
 
 	public Task<List<HeroCategory>> GetAllHeroCategory()
 	{
-		_logger.Debug($"[{nameof(GetAllHeroCategory)}] Fetch from mock service");
+		_logger.LogDebug("[{Method}] Fetch from mock service", nameof(GetAllHeroCategory));
 		return Task.FromResult(MockDataService.GetAllHeroCategory());
 	}
 }
@@ -71,7 +105,7 @@ public class MockHotsHeroDataClient : IHeroDataClient
 
 	public Task<List<Hero>> GetAll()
 	{
-		_logger.Debug($"[{nameof(GetAll)}] Fetch from mock service");
+		_logger.LogDebug("[{Method}] Fetch from mock service", nameof(GetAll));
 		return Task.FromResult(_data);
 	}
 
@@ -80,7 +114,7 @@ public class MockHotsHeroDataClient : IHeroDataClient
 
 	public Task<Hero> GetByKey(string key)
 	{
-		_logger.Debug($"[{nameof(GetByKey)}] Fetching key: {key} from mock service", key);
+		_logger.LogDebug("[{Method}] Fetching key: {Key} from mock service", nameof(GetByKey), key);
 		return Task.FromResult(_data.FirstOrDefault(x => x.Id == key));
 	}
 }
