@@ -5,9 +5,9 @@ import { routes } from './app.routes';
 import { HubConnectionFactory } from "@ssv/signalr-client";
 
 export const appConfig: ApplicationConfig = {
-  providers: [
-    provideBrowserGlobalErrorListeners(),
-    provideRouter(routes),
-    HubConnectionFactory,
-  ]
+	providers: [
+		provideBrowserGlobalErrorListeners(),
+		provideRouter(routes),
+		HubConnectionFactory,
+	]
 };

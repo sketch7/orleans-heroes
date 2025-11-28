@@ -1,0 +1,6 @@
+packages:
+  - "apps/**"
+  - "libs/**"
+  - "tools/**"
+hoistPattern:
+  - "*"

@@ -1,196 +1,196 @@
 <div class="container mx-auto px-4 py-8 max-w-6xl">
-  <!-- Header Card -->
-  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
-    <div class="flex items-center justify-between mb-4">
-      <h1 class="text-4xl font-bold text-gray-900 dark:text-white">SignalR</h1>
-      <span class="text-sm text-gray-500 dark:text-gray-400 font-mono">
-        @ssv/signalr-client: v{{ signalrVersion }}
-      </span>
-    </div>
+	<!-- Header Card -->
+	<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
+		<div class="flex items-center justify-between mb-4">
+			<h1 class="text-4xl font-bold text-gray-900 dark:text-white">SignalR</h1>
+			<span class="text-sm text-gray-500 dark:text-gray-400 font-mono">
+				@ssv/signalr-client: v{{ signalrVersion }}
+			</span>
+		</div>
 
-    <div class="flex flex-col sm:flex-row gap-4 text-sm">
-      <div class="flex items-center gap-2">
-        <span class="text-gray-600 dark:text-gray-400">Current user:</span>
-        <span
-          class="font-semibold text-gray-900 dark:text-white px-3 py-1 bg-blue-100 dark:bg-blue-900 rounded-full"
-        >
-          {{ currentUser() }}
-        </span>
-      </div>
+		<div class="flex flex-col sm:flex-row gap-4 text-sm">
+			<div class="flex items-center gap-2">
+				<span class="text-gray-600 dark:text-gray-400">Current user:</span>
+				<span
+					class="font-semibold text-gray-900 dark:text-white px-3 py-1 bg-blue-100 dark:bg-blue-900 rounded-full"
+				>
+					{{ currentUser() }}
+				</span>
+			</div>
 
-      <div class="flex items-center gap-2">
-        <span class="text-gray-600 dark:text-gray-400">Status:</span>
-        <span
-          class="font-mono text-xs px-3 py-1 rounded-full"
-          [class]="
-            connectionState()?.status === 'connected'
-              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-              : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
-          "
-        >
-          {{ connectionState()?.status || 'disconnected' }}
-        </span>
-      </div>
-    </div>
-  </div>
+			<div class="flex items-center gap-2">
+				<span class="text-gray-600 dark:text-gray-400">Status:</span>
+				<span
+					class="font-mono text-xs px-3 py-1 rounded-full"
+					[class]="
+						connectionState()?.status === 'connected'
+							? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+							: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+					"
+				>
+					{{ connectionState()?.status || 'disconnected' }}
+				</span>
+			</div>
+		</div>
+	</div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <!-- Connection Controls Card -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-      <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Connection Controls</h2>
+	<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+		<!-- Connection Controls Card -->
+		<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+			<h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Connection Controls</h2>
 
-      <div class="space-y-3">
-        <div class="flex flex-wrap gap-2">
-          <button
-            class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
-            (click)="connect()"
-          >
-            Connect
-          </button>
-          <button
-            class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
-            (click)="disconnect()"
-          >
-            Disconnect
-          </button>
-          <button
-            class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
-            (click)="connectDisconnect()"
-          >
-            Connect + Disconnect
-          </button>
-        </div>
+			<div class="space-y-3">
+				<div class="flex flex-wrap gap-2">
+					<button
+						class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
+						(click)="connect()"
+					>
+						Connect
+					</button>
+					<button
+						class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
+						(click)="disconnect()"
+					>
+						Disconnect
+					</button>
+					<button
+						class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
+						(click)="connectDisconnect()"
+					>
+						Connect + Disconnect
+					</button>
+				</div>
 
-        <div class="border-t border-gray-200 dark:border-gray-700 pt-3">
-          <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Actions</h3>
-          <div class="flex flex-wrap gap-2">
-            <button
-              class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
-              (click)="send()"
-            >
-              Send
-            </button>
-            <button
-              class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
-              (click)="invoke()"
-            >
-              Invoke
-            </button>
-            <button
-              class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
-              (click)="setData()"
-            >
-              Set Data
-            </button>
-          </div>
-        </div>
+				<div class="border-t border-gray-200 dark:border-gray-700 pt-3">
+					<h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Actions</h3>
+					<div class="flex flex-wrap gap-2">
+						<button
+							class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
+							(click)="send()"
+						>
+							Send
+						</button>
+						<button
+							class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
+							(click)="invoke()"
+						>
+							Invoke
+						</button>
+						<button
+							class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
+							(click)="setData()"
+						>
+							Set Data
+						</button>
+					</div>
+				</div>
 
-        <div class="border-t border-gray-200 dark:border-gray-700 pt-3">
-          <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Subscription</h3>
-          <div class="flex flex-wrap gap-2">
-            <button
-              class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
-              (click)="subscribe()"
-            >
-              Subscribe
-            </button>
-            <button
-              class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
-              (click)="dispose()"
-            >
-              Dispose
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+				<div class="border-t border-gray-200 dark:border-gray-700 pt-3">
+					<h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Subscription</h3>
+					<div class="flex flex-wrap gap-2">
+						<button
+							class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
+							(click)="subscribe()"
+						>
+							Subscribe
+						</button>
+						<button
+							class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
+							(click)="dispose()"
+						>
+							Dispose
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
 
-    <!-- Group Subscription Card -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-      <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Group Subscription</h2>
+		<!-- Group Subscription Card -->
+		<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+			<h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Group Subscription</h2>
 
-      <div class="space-y-3">
-        <div>
-          <label
-            for="group-select"
-            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-          >
-            Select Group
-          </label>
-          <select
-            id="group-select"
-            [value]="selectedGroupId()"
-            (change)="selectedGroupId.set($any($event.target).value)"
-            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
-          >
-            @for (group of availableGroups; track group.id) {
-            <option [value]="group.id">{{ group.name }}</option>
-            }
-          </select>
-        </div>
+			<div class="space-y-3">
+				<div>
+					<label
+						for="group-select"
+						class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+					>
+						Select Group
+					</label>
+					<select
+						id="group-select"
+						[value]="selectedGroupId()"
+						(change)="selectedGroupId.set($any($event.target).value)"
+						class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
+					>
+						@for (group of availableGroups; track group.id) {
+						<option [value]="group.id">{{ group.name }}</option>
+						}
+					</select>
+				</div>
 
-        <button
-          class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
-          (click)="subscribeToGroup()"
-        >
-          Subscribe to Group
-        </button>
-        <button
-          class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
-          (click)="subscribeToGroups()"
-        >
-          Subscribe to Groups
-        </button>
-      </div>
-    </div>
-  </div>
+				<button
+					class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
+					(click)="subscribeToGroup()"
+				>
+					Subscribe to Group
+				</button>
+				<button
+					class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
+					(click)="subscribeToGroups()"
+				>
+					Subscribe to Groups
+				</button>
+			</div>
+		</div>
+	</div>
 
-  <!-- Heroes List Card -->
-  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mt-6">
-    <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-      Heroes
-      <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
-        ({{ heroes().length }} active)
-      </span>
-    </h2>
+	<!-- Heroes List Card -->
+	<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mt-6">
+		<h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+			Heroes
+			<span class="text-sm font-normal text-gray-500 dark:text-gray-400">
+				({{ heroes().length }} active)
+			</span>
+		</h2>
 
-    @if (heroes().length === 0) {
-    <div class="text-center py-8 text-gray-500 dark:text-gray-400">
-      <svg
-        class="mx-auto h-12 w-12 mb-3 opacity-50"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-        />
-      </svg>
-      <p class="text-sm">No heroes connected yet</p>
-    </div>
-    } @else {
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-      @for (hero of heroes(); track hero.id) {
-      <div
-        class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:shadow-md transition-shadow duration-200"
-      >
-        <span class="font-medium text-gray-900 dark:text-white">{{ hero.name }}</span>
-        <div class="flex items-center gap-2">
-          <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              fill-rule="evenodd"
-              d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-              clip-rule="evenodd"
-            />
-          </svg>
-          <span class="font-semibold text-gray-900 dark:text-white">{{ hero.health }}</span>
-        </div>
-      </div>
-      }
-    </div>
-    }
-  </div>
+		@if (heroes().length === 0) {
+		<div class="text-center py-8 text-gray-500 dark:text-gray-400">
+			<svg
+				class="mx-auto h-12 w-12 mb-3 opacity-50"
+				fill="none"
+				stroke="currentColor"
+				viewBox="0 0 24 24"
+			>
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+				/>
+			</svg>
+			<p class="text-sm">No heroes connected yet</p>
+		</div>
+		} @else {
+		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+			@for (hero of heroes(); track hero.id) {
+			<div
+				class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:shadow-md transition-shadow duration-200"
+			>
+				<span class="font-medium text-gray-900 dark:text-white">{{ hero.name }}</span>
+				<div class="flex items-center gap-2">
+					<svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+						<path
+							fill-rule="evenodd"
+							d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+							clip-rule="evenodd"
+						/>
+					</svg>
+					<span class="font-semibold text-gray-900 dark:text-white">{{ hero.health }}</span>
+				</div>
+			</div>
+			}
+		</div>
+		}
+	</div>
 </div>
