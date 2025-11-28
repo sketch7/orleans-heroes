@@ -12,6 +12,9 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Serilog;
 using System.Net.Sockets;
+using Microsoft.Extensions.Configuration;
+using Orleans;
+using Orleans.Configuration;
 
 namespace Heroes.Server;
 
@@ -20,170 +23,151 @@ public class Program
 	public static Task Main(string[] args)
 	{
 		IAppInfo appInfo = null;
-		var hostBuilder = Host.CreateDefaultBuilder(args)
-			.ConfigureHostConfiguration(cfg =>
-			{
-				cfg.SetBasePath(Directory.GetCurrentDirectory())
-					.AddEnvironmentVariables("ASPNETCORE_") // todo: change from ASPNETCORE_?
-					.AddCommandLine(args);
-			})
-			// Temporarily disabled Grace - Orleans 9.x requires default service provider
-			//.UseServiceProviderFactory(new GraceServiceProviderFactory(graceConfig))
-			.ConfigureServices((ctx, services) =>
-			{
-				appInfo = new AppInfo(ctx.Configuration); // rebuild it so we ensure we have latest all configs
-				Console.Title = $"{appInfo.Name} - {appInfo.Environment}";
 
-				services.AddSingleton(appInfo);
-				services.AddSingleton<IAppTenantRegistry, AppTenantRegistry>();
-				services.AddAppGrains(); // Register grain dependencies
-										 // services.Configure<ApiHostedServiceOptions>(options =>
-										 // {
-										 // 	options.Port = GetAvailablePort(6600, 6699);
-										 // 	//options.PathString = "/health";
-										 // });
+		var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+		{
+			Args = args,
+			ContentRootPath = Directory.GetCurrentDirectory()
+		});
 
-				services.Configure<ConsoleLifetimeOptions>(options =>
+		// Configuration
+		var shortEnvName = AppInfo.MapEnvironmentName(builder.Environment.EnvironmentName);
+		builder.Configuration
+			.AddJsonFile("appsettings.json", optional: true)
+			.AddJsonFile($"appsettings.{shortEnvName}.json", optional: true)
+			.AddJsonFile("app-info.json", optional: true)
+			.AddEnvironmentVariables()
+			.AddCommandLine(args);
+
+		// Build interim AppInfo to determine dockerization and finalize config
+		appInfo = new AppInfo(((IConfigurationBuilder)builder.Configuration).Build());
+		if (appInfo.IsDockerized)
+		{
+			builder.Configuration.Sources.Clear();
+			builder.Configuration
+				.AddJsonFile("appsettings.json", optional: true)
+				.AddJsonFile($"appsettings.{shortEnvName}.json", optional: true)
+				.AddJsonFile("appsettings.dev-docker.json", optional: true)
+				.AddJsonFile("app-info.json", optional: true)
+				.AddEnvironmentVariables()
+				.AddCommandLine(args);
+			appInfo = new AppInfo(((IConfigurationBuilder)builder.Configuration).Build());
+		}
+
+		Console.Title = $"{appInfo.Name} - {appInfo.Environment}";
+
+		// Logging
+		builder.Host.UseSerilog((ctx, loggerConfig) =>
+		{
+			loggerConfig.Enrich.FromLogContext()
+				.ReadFrom.Configuration(ctx.Configuration)
+				.Enrich.WithMachineName()
+				.Enrich.WithDemystifiedStackTraces()
+				.WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{SourceContext:l}] {Message:lj}{NewLine}{Exception}");
+
+			loggerConfig.WithAppInfo(appInfo);
+		});
+
+		// Orleans
+		builder.Host.UseOrleans((ctx, siloBuilder) =>
+		{
+			siloBuilder
+				.ConfigureServices(services =>
 				{
-					options.SuppressStatusMessages = true;
-				});
-			})
-			.ConfigureAppConfiguration((ctx, cfg) =>
-			{
-				var shortEnvName = AppInfo.MapEnvironmentName(ctx.HostingEnvironment.EnvironmentName);
-				cfg.AddJsonFile("appsettings.json")
-					.AddJsonFile($"appsettings.{shortEnvName}.json", optional: true)
-					.AddJsonFile("app-info.json")
-					.AddEnvironmentVariables()
-					.AddCommandLine(args);
-
-				appInfo = new AppInfo(cfg.Build());
-
-				if (!appInfo.IsDockerized) return;
-
-				cfg.Sources.Clear();
-
-				cfg.AddJsonFile("appsettings.json")
-					.AddJsonFile($"appsettings.{shortEnvName}.json", optional: true)
-					.AddJsonFile("appsettings.dev-docker.json", optional: true)
-					.AddJsonFile("app-info.json")
-					.AddEnvironmentVariables()
-					.AddCommandLine(args);
-			})
-			.UseSerilog((ctx, loggerConfig) =>
-			{
-				loggerConfig.Enrich.FromLogContext()
-					.ReadFrom.Configuration(ctx.Configuration)
-					.Enrich.WithMachineName()
-					.Enrich.WithDemystifiedStackTraces()
-					.WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{SourceContext:l}] {Message:lj}{NewLine}{Exception}");
-
-				loggerConfig.WithAppInfo(appInfo);
-			})
-			.UseOrleans((ctx, builder) =>
-			{
-				builder
-					.ConfigureServices(services =>
+					services.AddAppGrains(); // Register grain dependencies in Orleans silo
+				})
+				.AddMemoryStreams(OrleansConstants.STREAM_PROVIDER)
+				.AddMemoryGrainStorage("PubSubStore")
+				.UseAppConfiguration(new AppSiloBuilderContext
+				{
+					AppInfo = appInfo,
+					HostBuilderContext = ctx,
+					SiloOptions = new AppSiloOptions
 					{
-						services.AddAppGrains(); // Register grain dependencies in Orleans silo
-					})
-					.AddMemoryStreams(OrleansConstants.STREAM_PROVIDER)
-					.AddMemoryGrainStorage("PubSubStore")
-					.UseAppConfiguration(new AppSiloBuilderContext
+						SiloPort = GetAvailablePort(11111, 12000),
+						GatewayPort = 30001,
+						// StorageProviderType = StorageProviderType.Redis
+					}
+				})
+				.AddIncomingGrainCallFilter<LoggingIncomingCallFilter>()
+				//.AddOutgoingGrainCallFilter<LoggingOutgoingCallFilter>()
+				.AddStartupTask<WarmupStartupTask>()
+				.UseSignalR(cfg =>
+				{
+					cfg.Configure((siloBuilderInner, signalrBuilderConfig) =>
 					{
-						AppInfo = appInfo,
-						HostBuilderContext = ctx,
-						SiloOptions = new AppSiloOptions
-						{
-							SiloPort = GetAvailablePort(11111, 12000),
-							GatewayPort = 30001,
-							// StorageProviderType = StorageProviderType.Redis
-						}
-					})
-					.AddIncomingGrainCallFilter<LoggingIncomingCallFilter>()
-					//.AddOutgoingGrainCallFilter<LoggingOutgoingCallFilter>()
-					.AddStartupTask<WarmupStartupTask>()
-					.UseSignalR(cfg =>
-					{
-						cfg.Configure((siloBuilder, signalrBuilderConfig) =>
-						{
-							siloBuilder.UseStorage(signalrBuilderConfig.StorageProvider, appInfo, storeName: "SignalR");
-							// siloBuilder.ConfigureStorageProvider(
-							// 	microSvcBuilderContext,
-							// 	siloConfigBuilder,
-							// 	opts.StorageProvider,
-							// 	storageConfigBuilder => storageConfigBuilder
-							// 		.WithStoreName("SignalR")
-							// );
-						});
-					})
-					;
-
-			})
-			.ConfigureWebHostDefaults(webBuilder =>
-			{
-				webBuilder
-					.UseUrls("http://localhost:6600")
-					.ConfigureServices((context, services) =>
-					{
-						services.AddSingleton<IHeroService, HeroService>();
-						services.AddCustomAuthentication();
-						services.AddSignalR()
-							.AddJsonProtocol(opts =>
-							{
-								opts.PayloadSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-								opts.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
-							})
-							.AddOrleans();
-
-						services.AddCors(o => o.AddPolicy("TempCorsPolicy", builder =>
-						{
-							builder
-								.SetIsOriginAllowed((host) => true)
-								.AllowAnyMethod()
-								.AllowAnyHeader()
-								.AllowCredentials();
-						}));
-
-						services.Configure<KestrelServerOptions>(options =>
-						{
-							options.AllowSynchronousIO = true;
-						});
-
-						services.AddAppClients();
-						services.AddAppGraphQL();
-						services.AddControllers().AddNewtonsoftJson();
-					})
-					.Configure((context, app) =>
-					{
-						var env = context.HostingEnvironment;
-
-						app.UseCors("TempCorsPolicy");
-						app.UseGraphQL("/graphql");
-						app.UseGraphQLPlayground("/", new()
-						{
-							GraphQLEndPoint = "/graphql",
-							SubscriptionsEndPoint = "/graphql",
-						});
-
-						if (env.IsDevelopment())
-						{
-							app.UseDeveloperExceptionPage();
-						}
-
-						app.UseRouting();
-						app.UseAuthorization();
-						app.UseEndpoints(endpoints =>
-						{
-							endpoints.MapHub<HeroHub>("/real-time/hero");
-							endpoints.MapHub<UserNotificationHub>("/userNotifications");
-							endpoints.MapControllers();
-						});
+						siloBuilderInner.UseStorage(signalrBuilderConfig.StorageProvider, appInfo, storeName: "SignalR");
 					});
-			})
-			;
+				})
+				;
+		});
 
-		return hostBuilder.Build().RunAsync();
+		// Web host and services
+		builder.WebHost.UseUrls("http://localhost:6600");
+
+		var services = builder.Services;
+		services.AddSingleton(appInfo);
+		services.AddSingleton<IAppTenantRegistry, AppTenantRegistry>();
+		services.AddAppGrains();
+
+		services.Configure<ConsoleLifetimeOptions>(options =>
+		{
+			options.SuppressStatusMessages = true;
+		});
+
+		services.AddSingleton<IHeroService, HeroService>();
+		services.AddCustomAuthentication();
+		services.AddSignalR(options => options.KeepAliveInterval = TimeSpan.FromSeconds(10))
+			.AddJsonProtocol(opts =>
+			{
+				opts.PayloadSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+				opts.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+			})
+			.AddOrleans();
+
+		services.AddCors(o => o.AddPolicy("TempCorsPolicy", corsBuilder =>
+		{
+			corsBuilder
+				.SetIsOriginAllowed((host) => true)
+				.AllowAnyMethod()
+				.AllowAnyHeader()
+				.AllowCredentials();
+		}));
+
+		services.Configure<KestrelServerOptions>(options =>
+		{
+			options.AllowSynchronousIO = true;
+		});
+
+		services.AddAppClients();
+		services.AddAppGraphQL();
+		services.AddControllers().AddNewtonsoftJson();
+
+		var app = builder.Build();
+
+		// Middleware pipeline
+		if (app.Environment.IsDevelopment())
+		{
+			app.UseDeveloperExceptionPage();
+		}
+
+		app.UseCors("TempCorsPolicy");
+		app.UseGraphQL("/graphql");
+		app.UseGraphQLPlayground("/", new()
+		{
+			GraphQLEndPoint = "/graphql",
+			SubscriptionsEndPoint = "/graphql",
+		});
+
+		app.UseRouting();
+		app.UseAuthorization();
+
+		// Map endpoints directly (UseEndpoints is obsolete in minimal hosting)
+		app.MapHub<HeroHub>("/real-time/hero");
+		app.MapHub<UserNotificationHub>("/userNotifications");
+		app.MapControllers();
+
+		return app.RunAsync();
 	}
 
 	private static void ConfigureServices(IInjectionScope scope)
