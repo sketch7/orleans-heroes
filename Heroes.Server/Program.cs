@@ -112,12 +112,10 @@ app.MapHub<UserNotificationHub>("/userNotifications");
 
 // Heroes REST endpoints
 app.MapGet("/api/heroes", (IHeroGrainClient client) => client.GetAll())
-	.WithTags("Heroes")
-	.WithOpenApi();
+	.WithTags("Heroes");
 
 app.MapGet("/api/heroes/{id}", (string id, IHeroGrainClient client) => client.Get(id))
-	.WithTags("Heroes")
-	.WithOpenApi();
+	.WithTags("Heroes");
 
 // OpenAPI + Scalar
 app.MapOpenApi();
