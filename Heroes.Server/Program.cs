@@ -87,9 +87,9 @@ builder.Host.UseOrleans((ctx, silo) =>
 // Web services
 builder.Services
 	.AddSingleton<IHeroService, HeroService>()
+	.AddSingleton<IHeroStatsGrainClient, HeroStatsGrainClient>()
 	.AddScoped<IHeroCategoryGrainClient, HeroCategoryGrainClient>()
 	.AddScoped<IHeroGrainClient, HeroGrainClient>()
-	.AddSingleton<IHeroStatsGrainClient, HeroStatsGrainClient>()
 ;
 builder.Services.AddCustomAuthentication();
 builder.Services.AddSignalR()
@@ -111,9 +111,14 @@ builder.Services.AddCors(o => o.AddPolicy("TempCorsPolicy", policy =>
 
 builder.Services.Configure<KestrelServerOptions>(options => options.AllowSynchronousIO = true);
 
-builder.Services.AddAppClients();
 builder.Services.AddGraphQL(gql => gql
-	.AddSystemTextJson()
+	.AddSystemTextJson(options =>
+	{
+		options.AllowTrailingCommas = true;
+		options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+		options.ReadCommentHandling = JsonCommentHandling.Skip;
+		options.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+	})
 	.AddDataLoader()
 	// .AddExecutionStrategySelector<DefaultExecutionStrategySelector>()
 	.AddSchema<AppSchema>()
