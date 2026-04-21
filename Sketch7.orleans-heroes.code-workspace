@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../Sketch7.dotnet.multitenancy"
+		},
+		{
+			"path": "../Sketch7.SignalR.Orleans"
+		}
+	],
+	"settings": {}
+}
