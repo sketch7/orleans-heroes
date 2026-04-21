@@ -8,7 +8,7 @@ public sealed class UserNotificationHubTests(HeroesWebApplicationFactory factory
 {
 	private const string HubPath = "/userNotifications";
 
-	[Fact]
+	[Fact(Timeout = 30_000)]
 	public async Task Connect_Succeeds()
 	{
 		// Arrange
@@ -24,7 +24,7 @@ public sealed class UserNotificationHubTests(HeroesWebApplicationFactory factory
 		await connection.StopAsync(TestContext.Current.CancellationToken);
 	}
 
-	[Fact]
+	[Fact(Timeout = 30_000)]
 	public async Task Connect_WithAuthenticatedUser_Succeeds()
 	{
 		// Arrange

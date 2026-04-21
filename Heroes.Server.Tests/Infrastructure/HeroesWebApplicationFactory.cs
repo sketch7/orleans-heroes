@@ -1,10 +1,13 @@
+using Heroes.Server;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Orleans.Configuration;
+using Orleans.Runtime;
 
 namespace Heroes.Server.Tests.Infrastructure;
 
@@ -13,7 +16,11 @@ namespace Heroes.Server.Tests.Infrastructure;
 /// in-memory Orleans silo. Expensive to create — share it via
 /// <see cref="IntegrationCollection"/> so Orleans starts once per test run.
 /// </summary>
-public sealed class HeroesWebApplicationFactory : WebApplicationFactory<Program>
+/// <remarks>
+/// Implements <see cref="IAsyncLifetime"/> so xUnit v3 calls <see cref="InitializeAsync"/>
+/// before any test timeout window opens, giving the Orleans silo time to fully start.
+/// </remarks>
+public sealed class HeroesWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
 	protected override void ConfigureWebHost(IWebHostBuilder builder)
 	{
@@ -44,6 +51,15 @@ public sealed class HeroesWebApplicationFactory : WebApplicationFactory<Program>
 				opts.NumMissedProbesLimit = 1;
 				opts.TableRefreshTimeout = TimeSpan.FromSeconds(2);
 			});
+
+			// Remove WarmupStartupTask — grains activate lazily on first call in tests,
+			// and the warmup task can delay silo startup significantly.
+			services.RemoveAll<WarmupStartupTask>();
+			var warmupDescriptor = services.FirstOrDefault(d =>
+				d.ServiceType == typeof(IStartupTask) &&
+				d.ImplementationType == typeof(WarmupStartupTask));
+			if (warmupDescriptor is not null)
+				services.Remove(warmupDescriptor);
 		});
 	}
 
@@ -55,6 +71,7 @@ public sealed class HeroesWebApplicationFactory : WebApplicationFactory<Program>
 	public HttpClient CreateHttpClient(string? tokenKey = null)
 	{
 		var client = CreateClient();
+		client.Timeout = TimeSpan.FromSeconds(30);
 		if (!string.IsNullOrEmpty(tokenKey))
 			client.DefaultRequestHeaders.Add("token", tokenKey);
 		return client;
@@ -77,6 +94,27 @@ public sealed class HeroesWebApplicationFactory : WebApplicationFactory<Program>
 			});
 
 		return builder.Build();
+	}
+
+	// ---- IAsyncLifetime ----
+	// InitializeAsync runs before any test timeout window opens, so the Orleans silo has
+	// time to fully start. Without this, the first test's 30-second timeout fires while
+	// the silo is still booting.
+
+	async ValueTask IAsyncLifetime.InitializeAsync()
+	{
+		// Boot the host before any test timeout window opens.
+		try
+		{
+			using var warmup = CreateClient();
+			warmup.Timeout = TimeSpan.FromSeconds(90);
+			// Lightweight request — ensures the Orleans silo fully starts.
+			await warmup.GetAsync("/openapi/v1.json", CancellationToken.None);
+		}
+		catch
+		{
+			// Ignore errors — 4xx is fine; we only need the host to boot.
+		}
 	}
 
 	// ---- Shutdown guard ----

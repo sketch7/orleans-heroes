@@ -71,7 +71,7 @@ builder.Host.UseOrleans((ctx, silo) =>
 			SiloOptions = new AppSiloOptions
 			{
 				SiloPort = GetAvailablePort(11111, 12000),
-				GatewayPort = 30001,
+				GatewayPort = GetAvailablePort(30000, 31000),
 			}
 		})
 		.AddIncomingGrainCallFilter<LoggingIncomingCallFilter>()

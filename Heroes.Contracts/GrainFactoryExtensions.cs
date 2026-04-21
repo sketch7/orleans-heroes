@@ -10,13 +10,13 @@ public static class GrainFactoryExtensions
 		=> factory.GetGrain<IHeroGrain>($"tenant/{tenant}/{key}");
 
 	public static IHeroCollectionGrain GetHeroCollectionGrain(this IGrainFactory factory, string tenant)
-		=> factory.GetGrain<IHeroCollectionGrain>($"tenant/{tenant}");
+		=> factory.GetGrain<IHeroCollectionGrain>($"tenant/{tenant}/collection");
 
 	public static IHeroCategoryGrain GetHeroCategoryGrain(this IGrainFactory factory, string tenant, string key)
 		=> factory.GetGrain<IHeroCategoryGrain>($"tenant/{tenant}/{key}");
 
 	public static IHeroCategoryCollectionGrain GetHeroCategoryCollectionGrain(this IGrainFactory factory, string tenant)
-		=> factory.GetGrain<IHeroCategoryCollectionGrain>($"tenant/{tenant}");
+		=> factory.GetGrain<IHeroCategoryCollectionGrain>($"tenant/{tenant}/collection");
 
 	// todo: these should be multi tenant
 	public static IHeroAbilitiesGrain GetHeroAbilitiesGrain(this IGrainFactory factory, string key)

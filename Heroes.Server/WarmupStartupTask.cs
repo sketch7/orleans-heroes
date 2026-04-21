@@ -18,9 +18,13 @@ public class WarmupStartupTask : IStartupTask
 
 	public async Task Execute(CancellationToken cancellationToken)
 	{
+		using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+		using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeout.Token);
+		var ct = linked.Token;
+
 		foreach (var tenant in _appTenantRegistry.GetAll())
 		{
-			if (cancellationToken.IsCancellationRequested)
+			if (ct.IsCancellationRequested)
 				break;
 
 			try
@@ -31,7 +35,7 @@ public class WarmupStartupTask : IStartupTask
 				var heroes = await grain.GetAll();
 				foreach (var heroKey in heroes)
 				{
-					if (cancellationToken.IsCancellationRequested)
+					if (ct.IsCancellationRequested)
 						break;
 
 					try

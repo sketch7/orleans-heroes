@@ -4,6 +4,8 @@ using Heroes.Core.Orleans;
 using Heroes.Grains.Heroes;
 using Microsoft.Extensions.Logging;
 using Orleans.Providers;
+using Sketch7.Multitenancy;
+using Sketch7.Multitenancy.Orleans;
 using System.Diagnostics;
 
 namespace Heroes.Grains.HeroCategories;
@@ -27,8 +29,10 @@ public struct HeroCategoryKeyData
 }
 
 [StorageProvider(ProviderName = OrleansConstants.GrainMemoryStorage)]
-public class HeroCategoryGrain : AppGrain<HeroCategoryState>, IHeroCategoryGrain
+public class HeroCategoryGrain : AppGrain<HeroCategoryState>, IHeroCategoryGrain, IWithTenantAccessor<AppTenant>
 {
+	public TenantAccessor<AppTenant> TenantAccessor { get; set; } = new();
+
 	private readonly IHeroDataClient _heroDataClient;
 	private HeroCategoryKeyData _keyData;
 
@@ -44,9 +48,6 @@ public class HeroCategoryGrain : AppGrain<HeroCategoryState>, IHeroCategoryGrain
 	{
 		await base.OnActivateAsync(cancellationToken);
 		_keyData = this.ParseKey<HeroCategoryKeyData>(HeroCategoryKeyData.Template);
-
-		// Set tenant in RequestContext for tenant-aware services
-		Orleans.Runtime.RequestContext.Set("tenant", _keyData.Tenant);
 
 		if (State.Entity == null)
 		{
