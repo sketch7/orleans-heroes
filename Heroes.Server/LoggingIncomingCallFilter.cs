@@ -16,7 +16,7 @@ public class LoggingIncomingCallFilter : IIncomingGrainCallFilter
 	{
 		var grainType = context.Grain.GetType();
 		var grainName = grainType.GetDemystifiedName();
-		var shouldHaveDetailedTrace = grainType.Namespace.Contains("Heroes"); // todo: Create log filter mechanism
+		var shouldHaveDetailedTrace = grainType.Namespace?.Contains("Heroes", StringComparison.Ordinal) == true; // todo: Create log filter mechanism
 
 		if (!shouldHaveDetailedTrace)
 		{
@@ -24,7 +24,7 @@ public class LoggingIncomingCallFilter : IIncomingGrainCallFilter
 			return;
 		}
 
-		string primaryKey = null;
+		string? primaryKey = null;
 		if (context.Grain is Grain grain)
 			primaryKey = grain.GetPrimaryKeyAny();
 
@@ -76,7 +76,7 @@ public class LoggingOutgoingCallFilter : IOutgoingGrainCallFilter
 	{
 		var grainType = context.Grain.GetType();
 		var grainName = grainType.GetDemystifiedName();
-		var shouldHaveDetailedTrace = grainType.Namespace.Contains("Heroes"); // todo: Create log filter mechanism
+		var shouldHaveDetailedTrace = grainType.Namespace?.Contains("Heroes", StringComparison.Ordinal) == true; // todo: Create log filter mechanism
 
 		if (!shouldHaveDetailedTrace)
 		{
@@ -84,7 +84,7 @@ public class LoggingOutgoingCallFilter : IOutgoingGrainCallFilter
 			return;
 		}
 
-		string primaryKey = null;
+		string? primaryKey = null;
 		if (context.Grain is Grain grain)
 			primaryKey = grain.GetPrimaryKeyAny();
 

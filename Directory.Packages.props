@@ -10,7 +10,8 @@
 
     <!-- vendors -->
     <OrleansVersion>9.2.1</OrleansVersion>
-    <SignalROrleansVersion>link</SignalROrleansVersion>
+    <!-- <SignalROrleansVersion>link</SignalROrleansVersion> -->
+    <SignalROrleansVersion>8.0.0</SignalROrleansVersion>
     <NewtonsoftJsonVersion>13.0.3</NewtonsoftJsonVersion>
     <GraceVersion>8.0.0-stla.2</GraceVersion>
     <GraceAspNetCoreHostingVersion>8.0.0-stla.2</GraceAspNetCoreHostingVersion>
@@ -36,11 +37,11 @@
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="$(MicrosoftExtensionsVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Logging" Version="$(MicrosoftExtensionsVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="$(MicrosoftExtensionsVersion)" />
-    <PackageVersion Include="System.Threading.Channels" Version="$(MicrosoftExtensionsVersion)" />
 
     <!-- ASP.NET Core packages -->
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(MicrosoftAspnetCoreVersion)" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(MicrosoftAspnetCoreVersion)" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="$(MicrosoftAspnetCoreVersion)" />
+    <PackageVersion Include="Scalar.AspNetCore" Version="2.6.0" />
 
     <!-- Grace DI packages -->
     <PackageVersion Include="Grace" Version="$(GraceVersion)" />
@@ -67,5 +68,7 @@
     <PackageVersion Include="Humanizer.Core" Version="3.0.1" />
     <PackageVersion Include="System.Reactive.Linq" Version="6.1.0" />
     <PackageVersion Include="Sucrose.Orleans.Persistence.Redis" Version="3.0.1" />
+    <PackageVersion Include="Sketch7.SignalR.Orleans" Version="$(SignalROrleansVersion)" />
+    <PackageVersion Include="Sketch7.SignalR.Orleans.AspNet" Version="$(SignalROrleansVersion)" />
   </ItemGroup>
 </Project>

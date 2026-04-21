@@ -15,8 +15,8 @@ public class HeroCategoryGraphType : ObjectGraphType<HeroCategory>
 		Field(x => x.Id).Description("Hero category unique key.");
 		Field(x => x.Title).Description("Hero Category title.");
 
-		Field<ListGraphType<HeroGraphType>, List<Hero>>("heroes")
-			.ResolveAsync(ctx => heroGrainClient.GetAllByRefs(ctx.Source.Heroes))
+		Field<ListGraphType<HeroGraphType>, List<Hero>?>("heroes")
+			.ResolveAsync(async ctx => await heroGrainClient.GetAllByRefs(ctx.Source.Heroes))
 			.Description("Heroes in category")
 			;
 	}

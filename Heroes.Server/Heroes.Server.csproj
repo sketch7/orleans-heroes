@@ -5,24 +5,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Grace" />
-    <PackageReference Include="Grace.AspNetCore.Hosting" />
-    <PackageReference Include="Grace.DependencyInjection.Extensions" />
     <PackageReference Include="GraphQL.Server.All" />
     <PackageReference Include="GraphQL.DataLoader" />
     <PackageReference Include="GraphQL.NewtonsoftJson" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" />
-    <PackageReference Include="Microsoft.Extensions.Logging" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="Microsoft.Orleans.Server" />
     <PackageReference Include="Microsoft.Orleans.Streaming" />
+    <PackageReference Include="Scalar.AspNetCore" />
     <PackageReference Include="Serilog" />
     <PackageReference Include="Serilog.AspNetCore" />
     <PackageReference Include="Serilog.Extensions.Hosting" />
@@ -40,8 +30,8 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(SignalROrleansVersion)' != 'link'">
-    <PackageReference Include="Sketch7.SignalR.Orleans" Version="$(SignalROrleansVersion)" />
-    <PackageReference Include="Sketch7.SignalR.Orleans.AspNet" Version="$(SignalROrleansVersion)" />
+    <PackageReference Include="Sketch7.SignalR.Orleans" />
+    <PackageReference Include="Sketch7.SignalR.Orleans.AspNet" />
   </ItemGroup>
 
   <ItemGroup>
@@ -57,10 +47,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Update="app-info.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="appsettings.dev.json">
+    <Content Update="appsettings.Development.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="appsettings.json">

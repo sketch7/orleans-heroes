@@ -1,312 +1,147 @@
-using Grace.DependencyInjection;
-using Grace.DependencyInjection.Extensions;
 using Heroes.Contracts;
-using Heroes.Core.Tenancy;
+using Heroes.Contracts.Heroes;
+using Heroes.GrainClients;
+using Heroes.Server;
+using Heroes.Server.Gql;
 using Heroes.Server.Infrastructure;
 using Heroes.Server.Realtime;
 using Heroes.Server.Sample;
-using Heroes.GrainClients;
-using Heroes.Server.Gql;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using Scalar.AspNetCore;
 using Serilog;
 using System.Net.Sockets;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
-namespace Heroes.Server;
+var builder = WebApplication.CreateBuilder(args);
 
-public class Program
+var appInfo = new AppInfo(builder.Configuration);
+Console.Title = $"{appInfo.Name} - {appInfo.Environment}";
+
+// Logging
+builder.Host.UseSerilog((ctx, loggerConfig) =>
 {
-	public static Task Main(string[] args)
-	{
-		IAppInfo appInfo = null;
-		var hostBuilder = Host.CreateDefaultBuilder(args)
-			.ConfigureHostConfiguration(cfg =>
-			{
-				cfg.SetBasePath(Directory.GetCurrentDirectory())
-					.AddEnvironmentVariables("ASPNETCORE_") // todo: change from ASPNETCORE_?
-					.AddCommandLine(args);
-			})
-			// Temporarily disabled Grace - Orleans 9.x requires default service provider
-			//.UseServiceProviderFactory(new GraceServiceProviderFactory(graceConfig))
-			.ConfigureServices((ctx, services) =>
-			{
-				appInfo = new AppInfo(ctx.Configuration); // rebuild it so we ensure we have latest all configs
-				Console.Title = $"{appInfo.Name} - {appInfo.Environment}";
+	loggerConfig
+		.Enrich.FromLogContext()
+		.ReadFrom.Configuration(ctx.Configuration)
+		.Enrich.WithMachineName()
+		.Enrich.WithDemystifiedStackTraces()
+		.WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{SourceContext:l}] {Message:lj}{NewLine}{Exception}");
 
-				services.AddSingleton(appInfo);
-				services.AddSingleton<IAppTenantRegistry, AppTenantRegistry>();
-				services.AddAppGrains(); // Register grain dependencies
-										 // services.Configure<ApiHostedServiceOptions>(options =>
-										 // {
-										 // 	options.Port = GetAvailablePort(6600, 6699);
-										 // 	//options.PathString = "/health";
-										 // });
+	loggerConfig.WithAppInfo(appInfo);
+});
 
-				services.Configure<ConsoleLifetimeOptions>(options =>
-				{
-					options.SuppressStatusMessages = true;
-				});
-			})
-			.ConfigureAppConfiguration((ctx, cfg) =>
-			{
-				var shortEnvName = AppInfo.MapEnvironmentName(ctx.HostingEnvironment.EnvironmentName);
-				cfg.AddJsonFile("appsettings.json")
-					.AddJsonFile($"appsettings.{shortEnvName}.json", optional: true)
-					.AddJsonFile("app-info.json")
-					.AddEnvironmentVariables()
-					.AddCommandLine(args);
+// Core services
+builder.Services.AddSingleton<IAppInfo>(appInfo);
+builder.Services.AddSingleton<IAppTenantRegistry, AppTenantRegistry>();
+builder.Services.Configure<ConsoleLifetimeOptions>(options => options.SuppressStatusMessages = true);
 
-				appInfo = new AppInfo(cfg.Build());
-
-				if (!appInfo.IsDockerized) return;
-
-				cfg.Sources.Clear();
-
-				cfg.AddJsonFile("appsettings.json")
-					.AddJsonFile($"appsettings.{shortEnvName}.json", optional: true)
-					.AddJsonFile("appsettings.dev-docker.json", optional: true)
-					.AddJsonFile("app-info.json")
-					.AddEnvironmentVariables()
-					.AddCommandLine(args);
-			})
-			.UseSerilog((ctx, loggerConfig) =>
-			{
-				loggerConfig.Enrich.FromLogContext()
-					.ReadFrom.Configuration(ctx.Configuration)
-					.Enrich.WithMachineName()
-					.Enrich.WithDemystifiedStackTraces()
-					.WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{SourceContext:l}] {Message:lj}{NewLine}{Exception}");
-
-				loggerConfig.WithAppInfo(appInfo);
-			})
-			.UseOrleans((ctx, builder) =>
-			{
-				builder
-					.ConfigureServices(services =>
-					{
-						services.AddAppGrains(); // Register grain dependencies in Orleans silo
-					})
-					.AddMemoryStreams(OrleansConstants.STREAM_PROVIDER)
-					.AddMemoryGrainStorage("PubSubStore")
-					.UseAppConfiguration(new AppSiloBuilderContext
-					{
-						AppInfo = appInfo,
-						HostBuilderContext = ctx,
-						SiloOptions = new AppSiloOptions
-						{
-							SiloPort = GetAvailablePort(11111, 12000),
-							GatewayPort = 30001,
-							// StorageProviderType = StorageProviderType.Redis
-						}
-					})
-					.AddIncomingGrainCallFilter<LoggingIncomingCallFilter>()
-					//.AddOutgoingGrainCallFilter<LoggingOutgoingCallFilter>()
-					.AddStartupTask<WarmupStartupTask>()
-					.UseSignalR(cfg =>
-					{
-						cfg.Configure((siloBuilder, signalrBuilderConfig) =>
-						{
-							siloBuilder.UseStorage(signalrBuilderConfig.StorageProvider, appInfo, storeName: "SignalR");
-							// siloBuilder.ConfigureStorageProvider(
-							// 	microSvcBuilderContext,
-							// 	siloConfigBuilder,
-							// 	opts.StorageProvider,
-							// 	storageConfigBuilder => storageConfigBuilder
-							// 		.WithStoreName("SignalR")
-							// );
-						});
-					})
-					;
-
-			})
-			.ConfigureWebHostDefaults(webBuilder =>
-			{
-				webBuilder
-					.UseUrls("http://localhost:6600")
-					.ConfigureServices((context, services) =>
-					{
-						services.AddSingleton<IHeroService, HeroService>();
-						services.AddCustomAuthentication();
-						services.AddSignalR()
-							.AddJsonProtocol(opts =>
-							{
-								opts.PayloadSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-								opts.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
-							})
-							.AddOrleans();
-
-						services.AddCors(o => o.AddPolicy("TempCorsPolicy", builder =>
-						{
-							builder
-								.SetIsOriginAllowed((host) => true)
-								.AllowAnyMethod()
-								.AllowAnyHeader()
-								.AllowCredentials();
-						}));
-
-						services.Configure<KestrelServerOptions>(options =>
-						{
-							options.AllowSynchronousIO = true;
-						});
-
-						services.AddAppClients();
-						services.AddAppGraphQL();
-						services.AddControllers().AddNewtonsoftJson();
-					})
-					.Configure((context, app) =>
-					{
-						var env = context.HostingEnvironment;
-
-						app.UseCors("TempCorsPolicy");
-						app.UseGraphQL("/graphql");
-						app.UseGraphQLPlayground("/", new()
-						{
-							GraphQLEndPoint = "/graphql",
-							SubscriptionsEndPoint = "/graphql",
-						});
-
-						if (env.IsDevelopment())
-						{
-							app.UseDeveloperExceptionPage();
-						}
-
-						app.UseRouting();
-						app.UseAuthorization();
-						app.UseEndpoints(endpoints =>
-						{
-							endpoints.MapHub<HeroHub>("/real-time/hero");
-							endpoints.MapHub<UserNotificationHub>("/userNotifications");
-							endpoints.MapControllers();
-						});
-					});
-			})
-			;
-
-		return hostBuilder.Build().RunAsync();
-	}
-
-	private static void ConfigureServices(IInjectionScope scope)
-	{
-		var tenantRegistry = scope.Locate<IAppTenantRegistry>();
-		var tenants = tenantRegistry.GetAll().ToList();
-
-		scope.Configure(c =>
+// Orleans
+builder.Host.UseOrleans((ctx, silo) =>
+{
+	silo
+		.ConfigureServices(services => services.AddAppGrains())
+		.AddMemoryStreams(OrleansConstants.STREAM_PROVIDER)
+		.AddMemoryGrainStorage("PubSubStore")
+		.UseAppConfiguration(new AppSiloBuilderContext
 		{
-
-			c.Export<TenantGrainActivator>().As<IGrainActivator>().Lifestyle.Singleton();
-			//c
-			//	//.Export<MockLoLHeroDataClient>()
-			//	.Export<MockHotsHeroDataClient>()
-			//	.As<IHeroDataClient>()
-			//	;
-			// todo: use multi tenancy lib
-			c.ExportFactory<IExportLocatorScope, ITenant>(exportScope => exportScope.GetTenantContext());
-
-			//c.Export<MockHotsHeroDataClient>().AsKeyed<IHeroDataClient>("hots").Lifestyle.Singleton();
-			//c.Export<MockLoLHeroDataClient>().AsKeyed<IHeroDataClient>("lol").Lifestyle.Singleton();
-			//c.ExportFactory<IExportLocatorScope, ITenant, IHeroDataClient>((scope, tenant) =>
-			//{
-			//	var tenant = RequestContext.Get("tenant") ?? tenant?.Key;
-
-			//	if (tenant == null) throw new ArgumentNullException("tenant", "Tenant must be defined");
-			//	return scope.Locate<IHeroDataClient>(withKey: tenant);
-			//});
-
-
-			//c.ExportForAllTenants<IHeroDataClient, MockLoLHeroDataClient>(Tenants.All, x => x.Lifestyle.Singleton());
-
-			//c.ForTenant(Tenants.LeageOfLegends).PopulateFrom(x => x.AddHeroesLoLGrains());
-			//c.ForTenant(Tenants.HeroesOfTheStorm).PopulateFrom(x => x.AddHeroesHotsGrains());
-
-			c.ForTenants(tenants, tb =>
+			AppInfo = appInfo,
+			HostBuilderContext = ctx,
+			SiloOptions = new AppSiloOptions
 			{
-				tb
-					.ForTenant(AppTenantRegistry.LeagueOfLegends.Key, tc => tc.PopulateFrom(x => x.AddAppLoLGrains()))
-					.ForTenant(x => x.Key == AppTenantRegistry.HeroesOfTheStorm.Key, tc => tc.PopulateFrom(x => x.AddAppHotsGrains()))
-					;
-			});
-
-			/*
-			 *
-			 * // register with filter tenant
-			 * c.ForTenants(tenants, tb =>
-			 * {
-			 *		tb.ForTenant(x => x.Platform == "x").PopulateFrom(x => x.AddHeroesHotsGrains());
-			 * });
-			 *
-			 * // register one per type
-			 * c.For<IHeroDataClient>(tb =>
-			 * {
-			 *		tb.For(x => x.Key == "lol").Use<MockLoLHeroDataClient>();
-			 * });
-			 *
-			 */
-
+				SiloPort = GetAvailablePort(11111, 12000),
+				GatewayPort = 30001,
+			}
+		})
+		.AddIncomingGrainCallFilter<LoggingIncomingCallFilter>()
+		.AddStartupTask<WarmupStartupTask>()
+		.UseSignalR(cfg =>
+		{
+			cfg.Configure((siloBuilder, signalrBuilderConfig) =>
+				siloBuilder.UseStorage(signalrBuilderConfig.StorageProvider, appInfo, storeName: "SignalR"));
 		});
-	}
+});
 
-	// todo: remove if its possible to register services directly to grace - https://github.com/ipjohnson/Grace/issues/225
-	private class GraceServiceProviderFactory : IServiceProviderFactory<IInjectionScope>
+// Web services
+builder.Services.AddSingleton<IHeroService, HeroService>();
+builder.Services.AddCustomAuthentication();
+builder.Services.AddSignalR()
+	.AddJsonProtocol(opts =>
 	{
-		private readonly IInjectionScopeConfiguration _configuration;
+		opts.PayloadSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+		opts.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+	})
+	.AddOrleans();
 
-		/// <summary>
-		/// Default constructor
-		/// </summary>
-		/// <param name="configuration"></param>
-		public GraceServiceProviderFactory(IInjectionScopeConfiguration configuration)
-		{
-			_configuration = configuration ?? new InjectionScopeConfiguration();
-		}
+builder.Services.AddCors(o => o.AddPolicy("TempCorsPolicy", policy =>
+{
+	policy
+		.SetIsOriginAllowed(_ => true)
+		.AllowAnyMethod()
+		.AllowAnyHeader()
+		.AllowCredentials();
+}));
 
-		/// <summary>
-		/// Creates a container builder from an <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
-		/// </summary>
-		/// <param name="services">The collection of services</param>
-		/// <returns>A container builder that can be used to create an <see cref="T:System.IServiceProvider" />.</returns>
-		public IInjectionScope CreateBuilder(IServiceCollection services)
-		{
-			var container = new DependencyInjectionContainer(_configuration);
+builder.Services.Configure<KestrelServerOptions>(options => options.AllowSynchronousIO = true);
 
-			container.Populate(services);
+builder.Services.AddAppClients();
+builder.Services.AddAppGraphQL();
+builder.Services.AddOpenApi();
 
-			ConfigureServices(container);
+var app = builder.Build();
 
-			return container;
-		}
+// Middleware pipeline
+app.UseCors("TempCorsPolicy");
 
-		/// <summary>
-		/// Creates an <see cref="T:System.IServiceProvider" /> from the container builder.
-		/// </summary>
-		/// <param name="containerBuilder">The container builder</param>
-		/// <returns>An <see cref="T:System.IServiceProvider" /></returns>
-		public IServiceProvider CreateServiceProvider(IInjectionScope containerBuilder)
-		{
-			return containerBuilder.Locate<IServiceProvider>();
-		}
-	}
+app.UseGraphQL("/graphql");
+app.UseGraphQLPlayground("/", new()
+{
+	GraphQLEndPoint = "/graphql",
+	SubscriptionsEndPoint = "/graphql",
+});
 
-	private static int GetAvailablePort(int start, int end)
+if (app.Environment.IsDevelopment())
+	app.UseDeveloperExceptionPage();
+
+app.UseRouting();
+app.UseAuthorization();
+
+// Hubs
+app.MapHub<HeroHub>("/real-time/hero");
+app.MapHub<UserNotificationHub>("/userNotifications");
+
+// Heroes REST endpoints
+app.MapGet("/api/heroes", (IHeroGrainClient client) => client.GetAll())
+	.WithTags("Heroes");
+
+app.MapGet("/api/heroes/{id}", (string id, IHeroGrainClient client) => client.Get(id))
+	.WithTags("Heroes");
+
+// OpenAPI + Scalar
+app.MapOpenApi();
+app.MapScalarApiReference();
+
+await app.RunAsync();
+
+static int GetAvailablePort(int start, int end)
+{
+	for (var port = start; port < end; ++port)
 	{
-		for (var port = start; port < end; ++port)
+		var listener = TcpListener.Create(port);
+		listener.ExclusiveAddressUse = true;
+		try
 		{
-			var listener = TcpListener.Create(port);
-			listener.ExclusiveAddressUse = true;
-			try
-			{
-				listener.Start();
-				return port;
-			}
-			catch (SocketException)
-			{
-			}
-			finally
-			{
-				listener.Stop();
-			}
+			listener.Start();
+			return port;
 		}
-
-		throw new InvalidOperationException();
+		catch (SocketException)
+		{
+		}
+		finally
+		{
+			listener.Stop();
+		}
 	}
+
+	throw new InvalidOperationException("No available port found in range.");
 }

@@ -2,7 +2,7 @@
   "name": "orleans-heroes",
   "version": "1.0.0",
   "description": "Microsoft Orleans - Real life app scenario",
-  "main": "index.js",
+  "dotnetBuildSln": "./OrleansHeroes.build.slnx",
   "scripts": {
     "start": "concurrently \"npm run server\" \"npm run app\"",
     "server": "cd ./Heroes.Server && start dotnet run --project ./ --no-build",

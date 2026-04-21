@@ -9,11 +9,9 @@ public class AppGraphSubscription : ObjectGraphType
 		IHeroService service
 	)
 	{
-		FieldSubscribe<ListGraphType<HeroGraphType>>(
-			name: "heroAdded",
-			description: "hero added",
-			resolve: context => service.Heroes(),
-			subscribe: context => service.AddedHero()
-		);
+		Field<ListGraphType<HeroGraphType>>("heroAdded")
+			.Description("hero added")
+			.Resolve(_ => service.Heroes())
+			.ResolveStream(_ => service.AddedHero());
 	}
 }

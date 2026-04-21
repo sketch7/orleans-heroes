@@ -7,8 +7,8 @@ public class ClientBuilderContext
 	public string ClusterId => AppInfo.ClusterId;
 	public string ServiceId => AppInfo.Name;
 
-	public ILogger Logger { get; set; }
-	public IAppInfo AppInfo { get; set; }
-	public IConfiguration Configuration { get; set; }
-	public Action<IClientBuilder> ConfigureClientBuilder { get; set; }
+	public required ILogger Logger { get; init; }
+	public required IAppInfo AppInfo { get; init; }
+	public required IConfiguration Configuration { get; init; }
+	public required Action<IClientBuilder> ConfigureClientBuilder { get; init; }
 }
