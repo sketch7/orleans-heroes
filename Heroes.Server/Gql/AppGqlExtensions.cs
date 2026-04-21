@@ -15,7 +15,7 @@ public static class AppGqlExtensions
 			.AddDataLoader()
 			//.AddAutoSchema<AppGraphQuery>()
 			.AddSchema<AppSchema>()
-			.AddExecutionStrategySelector<GraceDefaultExecutionStrategySelector>()
+			// .AddExecutionStrategySelector<DefaultExecutionStrategySelector>()
 			.AddUserContextBuilder(httpContext => new GraphQLUserContext { User = httpContext.User })
 		);
 
@@ -26,13 +26,5 @@ public static class AppGqlExtensions
 		services.AddSingleton<HeroGraphType>();
 		services.AddSingleton<HeroCategoryGraphType>();
 		services.AddSingleton<HeroStatsGraphType>();
-	}
-}
-
-// todo: only needed for hack due Grace IEnumerable doesnt seem to be optional
-public class GraceDefaultExecutionStrategySelector : DefaultExecutionStrategySelector
-{
-	public GraceDefaultExecutionStrategySelector() : base()
-	{
 	}
 }

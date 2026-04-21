@@ -1,4 +1,4 @@
-﻿﻿using Heroes.Contracts;
+using Heroes.Contracts;
 using Heroes.Contracts.HeroCategories;
 using Heroes.Core.Orleans;
 using Microsoft.Extensions.Logging;

@@ -13,7 +13,7 @@ public static class GrainClientsServiceCollectionExtensions
 	public static void AddAppClients(this IServiceCollection services)
 	{
 		services.AddSingleton<IHeroCategoryGrainClient, HeroCategoryGrainClient>();
-		services.AddSingleton<IHeroGrainClient, HeroGrainClient>();
+		services.AddScoped<IHeroGrainClient, HeroGrainClient>();
 		services.AddSingleton<IHeroStatsGrainClient, HeroStatsGrainClient>();
 	}
 }

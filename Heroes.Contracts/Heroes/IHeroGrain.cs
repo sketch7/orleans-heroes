@@ -1,9 +1,10 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Sketch7.Multitenancy.Orleans;
 
 namespace Heroes.Contracts.Heroes;
 
-public interface IHeroGrain : IGrainWithStringKey, IAppGrainContract
+public interface IHeroGrain : IGrainWithStringKey, IAppGrainContract, ITenantGrain
 {
 	Task<Hero> Get();
 }

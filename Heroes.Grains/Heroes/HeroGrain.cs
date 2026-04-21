@@ -9,6 +9,8 @@ using Orleans.Runtime;
 using Orleans.Streams;
 using SignalR.Orleans;
 using SignalR.Orleans.Core;
+using Sketch7.Multitenancy;
+using Sketch7.Multitenancy.Orleans;
 using System.Diagnostics;
 
 namespace Heroes.Grains.Heroes;
@@ -32,8 +34,10 @@ public struct HeroKeyData
 }
 
 [StorageProvider(ProviderName = OrleansConstants.GrainMemoryStorage)]
-public class HeroGrain : AppGrain<HeroState>, IHeroGrain
+public class HeroGrain : AppGrain<HeroState>, IHeroGrain, IWithTenantAccessor<AppTenant>
 {
+	public TenantAccessor<AppTenant> TenantAccessor { get; set; } = new();
+
 	private readonly IHeroDataClient _heroDataClient;
 	private HeroKeyData _keyData;
 
@@ -53,10 +57,7 @@ public class HeroGrain : AppGrain<HeroState>, IHeroGrain
 
 		_keyData = this.ParseKey<HeroKeyData>(HeroKeyData.Template);
 
-		// Set tenant in RequestContext for tenant-aware services
-		RequestContext.Set("tenant", _keyData.Tenant);
-
-		Logger.LogInformation("Activating HeroGrain for tenant: {Tenant}, id: {Id}", _keyData.Tenant, _keyData.Id);
+		Logger.LogInformation("Activating HeroGrain for tenant: {Tenant}, id: {Id}", TenantAccessor.Tenant?.Key, _keyData.Id);
 
 		// Check cancellation before proceeding
 		cancellationToken.ThrowIfCancellationRequested();

@@ -24,6 +24,16 @@
     <PackageReference Include="Sucrose.Orleans.Persistence.Redis" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(MultitenancyVersion)' == 'link'">
+    <ProjectReference Include="$(MultitenancyBaseLinkPath)\src\Sketch7.Multitenancy.AspNet\Sketch7.Multitenancy.AspNet.csproj" />
+    <ProjectReference Include="$(MultitenancyBaseLinkPath)\src\Sketch7.Multitenancy.Orleans\Sketch7.Multitenancy.Orleans.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(MultitenancyVersion)' != 'link'">
+    <PackageReference Include="Sketch7.Multitenancy.AspNet" />
+    <PackageReference Include="Sketch7.Multitenancy.Orleans" />
+  </ItemGroup>
+
   <ItemGroup Condition="'$(SignalROrleansVersion)' == 'link'">
     <ProjectReference Include="$(SignalrOrleansBaseLinkPath)\src\SignalR.Orleans\SignalR.Orleans.csproj" />
     <ProjectReference Include="$(SignalrOrleansBaseLinkPath)\src\SignalR.Orleans.AspNet\SignalR.Orleans.AspNet.csproj" />

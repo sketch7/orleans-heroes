@@ -1,6 +1,8 @@
-﻿namespace Heroes.Contracts.HeroCategories;
+﻿using Sketch7.Multitenancy.Orleans;
 
-public interface IHeroCategoryGrain : IGrainWithStringKey, IAppGrainContract
+namespace Heroes.Contracts.HeroCategories;
+
+public interface IHeroCategoryGrain : IGrainWithStringKey, IAppGrainContract, ITenantGrain
 {
 	Task<HeroCategory> Get();
 }

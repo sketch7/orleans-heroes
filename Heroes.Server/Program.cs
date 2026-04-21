@@ -1,14 +1,19 @@
 using Heroes.Contracts;
 using Heroes.Contracts.Heroes;
 using Heroes.GrainClients;
+using Heroes.Grains;
 using Heroes.Server;
 using Heroes.Server.Gql;
 using Heroes.Server.Infrastructure;
 using Heroes.Server.Realtime;
 using Heroes.Server.Sample;
+using Heroes.Server.Tenancy;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Scalar.AspNetCore;
 using Serilog;
+using Sketch7.Multitenancy;
+using Sketch7.Multitenancy.AspNet;
+using Sketch7.Multitenancy.Orleans;
 using System.Net.Sockets;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -33,7 +38,19 @@ builder.Host.UseSerilog((ctx, loggerConfig) =>
 
 // Core services
 builder.Services.AddSingleton<IAppInfo>(appInfo);
-builder.Services.AddSingleton<IAppTenantRegistry, AppTenantRegistry>();
+
+var tenantRegistry = new AppTenantRegistry();
+builder.Services
+	.AddMultitenancy<AppTenant>(opts => opts
+		.WithRegistry<IAppTenantRegistry>(tenantRegistry)
+		.WithServices(tsb => tsb
+			.For("lol", s => s.AddSingleton<IHeroDataClient, MockLoLHeroDataClient>())
+			.For("hots", s => s.AddSingleton<IHeroDataClient, MockHotsHeroDataClient>())
+		)
+	);
+// WithHttpResolver workaround: SDK 10.0.x cannot resolve extension blocks with generic receiver + method generic
+builder.Services.AddScoped<ITenantHttpResolver<AppTenant>, AppTenantHttpResolver>();
+
 builder.Services.Configure<ConsoleLifetimeOptions>(options => options.SuppressStatusMessages = true);
 
 // Orleans
@@ -55,6 +72,7 @@ builder.Host.UseOrleans((ctx, silo) =>
 		})
 		.AddIncomingGrainCallFilter<LoggingIncomingCallFilter>()
 		.AddStartupTask<WarmupStartupTask>()
+		.UseMultitenancy<AppTenant>()
 		.UseSignalR(cfg =>
 		{
 			cfg.Configure((siloBuilder, signalrBuilderConfig) =>
@@ -104,6 +122,7 @@ if (app.Environment.IsDevelopment())
 	app.UseDeveloperExceptionPage();
 
 app.UseRouting();
+app.UseMultitenancy<AppTenant>();
 app.UseAuthorization();
 
 // Hubs
@@ -111,10 +130,10 @@ app.MapHub<HeroHub>("/real-time/hero");
 app.MapHub<UserNotificationHub>("/userNotifications");
 
 // Heroes REST endpoints
-app.MapGet("/api/heroes", (IHeroGrainClient client) => client.GetAll())
+app.MapGet("/api/{tenant}/heroes", (string tenant, IHeroGrainClient client) => client.GetAll())
 	.WithTags("Heroes");
 
-app.MapGet("/api/heroes/{id}", (string id, IHeroGrainClient client) => client.Get(id))
+app.MapGet("/api/{tenant}/heroes/{id}", (string tenant, string id, IHeroGrainClient client) => client.Get(id))
 	.WithTags("Heroes");
 
 // OpenAPI + Scalar
