@@ -5,6 +5,6 @@ namespace Heroes.Server.Realtime.Core;
 
 public class Subscription<T>
 {
-	public StreamSubscriptionHandle<T> Stream { get; set; }
-	public Subject<T> Subject { get; set; }
+	public required StreamSubscriptionHandle<T> Stream { get; init; }
+	public required Subject<T> Subject { get; init; }
 }

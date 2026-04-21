@@ -27,9 +27,9 @@ public class AppSiloOptions
 
 public class AppSiloBuilderContext
 {
-	public HostBuilderContext HostBuilderContext { get; set; }
-	public IAppInfo AppInfo { get; set; }
-	public AppSiloOptions SiloOptions { get; set; }
+	public required HostBuilderContext HostBuilderContext { get; init; }
+	public required IAppInfo AppInfo { get; init; }
+	public required AppSiloOptions SiloOptions { get; init; }
 }
 
 public static class SiloBuilderExtensions
@@ -92,9 +92,9 @@ public static class SiloBuilderExtensions
 			;
 	}
 
-	public static ISiloBuilder UseStorage(this ISiloBuilder siloBuilder, string storeProviderName, IAppInfo appInfo, StorageProviderType? storageProvider = null, string storeName = null)
+	public static ISiloBuilder UseStorage(this ISiloBuilder siloBuilder, string storeProviderName, IAppInfo appInfo, StorageProviderType? storageProvider = null, string? storeName = null)
 	{
-		storeName = storeName.IfNullOrEmptyReturn(storeProviderName);
+		storeName = string.IsNullOrEmpty(storeName) ? storeProviderName : storeName;
 		storageProvider ??= _defaultProviderType;
 
 		switch (storageProvider)

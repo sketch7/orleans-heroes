@@ -22,9 +22,9 @@ public class CustomAuthenticationHandler : AuthenticationHandler<JwtBearerOption
 
 	protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
 	{
-		string token = !string.IsNullOrEmpty(Request.Headers[Authorization])
-			? Request.Headers[Authorization]
-			: Request.Query[Authorization];
+		string? token = Request.Headers[Authorization];
+		if (string.IsNullOrEmpty(token))
+			token = Request.Query[Authorization];
 
 		if (string.IsNullOrEmpty(token))
 			return AuthenticateResult.NoResult();
@@ -61,7 +61,7 @@ public class CustomAuthenticationHandler : AuthenticationHandler<JwtBearerOption
 		},
 	};
 
-	public Task<AuthModel> GetByKey(string key) => Task.FromResult(_mockUsers.FirstOrDefault(x => x.Key == key));
+	public Task<AuthModel?> GetByKey(string key) => Task.FromResult(_mockUsers.FirstOrDefault(x => x.Key == key));
 }
 
 public static class AuthServiceCollectionExtensions
@@ -84,7 +84,7 @@ public static class AuthServiceCollectionExtensions
 
 public class AuthModel
 {
-	public string Id { get; set; }
-	public string Name { get; set; }
-	public string Key { get; set; }
+	public required string Id { get; init; }
+	public required string Name { get; init; }
+	public required string Key { get; init; }
 }

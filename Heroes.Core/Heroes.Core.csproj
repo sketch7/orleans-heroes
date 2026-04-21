@@ -11,6 +11,5 @@
     <PackageReference Include="Microsoft.Orleans.Sdk" />
     <PackageReference Include="Serilog" />
     <PackageReference Include="System.Reactive.Linq" />
-    <PackageReference Include="System.Threading.Channels" />
   </ItemGroup>
 </Project>

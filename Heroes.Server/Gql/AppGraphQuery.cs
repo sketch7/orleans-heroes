@@ -14,34 +14,25 @@ public class AppGraphQuery : ObjectGraphType
 	{
 		Name = "AppQueries";
 
-		Field<HeroGraphType, Hero>("hero")
+		Field<HeroGraphType, Hero?>("hero")
 			.Description("Hero entry.")
 			.Argument<StringGraphType>("key", "Unique key.")
-			.ResolveAsync(ctx =>
-			{
-				var result = heroGrainClient.Get(ctx.GetArgument<string>("key"));
-				return result;
-			})
+			.ResolveAsync(async ctx => await heroGrainClient.Get(ctx.GetArgument<string>("key")))
 			;
 
-		Field<ListGraphType<HeroGraphType>, List<Hero>>("heroes")
+		Field<ListGraphType<HeroGraphType>, List<Hero>?>("heroes")
 			.Description("All available Heroes.")
 			.Argument<HeroRoleGraphType>("role", "Filter by role.")
-			.ResolveAsync(ctx =>
+			.ResolveAsync(async ctx =>
 			{
 				var role = ctx.GetArgument<int?>("role");
-				var result = heroGrainClient.GetAll((HeroRoleType?)role);
-				return result;
+				return await heroGrainClient.GetAll((HeroRoleType?)role);
 			})
 			;
 
-		Field<ListGraphType<HeroCategoryGraphType>, List<HeroCategory>>("heroCategories")
+		Field<ListGraphType<HeroCategoryGraphType>, List<HeroCategory>?>("heroCategories")
 			.Description("All hero categories.")
-			.ResolveAsync(ctx =>
-			{
-				var result = heroCategoryGrainClient.GetAll();
-				return result;
-			})
+			.ResolveAsync(async ctx => await heroCategoryGrainClient.GetAll())
 			;
 
 	}

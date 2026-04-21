@@ -32,7 +32,7 @@ public class HeroHub : Hub<IHeroHub>
 
 		await Clients.All.Send($"{Context.ConnectionId} joined");
 
-		if (Context.User.Identity.IsAuthenticated)
+		if (Context.User?.Identity?.IsAuthenticated == true && !string.IsNullOrEmpty(Context.User.Identity.Name))
 		{
 			var loggedInUser = Clients.User(Context.User.Identity.Name);
 			await loggedInUser.Send($"logged in user => {Context.User.Identity.Name} -> ConnectionId: {Context.ConnectionId}");
@@ -42,7 +42,7 @@ public class HeroHub : Hub<IHeroHub>
 		Context.Items.Add(HeroStreamProviderKey, streamProvider);
 	}
 
-	public override async Task OnDisconnectedAsync(Exception ex)
+	public override async Task OnDisconnectedAsync(Exception? ex)
 	{
 		_logger.LogInformation("User disconnected {connectionId}", Context.ConnectionId);
 		await Clients.All.Send($"{Context.ConnectionId} left");
@@ -51,8 +51,8 @@ public class HeroHub : Hub<IHeroHub>
 	public ChannelReader<Hero> GetUpdates(string id)
 	{
 		// todo: this method need to be fixed
-		Context.Items.TryGetValue(HeroStreamProviderKey, out var streamProviderObj);
-		var streamProvider = (IStreamProvider)streamProviderObj;
+		if (!Context.Items.TryGetValue(HeroStreamProviderKey, out var streamProviderObj) || streamProviderObj is not IStreamProvider streamProvider)
+			throw new InvalidOperationException("Stream provider not available. Ensure OnConnectedAsync completed successfully.");
 		var stream = streamProvider.GetStream<Hero>(StreamConstants.HeroStream.ToString(), $"hero:{id}");
 		var heroSubject = new Subject<Hero>();
 
@@ -88,9 +88,8 @@ public class HeroHub : Hub<IHeroHub>
 	public async Task StreamUnsubscribe(string methodName, string id)
 	{
 		var key = $"{methodName}:{id}";
-		if (Context.Items.TryGetValue(key, out var subscriptionObj))
+		if (Context.Items.TryGetValue(key, out var subscriptionObj) && subscriptionObj is Subscription<Hero> subscription)
 		{
-			var subscription = (Subscription<Hero>)subscriptionObj;
 			await subscription.Stream.UnsubscribeAsync();
 			subscription.Subject.Dispose();
 			Context.Items.Remove(key);
