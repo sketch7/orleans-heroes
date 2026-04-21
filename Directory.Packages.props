@@ -10,7 +10,8 @@
 
     <!-- vendors -->
     <OrleansVersion>9.2.1</OrleansVersion>
-    <SignalROrleansVersion>link</SignalROrleansVersion>
+    <!-- <SignalROrleansVersion>link</SignalROrleansVersion> -->
+    <SignalROrleansVersion>8.0.0</SignalROrleansVersion>
     <NewtonsoftJsonVersion>13.0.3</NewtonsoftJsonVersion>
     <GraceVersion>8.0.0-stla.2</GraceVersion>
     <GraceAspNetCoreHostingVersion>8.0.0-stla.2</GraceAspNetCoreHostingVersion>
@@ -36,7 +37,6 @@
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="$(MicrosoftExtensionsVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Logging" Version="$(MicrosoftExtensionsVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="$(MicrosoftExtensionsVersion)" />
-    <PackageVersion Include="System.Threading.Channels" Version="$(MicrosoftExtensionsVersion)" />
 
     <!-- ASP.NET Core packages -->
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(MicrosoftAspnetCoreVersion)" />
