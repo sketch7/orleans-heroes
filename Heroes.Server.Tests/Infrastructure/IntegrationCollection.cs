@@ -1,5 +1,4 @@
 using Heroes.Server.Tests.Infrastructure;
-using Xunit;
 
 namespace Heroes.Server.Tests;
 

@@ -1,13 +1,10 @@
-﻿using Heroes.Contracts;
+using Heroes.Contracts;
 using Heroes.Contracts.Heroes;
 using Heroes.Core.Orleans;
 using Heroes.Core.Utils;
 using Microsoft.Extensions.Logging;
-using Orleans;
 using Orleans.Providers;
-using Orleans.Runtime;
 using Orleans.Streams;
-using SignalR.Orleans;
 using SignalR.Orleans.Core;
 using Sketch7.Multitenancy;
 using Sketch7.Multitenancy.Orleans;

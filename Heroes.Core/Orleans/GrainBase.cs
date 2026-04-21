@@ -1,6 +1,5 @@
-﻿using Heroes.Core.Utils;
+using Heroes.Core.Utils;
 using Microsoft.Extensions.Logging;
-using Orleans;
 using Orleans.Concurrency;
 
 namespace Heroes.Core.Orleans;

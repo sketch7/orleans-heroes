@@ -1,10 +1,8 @@
-﻿using Heroes.Contracts;
+using Heroes.Contracts;
 using Orleans.Configuration;
-using Orleans.Hosting;
 using Orleans.Persistence.Redis.Config;
 using System.Diagnostics;
 using System.Net;
-using System.Net.Sockets;
 using HostBuilderContext = Microsoft.Extensions.Hosting.HostBuilderContext;
 
 namespace Heroes.Server.Infrastructure;

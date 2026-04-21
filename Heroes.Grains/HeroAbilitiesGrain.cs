@@ -1,6 +1,5 @@
-﻿using Heroes.Contracts.Heroes;
+using Heroes.Contracts.Heroes;
 using Heroes.Contracts.Mocks;
-using Orleans;
 
 namespace Heroes.Grains;
 

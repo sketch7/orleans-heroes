@@ -1,7 +1,6 @@
+using Heroes.Server.Tests.Infrastructure;
 using System.Text;
 using System.Text.Json;
-using Heroes.Server.Tests.Infrastructure;
-using Xunit;
 
 namespace Heroes.Server.Tests.Gql;
 

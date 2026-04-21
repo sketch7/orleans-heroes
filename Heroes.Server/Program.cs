@@ -1,9 +1,15 @@
+using GraphQL;
 using Heroes.Contracts;
+using Heroes.Contracts.HeroCategories;
 using Heroes.Contracts.Heroes;
-using Heroes.GrainClients;
+using Heroes.Contracts.Stats;
+using Heroes.GrainClients.HeroCategories;
+using Heroes.GrainClients.Heroes;
+using Heroes.GrainClients.Statistics;
 using Heroes.Grains;
 using Heroes.Server;
 using Heroes.Server.Gql;
+using Heroes.Server.Gql.Core;
 using Heroes.Server.Infrastructure;
 using Heroes.Server.Realtime;
 using Heroes.Server.Sample;
@@ -43,13 +49,12 @@ var tenantRegistry = new AppTenantRegistry();
 builder.Services
 	.AddMultitenancy<AppTenant>(opts => opts
 		.WithRegistry<IAppTenantRegistry>(tenantRegistry)
+		.WithHttpResolver<AppTenant, AppTenantHttpResolver>()
 		.WithServices(tsb => tsb
 			.For("lol", s => s.AddSingleton<IHeroDataClient, MockLoLHeroDataClient>())
 			.For("hots", s => s.AddSingleton<IHeroDataClient, MockHotsHeroDataClient>())
 		)
 	);
-// WithHttpResolver workaround: SDK 10.0.x cannot resolve extension blocks with generic receiver + method generic
-builder.Services.AddScoped<ITenantHttpResolver<AppTenant>, AppTenantHttpResolver>();
 
 builder.Services.Configure<ConsoleLifetimeOptions>(options => options.SuppressStatusMessages = true);
 
@@ -57,7 +62,6 @@ builder.Services.Configure<ConsoleLifetimeOptions>(options => options.SuppressSt
 builder.Host.UseOrleans((ctx, silo) =>
 {
 	silo
-		.ConfigureServices(services => services.AddAppGrains())
 		.AddMemoryStreams(OrleansConstants.STREAM_PROVIDER)
 		.AddMemoryGrainStorage("PubSubStore")
 		.UseAppConfiguration(new AppSiloBuilderContext
@@ -81,7 +85,12 @@ builder.Host.UseOrleans((ctx, silo) =>
 });
 
 // Web services
-builder.Services.AddSingleton<IHeroService, HeroService>();
+builder.Services
+	.AddSingleton<IHeroService, HeroService>()
+	.AddScoped<IHeroCategoryGrainClient, HeroCategoryGrainClient>()
+	.AddScoped<IHeroGrainClient, HeroGrainClient>()
+	.AddSingleton<IHeroStatsGrainClient, HeroStatsGrainClient>()
+;
 builder.Services.AddCustomAuthentication();
 builder.Services.AddSignalR()
 	.AddJsonProtocol(opts =>
@@ -103,7 +112,14 @@ builder.Services.AddCors(o => o.AddPolicy("TempCorsPolicy", policy =>
 builder.Services.Configure<KestrelServerOptions>(options => options.AllowSynchronousIO = true);
 
 builder.Services.AddAppClients();
-builder.Services.AddAppGraphQL();
+builder.Services.AddGraphQL(gql => gql
+	.AddSystemTextJson()
+	.AddDataLoader()
+	// .AddExecutionStrategySelector<DefaultExecutionStrategySelector>()
+	.AddSchema<AppSchema>()
+	.AddGraphTypes()
+	.AddUserContextBuilder(httpContext => new GraphQLUserContext { User = httpContext.User })
+);
 builder.Services.AddOpenApi();
 
 var app = builder.Build();

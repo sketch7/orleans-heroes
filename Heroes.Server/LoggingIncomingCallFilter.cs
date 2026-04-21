@@ -1,4 +1,3 @@
-﻿using Orleans;
 using System.Diagnostics;
 
 namespace Heroes.Server;

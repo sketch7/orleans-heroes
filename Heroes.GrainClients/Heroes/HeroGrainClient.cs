@@ -1,4 +1,3 @@
-﻿using Heroes.Contracts;
 using Heroes.Contracts.Heroes;
 using Sketch7.Multitenancy;
 

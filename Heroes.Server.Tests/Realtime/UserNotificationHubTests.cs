@@ -1,6 +1,5 @@
 using Heroes.Server.Tests.Infrastructure;
 using Microsoft.AspNetCore.SignalR.Client;
-using Xunit;
 
 namespace Heroes.Server.Tests.Realtime;
 
