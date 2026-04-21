@@ -75,27 +75,37 @@ public class HeroGrain : AppGrain<HeroState>, IHeroGrain, IWithTenantAccessor<Ap
 		// Check cancellation before setting up SignalR and streams
 		cancellationToken.ThrowIfCancellationRequested();
 
-		_hubContext = GrainFactory.GetHub<IHeroHub>();
-		var hubGroup = _hubContext.Group($"{_keyData.Tenant}/hero/{_keyData.Id}");
-		var hubAllGroup = _hubContext.Group($"{_keyData.Tenant}/hero"); // all
-
-		var streamProvider = this.GetStreamProvider(OrleansConstants.STREAM_PROVIDER);
-		var stream = streamProvider.GetStream<Hero>(StreamConstants.HeroStream.ToString(), $"hero:{_keyData.Id}");
-
-		// Only register timer if we have a valid entity
-		if (State.Entity != null)
+		// SignalR hub/stream setup is best-effort — if the stream provider or hub
+		// grains are not yet ready (e.g. early in startup), log and skip real-time
+		// features rather than failing grain activation entirely.
+		try
 		{
-			this.RegisterGrainTimer(async x =>
-				{
-					State.Entity.Health = RandomUtils.GenerateNumber(1, 100);
+			_hubContext = GrainFactory.GetHub<IHeroHub>();
+			var hubGroup = _hubContext.Group($"{_keyData.Tenant}/hero/{_keyData.Id}");
+			var hubAllGroup = _hubContext.Group($"{_keyData.Tenant}/hero"); // all
 
-					await Task.WhenAll(
-						Set(State.Entity),
-						stream.OnNextAsync(State.Entity),
-						hubGroup.Send("HeroChanged", State.Entity),
-						hubAllGroup.Send("HeroChanged", State.Entity)
-					);
-				}, State, new GrainTimerCreationOptions { DueTime = TimeSpan.FromSeconds(2), Period = TimeSpan.FromSeconds(3), Interleave = true });
+			var streamProvider = this.GetStreamProvider(OrleansConstants.STREAM_PROVIDER);
+			var stream = streamProvider.GetStream<Hero>(StreamConstants.HeroStream.ToString(), $"hero:{_keyData.Id}");
+
+			// Only register timer if we have a valid entity
+			if (State.Entity != null)
+			{
+				this.RegisterGrainTimer(async x =>
+					{
+						State.Entity.Health = RandomUtils.GenerateNumber(1, 100);
+
+						await Task.WhenAll(
+							Set(State.Entity),
+							stream.OnNextAsync(State.Entity),
+							hubGroup.Send("HeroChanged", State.Entity),
+							hubAllGroup.Send("HeroChanged", State.Entity)
+						);
+					}, State, new GrainTimerCreationOptions { DueTime = TimeSpan.FromSeconds(2), Period = TimeSpan.FromSeconds(3), Interleave = true });
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.LogWarning(ex, "Hero {Id} (tenant: {Tenant}) activated without real-time support — SignalR/stream setup failed.", _keyData.Id, _keyData.Tenant);
 		}
 	}
 

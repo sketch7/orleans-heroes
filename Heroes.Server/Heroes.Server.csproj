@@ -21,7 +21,7 @@
     <PackageReference Include="Serilog.Extensions.Logging" />
     <PackageReference Include="Serilog.Settings.Configuration" />
     <PackageReference Include="Serilog.Sinks.Console" />
-    <PackageReference Include="Sucrose.Orleans.Persistence.Redis" />
+    <!-- <PackageReference Include="Sucrose.Orleans.Persistence.Redis" /> -->
   </ItemGroup>
 
   <ItemGroup Condition="'$(MultitenancyVersion)' == 'link'">

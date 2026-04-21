@@ -30,9 +30,9 @@ public class WarmupStartupTask : IStartupTask
 			try
 			{
 				var grain = _grainFactory.GetHeroCollectionGrain(tenant.Key);
-				await grain.Activate();
+				await grain.Activate().WaitAsync(ct);
 
-				var heroes = await grain.GetAll();
+				var heroes = await grain.GetAll().WaitAsync(ct);
 				foreach (var heroKey in heroes)
 				{
 					if (ct.IsCancellationRequested)
@@ -40,7 +40,7 @@ public class WarmupStartupTask : IStartupTask
 
 					try
 					{
-						await _grainFactory.GetHeroGrain(tenant.Key, heroKey).Activate();
+						await _grainFactory.GetHeroGrain(tenant.Key, heroKey).Activate().WaitAsync(ct);
 					}
 					catch (Exception ex)
 					{

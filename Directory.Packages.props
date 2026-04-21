@@ -6,13 +6,13 @@
     <SignalrOrleansBaseLinkPath>..\..\Sketch7.SignalR.Orleans</SignalrOrleansBaseLinkPath>
     <MultitenancyBaseLinkPath>..\..\Sketch7.dotnet.multitenancy</MultitenancyBaseLinkPath>
     <!-- framework -->
-    <MicrosoftExtensionsVersion>10.0.0</MicrosoftExtensionsVersion>
-    <MicrosoftAspnetCoreVersion>10.0.0</MicrosoftAspnetCoreVersion>
+    <MicrosoftExtensionsVersion>10.0.6</MicrosoftExtensionsVersion>
+    <MicrosoftAspnetCoreVersion>10.0.6</MicrosoftAspnetCoreVersion>
 
     <!-- vendors -->
-    <OrleansVersion>9.2.1</OrleansVersion>
+    <OrleansVersion>10.1.0</OrleansVersion>
     <!-- <SignalROrleansVersion>link</SignalROrleansVersion> -->
-    <SignalROrleansVersion>8.0.0</SignalROrleansVersion>
+    <SignalROrleansVersion>link</SignalROrleansVersion>
     <!-- <MultitenancyVersion>1.0.0</MultitenancyVersion> -->
     <MultitenancyVersion>link</MultitenancyVersion>
     <NewtonsoftJsonVersion>13.0.4</NewtonsoftJsonVersion>
@@ -68,9 +68,10 @@
     <PackageVersion Include="Newtonsoft.Json" Version="$(NewtonsoftJsonVersion)" />
     <PackageVersion Include="Humanizer.Core" Version="3.0.1" />
     <PackageVersion Include="System.Reactive.Linq" Version="6.1.0" />
-    <PackageVersion Include="Sucrose.Orleans.Persistence.Redis" Version="3.0.1" />
-    <PackageVersion Include="Sketch7.SignalR.Orleans" Version="$(SignalROrleansVersion)" />
-    <PackageVersion Include="Sketch7.SignalR.Orleans.AspNet" Version="$(SignalROrleansVersion)" />
+
+    <!-- <PackageVersion Include="Sucrose.Orleans.Persistence.Redis" Version="3.0.1" /> -->
+    <PackageVersion Include="Sketch7.SignalR.Orleans" Version="$(SignalROrleansVersion)" Condition="'$(SignalROrleansVersion)' != 'link'" />
+    <PackageVersion Include="Sketch7.SignalR.Orleans.AspNet" Version="$(SignalROrleansVersion)" Condition="'$(SignalROrleansVersion)' != 'link'" />
 
     <!-- Test packages -->
     <PackageVersion Include="xunit.v3" Version="4.0.0-pre.81" />

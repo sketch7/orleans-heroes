@@ -132,6 +132,10 @@ var app = builder.Build();
 // Middleware pipeline
 app.UseCors("TempCorsPolicy");
 
+// Lightweight health probe — registered BEFORE multitenancy middleware so it
+// always returns 200 regardless of the {tenant} route param.
+app.MapGet("/ping", () => Results.Ok("pong")).ExcludeFromDescription();
+
 app.UseGraphQL("/graphql");
 app.UseGraphQLPlayground("/", new()
 {
@@ -143,7 +147,12 @@ if (app.Environment.IsDevelopment())
 	app.UseDeveloperExceptionPage();
 
 app.UseRouting();
-app.UseMultitenancy<AppTenant>();
+// Apply multitenancy middleware only to /api/ routes — SignalR hubs and other
+// endpoints don't have a {tenant} route param and must not be blocked.
+app.UseWhen(
+	ctx => ctx.Request.Path.StartsWithSegments("/api"),
+	branch => branch.UseMultitenancy<AppTenant>()
+);
 app.UseAuthorization();
 
 // Hubs

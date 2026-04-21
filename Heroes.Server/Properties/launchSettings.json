@@ -5,8 +5,7 @@
       "launchBrowser": false,
       "launchUrl": "info",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        // "DOCKER": "true"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "applicationUrl": "http://localhost:6600"
     }

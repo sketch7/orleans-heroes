@@ -52,14 +52,11 @@ public sealed class HeroesWebApplicationFactory : WebApplicationFactory<Program>
 				opts.TableRefreshTimeout = TimeSpan.FromSeconds(2);
 			});
 
-			// Remove WarmupStartupTask — grains activate lazily on first call in tests,
-			// and the warmup task can delay silo startup significantly.
-			services.RemoveAll<WarmupStartupTask>();
-			var warmupDescriptor = services.FirstOrDefault(d =>
-				d.ServiceType == typeof(IStartupTask) &&
-				d.ImplementationType == typeof(WarmupStartupTask));
-			if (warmupDescriptor is not null)
-				services.Remove(warmupDescriptor);
+			// Remove ALL IStartupTask registrations — grains activate lazily in tests.
+			// Using RemoveAll<IStartupTask>() is the only reliable approach because
+			// AddStartupTask<T>() may register via a factory lambda (ImplementationType = null),
+			// making targeted removal by ImplementationType unreliable.
+			services.RemoveAll<IStartupTask>();
 		});
 	}
 
@@ -104,35 +101,38 @@ public sealed class HeroesWebApplicationFactory : WebApplicationFactory<Program>
 	async ValueTask IAsyncLifetime.InitializeAsync()
 	{
 		// Boot the host before any test timeout window opens.
+		// Use /ping (registered before multitenancy middleware) so tenant resolution
+		// never blocks this warmup request.
 		try
 		{
 			using var warmup = CreateClient();
-			warmup.Timeout = TimeSpan.FromSeconds(90);
-			// Lightweight request — ensures the Orleans silo fully starts.
-			await warmup.GetAsync("/openapi/v1.json", CancellationToken.None);
+			warmup.Timeout = TimeSpan.FromSeconds(120);
+			await warmup.GetAsync("/ping", CancellationToken.None);
 		}
 		catch
 		{
-			// Ignore errors — 4xx is fine; we only need the host to boot.
+			// Ignore errors — we only need the host to have booted.
 		}
 	}
 
 	// ---- Shutdown guard ----
-	// The Orleans silo's membership protocol can hang the process for ~11 minutes
-	// during teardown.  We schedule a forced exit before handing off to the base
-	// disposal, covering both the async path (called by xUnit v3 via IAsyncDisposable)
-	// and the sync path (Dispose(bool) called via IDisposable).
-
-	public override ValueTask DisposeAsync()
+	/// <summary>
+	/// Caps the overall disposal at 10 s to prevent the test process from hanging when Orleans
+	/// stream agents or SignalR.Orleans grains block shutdown (they retry for up to minutes on
+	/// graceful deactivation). After the cap, the silo threads become effectively orphaned but
+	/// are all daemon-ish — the test runner process exits normally.
+	/// </summary>
+	public override async ValueTask DisposeAsync()
 	{
-		ScheduleShutdownTimeout();
-		return base.DisposeAsync();
-	}
-
-	protected override void Dispose(bool disposing)
-	{
-		ScheduleShutdownTimeout();
-		base.Dispose(disposing);
+		using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+		try
+		{
+			await base.DisposeAsync().AsTask().WaitAsync(cts.Token);
+		}
+		catch (OperationCanceledException)
+		{
+			// Orleans/SignalR grain deactivation exceeded the cap — proceed without blocking.
+		}
 	}
 
 	/// <summary>
