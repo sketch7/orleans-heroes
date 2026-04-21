@@ -70,5 +70,13 @@
     <PackageVersion Include="Sucrose.Orleans.Persistence.Redis" Version="3.0.1" />
     <PackageVersion Include="Sketch7.SignalR.Orleans" Version="$(SignalROrleansVersion)" />
     <PackageVersion Include="Sketch7.SignalR.Orleans.AspNet" Version="$(SignalROrleansVersion)" />
+
+    <!-- Test packages -->
+    <PackageVersion Include="xunit.v3" Version="4.0.0-pre.81" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.0-pre.4" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.4.0" />
+    <PackageVersion Include="Shouldly" Version="4.3.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(MicrosoftAspnetCoreVersion)" />
+    <PackageVersion Include="Microsoft.AspNetCore.SignalR.Client" Version="$(MicrosoftAspnetCoreVersion)" />
   </ItemGroup>
 </Project>

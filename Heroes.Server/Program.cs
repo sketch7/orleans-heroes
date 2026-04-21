@@ -145,3 +145,6 @@ static int GetAvailablePort(int start, int end)
 
 	throw new InvalidOperationException("No available port found in range.");
 }
+
+// Required for WebApplicationFactory<Program> from external test assemblies
+public partial class Program { }
