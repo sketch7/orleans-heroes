@@ -40,7 +40,8 @@
 
     <!-- ASP.NET Core packages -->
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(MicrosoftAspnetCoreVersion)" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(MicrosoftAspnetCoreVersion)" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="$(MicrosoftAspnetCoreVersion)" />
+    <PackageVersion Include="Scalar.AspNetCore" Version="2.5.10" />
 
     <!-- Grace DI packages -->
     <PackageVersion Include="Grace" Version="$(GraceVersion)" />

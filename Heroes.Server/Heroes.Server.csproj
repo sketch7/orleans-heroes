@@ -5,14 +5,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Grace" />
-    <PackageReference Include="Grace.AspNetCore.Hosting" />
-    <PackageReference Include="Grace.DependencyInjection.Extensions" />
     <PackageReference Include="GraphQL.Server.All" />
     <PackageReference Include="GraphQL.DataLoader" />
     <PackageReference Include="GraphQL.NewtonsoftJson" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="Microsoft.Extensions.Configuration" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" />
@@ -23,6 +20,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging" />
     <PackageReference Include="Microsoft.Orleans.Server" />
     <PackageReference Include="Microsoft.Orleans.Streaming" />
+    <PackageReference Include="Scalar.AspNetCore" />
     <PackageReference Include="Serilog" />
     <PackageReference Include="Serilog.AspNetCore" />
     <PackageReference Include="Serilog.Extensions.Hosting" />
@@ -57,10 +55,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Update="app-info.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="appsettings.dev.json">
+    <Content Update="appsettings.Development.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="appsettings.json">
