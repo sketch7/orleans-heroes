@@ -78,4 +78,30 @@ public sealed class HeroesWebApplicationFactory : WebApplicationFactory<Program>
 
 		return builder.Build();
 	}
+
+	// ---- Shutdown guard ----
+	// The Orleans silo's membership protocol can hang the process for ~11 minutes
+	// during teardown.  We schedule a forced exit before handing off to the base
+	// disposal, covering both the async path (called by xUnit v3 via IAsyncDisposable)
+	// and the sync path (Dispose(bool) called via IDisposable).
+
+	public override ValueTask DisposeAsync()
+	{
+		ScheduleShutdownTimeout();
+		return base.DisposeAsync();
+	}
+
+	protected override void Dispose(bool disposing)
+	{
+		ScheduleShutdownTimeout();
+		base.Dispose(disposing);
+	}
+
+	/// <summary>
+	/// Schedules <see cref="Environment.Exit"/> after 30 seconds on a thread-pool thread.
+	/// If the process exits normally before the delay completes the scheduled action is moot.
+	/// </summary>
+	private static void ScheduleShutdownTimeout() =>
+		_ = Task.Delay(TimeSpan.FromSeconds(30))
+			.ContinueWith(_ => Environment.Exit(0), TaskScheduler.Default);
 }
