@@ -68,5 +68,7 @@
     <PackageVersion Include="Humanizer.Core" Version="3.0.1" />
     <PackageVersion Include="System.Reactive.Linq" Version="6.1.0" />
     <PackageVersion Include="Sucrose.Orleans.Persistence.Redis" Version="3.0.1" />
+    <PackageVersion Include="Sketch7.SignalR.Orleans" Version="$(SignalROrleansVersion)" />
+    <PackageVersion Include="Sketch7.SignalR.Orleans.AspNet" Version="$(SignalROrleansVersion)" />
   </ItemGroup>
 </Project>

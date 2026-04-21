@@ -30,8 +30,8 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(SignalROrleansVersion)' != 'link'">
-    <PackageReference Include="Sketch7.SignalR.Orleans" Version="$(SignalROrleansVersion)" />
-    <PackageReference Include="Sketch7.SignalR.Orleans.AspNet" Version="$(SignalROrleansVersion)" />
+    <PackageReference Include="Sketch7.SignalR.Orleans" />
+    <PackageReference Include="Sketch7.SignalR.Orleans.AspNet" />
   </ItemGroup>
 
   <ItemGroup>
