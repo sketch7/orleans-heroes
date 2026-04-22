@@ -198,10 +198,10 @@ app.MapHub<HeroHub>("/real-time/hero");
 app.MapHub<UserNotificationHub>("/userNotifications");
 
 // Heroes REST endpoints
-app.MapGet("/api/{tenant}/heroes", (string _, IHeroGrainClient client) => client.GetAll())
+app.MapGet("/api/{tenant}/heroes", (string tenant, IHeroGrainClient client) => client.GetAll())
 	.WithTags("Heroes");
 
-app.MapGet("/api/{tenant}/heroes/{id}", (string _, string id, IHeroGrainClient client) => client.Get(id))
+app.MapGet("/api/{tenant}/heroes/{id}", (string tenant, string id, IHeroGrainClient client) => client.Get(id))
 	.WithTags("Heroes");
 
 // GraphQL endpoint — tenant resolved from the X-Tenant request header
