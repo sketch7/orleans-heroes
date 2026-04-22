@@ -15,8 +15,6 @@
     <SignalROrleansVersion>link</SignalROrleansVersion>
     <!-- <MultitenancyVersion>1.0.0</MultitenancyVersion> -->
     <MultitenancyVersion>link</MultitenancyVersion>
-    <NewtonsoftJsonVersion>13.0.4</NewtonsoftJsonVersion>
-    <GraphQLVersion>8.3.3</GraphQLVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -50,7 +48,7 @@
     <PackageVersion Include="Sketch7.Multitenancy.Orleans" Version="$(MultitenancyVersion)" Condition="'$(MultitenancyVersion)' != 'link'" />
 
     <!-- GraphQL packages -->
-    <PackageVersion Include="GraphQL.Server.All" Version="$(GraphQLVersion)" />
+    <PackageVersion Include="GraphQL.Server.All" Version="8.3.3" />
 
     <!-- Serilog packages -->
     <PackageVersion Include="Serilog" Version="4.3.0" />
@@ -63,7 +61,6 @@
     <PackageVersion Include="Serilog.Sinks.Console" Version="6.1.1" />
 
     <!-- Other packages -->
-    <PackageVersion Include="Newtonsoft.Json" Version="$(NewtonsoftJsonVersion)" />
     <PackageVersion Include="Humanizer.Core" Version="3.0.1" />
     <PackageVersion Include="System.Reactive.Linq" Version="6.1.0" />
 

@@ -58,6 +58,13 @@ builder.Services
 
 builder.Services.Configure<ConsoleLifetimeOptions>(options => options.SuppressStatusMessages = true);
 
+// Global JSON options for minimal API endpoints — camelCase properties + string enums
+builder.Services.ConfigureHttpJsonOptions(opts =>
+{
+	opts.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+	opts.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+});
+
 // Orleans
 builder.Host.UseOrleans((ctx, silo) =>
 {

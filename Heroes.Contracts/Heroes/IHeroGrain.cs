@@ -1,6 +1,5 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Sketch7.Multitenancy.Orleans;
+﻿using Sketch7.Multitenancy.Orleans;
+using System.Text.Json.Serialization;
 
 namespace Heroes.Contracts.Heroes;
 
@@ -30,7 +29,7 @@ public class Hero
 	public override string ToString() => DebuggerDisplay;
 }
 
-[JsonConverter(typeof(StringEnumConverter), true)]
+[JsonConverter(typeof(JsonStringEnumConverter<HeroRoleType>))]
 public enum HeroRoleType
 {
 	Assassin = 1,
