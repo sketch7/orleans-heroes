@@ -14,7 +14,6 @@ using Heroes.Server.Infrastructure;
 using Heroes.Server.Realtime;
 using Heroes.Server.Sample;
 using Heroes.Server.Tenancy;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Scalar.AspNetCore;
 using Serilog;
 using Sketch7.Multitenancy;
@@ -108,8 +107,6 @@ builder.Services.AddCors(o => o.AddPolicy("TempCorsPolicy", policy =>
 		.AllowAnyHeader()
 		.AllowCredentials();
 }));
-
-builder.Services.Configure<KestrelServerOptions>(options => options.AllowSynchronousIO = true);
 
 builder.Services.AddGraphQL(gql => gql
 	.AddSystemTextJson(options =>
