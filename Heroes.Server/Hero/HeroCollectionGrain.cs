@@ -47,7 +47,7 @@ public sealed class HeroCollectionGrain : AppGrain<HeroCollectionState>, IHeroCo
 		);
 	}
 
-	private async Task Set(IEnumerable<Hero> heroes)
+	private async Task Set(IEnumerable<HeroModel> heroes)
 	{
 		State.HeroKeys = heroes.ToDictionary(x => x.Id, x => x.Role);
 		await WriteStateAsync();

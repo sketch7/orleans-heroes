@@ -2,16 +2,13 @@ using GraphQL;
 
 namespace Heroes.Server.Gql;
 
-using Hero = Heroes.Server.Hero.Hero;
-using HeroCategory = Heroes.Server.HeroCategory.HeroCategory;
-
 public class AppGraphQuery : ObjectGraphType
 {
 	public AppGraphQuery()
 	{
 		Name = "AppQueries";
 
-		Field<HeroGraphType, Hero?>("hero")
+		Field<HeroGraphType, HeroModel?>("hero")
 			.Description("Hero entry.")
 			.Argument<StringGraphType>("key", "Unique key.")
 			.ResolveAsync(async ctx =>
@@ -21,7 +18,7 @@ public class AppGraphQuery : ObjectGraphType
 			})
 			;
 
-		Field<ListGraphType<HeroGraphType>, List<Hero>?>("heroes")
+		Field<ListGraphType<HeroGraphType>, List<HeroModel>?>("heroes")
 			.Description("All available Heroes.")
 			.Argument<HeroRoleGraphType>("role", "Filter by role.")
 			.ResolveAsync(async ctx =>
@@ -32,7 +29,7 @@ public class AppGraphQuery : ObjectGraphType
 			})
 			;
 
-		Field<ListGraphType<HeroCategoryGraphType>, List<HeroCategory>?>("heroCategories")
+		Field<ListGraphType<HeroCategoryGraphType>, List<HeroCategoryModel>?>("heroCategories")
 			.Description("All hero categories.")
 			.ResolveAsync(async ctx =>
 			{

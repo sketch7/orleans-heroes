@@ -5,8 +5,8 @@ namespace Heroes.Server.HeroCategory;
 
 public interface IHeroCategoryGrainClient
 {
-	Task<HeroCategory> Get(string key);
-	Task<List<HeroCategory>> GetAll();
+	Task<HeroCategoryModel> Get(string key);
+	Task<List<HeroCategoryModel>> GetAll();
 }
 
 public sealed class HeroCategoryGrainClient : IHeroCategoryGrainClient
@@ -27,10 +27,10 @@ public sealed class HeroCategoryGrainClient : IHeroCategoryGrainClient
 		=> _tenantAccessor.Tenant?.Key
 			?? throw new InvalidOperationException("No tenant is set for the current request.");
 
-	public Task<HeroCategory> Get(string key)
+	public Task<HeroCategoryModel> Get(string key)
 		=> _grainFactory.GetHeroCategoryGrain(TenantKey, key).Get();
 
-	public async Task<List<HeroCategory>> GetAllByRefs(ICollection<string> keys)
+	public async Task<List<HeroCategoryModel>> GetAllByRefs(ICollection<string> keys)
 	{
 		if (keys?.Count == 0)
 			return null;
@@ -39,7 +39,7 @@ public sealed class HeroCategoryGrainClient : IHeroCategoryGrainClient
 		return categories.ToList();
 	}
 
-	public async Task<List<HeroCategory>> GetAll()
+	public async Task<List<HeroCategoryModel>> GetAll()
 	{
 		var keys = await _grainFactory.GetHeroCategoryCollectionGrain(TenantKey).GetAll();
 		return await GetAllByRefs(keys);

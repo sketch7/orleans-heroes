@@ -10,7 +10,7 @@ namespace Heroes.Server.HeroCategory;
 public sealed class HeroCategoryState
 {
 	[Id(0)]
-	public HeroCategory Entity { get; set; }
+	public HeroCategoryModel Entity { get; set; }
 }
 
 [StorageProvider(ProviderName = OrleansConstants.GrainMemoryStorage)]
@@ -45,9 +45,9 @@ public sealed class HeroCategoryGrain : AppGrain<HeroCategoryState>, IHeroCatego
 		}
 	}
 
-	public Task<HeroCategory> Get() => Task.FromResult(State.Entity);
+	public Task<HeroCategoryModel> Get() => Task.FromResult(State.Entity);
 
-	private Task Set(HeroCategory entity)
+	private Task Set(HeroCategoryModel entity)
 	{
 		State.Entity = entity;
 		return WriteStateAsync();

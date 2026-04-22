@@ -4,7 +4,7 @@ namespace Heroes.Server.HeroCategory;
 
 public interface IHeroCategoryGrain : IGrainWithStringKey, IAppGrainContract, ITenantGrain
 {
-	Task<HeroCategory> Get();
+	Task<HeroCategoryModel> Get();
 }
 
 public interface IHeroCategoryCollectionGrain : IGrainWithStringKey, IAppGrainContract, ITenantGrain
@@ -13,7 +13,7 @@ public interface IHeroCategoryCollectionGrain : IGrainWithStringKey, IAppGrainCo
 }
 
 [GenerateSerializer, DebuggerDisplay("{DebuggerDisplay,nq}")]
-public class HeroCategory
+public class HeroCategoryModel
 {
 	protected string DebuggerDisplay => $"Id: '{Id}', Title: '{Title}'";
 

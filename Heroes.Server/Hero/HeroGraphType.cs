@@ -1,6 +1,6 @@
 namespace Heroes.Server.Hero;
 
-public class HeroGraphType : ObjectGraphType<Hero>
+public class HeroGraphType : ObjectGraphType<HeroModel>
 {
 	public HeroGraphType()
 	{

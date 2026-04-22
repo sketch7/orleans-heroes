@@ -50,13 +50,13 @@ public sealed class HeroHub : Hub<IHeroHub>
 		await Clients.All.Send($"{Context.ConnectionId} left");
 	}
 
-	public ChannelReader<Hero> GetUpdates(string id)
+	public ChannelReader<HeroModel> GetUpdates(string id)
 	{
 		if (!Context.Items.TryGetValue(HeroStreamProviderKey, out var streamProviderObj) || streamProviderObj is not IStreamProvider streamProvider)
 			throw new InvalidOperationException("Stream provider not available. Ensure OnConnectedAsync completed successfully.");
 
-		var stream = streamProvider.GetStream<Hero>(StreamConstants.HeroStream.ToString(), $"hero:{id}");
-		var heroSubject = new Subject<Hero>();
+		var stream = streamProvider.GetStream<HeroModel>(StreamConstants.HeroStream.ToString(), $"hero:{id}");
+		var heroSubject = new Subject<HeroModel>();
 
 		Task.Run(async () =>
 		{
@@ -66,7 +66,7 @@ public sealed class HeroHub : Hub<IHeroHub>
 				await Clients.All.Send("msg ->");
 				heroSubject.OnNext(action);
 			});
-			Context.Items.Add($"{nameof(GetUpdates)}:{id}", new Subscription<Hero>
+			Context.Items.Add($"{nameof(GetUpdates)}:{id}", new Subscription<HeroModel>
 			{
 				Stream = heroStream,
 				Subject = heroSubject
@@ -88,7 +88,7 @@ public sealed class HeroHub : Hub<IHeroHub>
 	public async Task StreamUnsubscribe(string methodName, string id)
 	{
 		var key = $"{methodName}:{id}";
-		if (!Context.Items.TryGetValue(key, out var subscriptionObj) || subscriptionObj is not Subscription<Hero> subscription)
+		if (!Context.Items.TryGetValue(key, out var subscriptionObj) || subscriptionObj is not Subscription<HeroModel> subscription)
 			return;
 
 		await subscription.Stream.UnsubscribeAsync();

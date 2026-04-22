@@ -11,7 +11,7 @@ namespace Heroes.Server.Hero;
 public sealed class HeroState
 {
 	[Id(0)]
-	public Hero Entity { get; set; }
+	public HeroModel Entity { get; set; }
 }
 
 [StorageProvider(ProviderName = OrleansConstants.GrainMemoryStorage)]
@@ -64,7 +64,7 @@ public sealed class HeroGrain : AppGrain<HeroState>, IHeroGrain, IWithTenantAcce
 			var hubAllGroup = _hubContext.Group($"{_keyData.TenantKey}/hero");
 
 			var streamProvider = this.GetStreamProvider(OrleansConstants.STREAM_PROVIDER);
-			var stream = streamProvider.GetStream<Hero>(StreamConstants.HeroStream.ToString(), $"hero:{_keyData.GrainKey}");
+			var stream = streamProvider.GetStream<HeroModel>(StreamConstants.HeroStream.ToString(), $"hero:{_keyData.GrainKey}");
 
 			if (State.Entity != null)
 			{
@@ -87,9 +87,9 @@ public sealed class HeroGrain : AppGrain<HeroState>, IHeroGrain, IWithTenantAcce
 		}
 	}
 
-	public Task<Hero> Get() => Task.FromResult(State.Entity);
+	public Task<HeroModel> Get() => Task.FromResult(State.Entity);
 
-	private Task Set(Hero hero)
+	private Task Set(HeroModel hero)
 	{
 		State.Entity = hero;
 		return WriteStateAsync();

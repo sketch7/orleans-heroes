@@ -10,7 +10,7 @@ public interface IHeroHub
 
 public interface IHeroGrain : IGrainWithStringKey, IAppGrainContract, ITenantGrain
 {
-	Task<Hero> Get();
+	Task<HeroModel> Get();
 }
 
 public interface IHeroCollectionGrain : IGrainWithStringKey, IAppGrainContract, ITenantGrain
@@ -25,7 +25,7 @@ public interface IHeroAbilitiesGrain : IGrainWithStringKey, IAppGrainContract, I
 }
 
 [GenerateSerializer, DebuggerDisplay("{DebuggerDisplay,nq}")]
-public class Hero
+public class HeroModel
 {
 	protected string DebuggerDisplay => $"Id: '{Id}', Name: '{Name}', Role: {Role}, Health: {Health}, Popularity: {Popularity}";
 

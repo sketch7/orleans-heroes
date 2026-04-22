@@ -2,9 +2,9 @@ namespace Heroes.Server.Hero;
 
 public interface IHeroGrainClient
 {
-	Task<Hero> Get(string key);
-	Task<List<Hero>> GetAll(HeroRoleType? role = null);
-	Task<List<Hero>> GetAllByRefs(ICollection<string> keys);
+	Task<HeroModel> Get(string key);
+	Task<List<HeroModel>> GetAll(HeroRoleType? role = null);
+	Task<List<HeroModel>> GetAllByRefs(ICollection<string> keys);
 }
 
 public sealed class HeroGrainClient : IHeroGrainClient
@@ -25,10 +25,10 @@ public sealed class HeroGrainClient : IHeroGrainClient
 		=> _tenantAccessor.Tenant?.Key
 			?? throw new InvalidOperationException("No tenant is set for the current request.");
 
-	public Task<Hero> Get(string key)
+	public Task<HeroModel> Get(string key)
 		=> _grainFactory.GetHeroGrain(TenantKey, key).Get();
 
-	public async Task<List<Hero>> GetAllByRefs(ICollection<string> keys)
+	public async Task<List<HeroModel>> GetAllByRefs(ICollection<string> keys)
 	{
 		if (keys?.Count == 0)
 			return null;
@@ -37,7 +37,7 @@ public sealed class HeroGrainClient : IHeroGrainClient
 		return heroes.ToList();
 	}
 
-	public async Task<List<Hero>> GetAll(HeroRoleType? role = null)
+	public async Task<List<HeroModel>> GetAll(HeroRoleType? role = null)
 	{
 		var keys = await _grainFactory.GetHeroCollectionGrain(TenantKey).GetAll(role);
 		return await GetAllByRefs(keys);
