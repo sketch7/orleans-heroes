@@ -1,4 +1,5 @@
 using GraphQL;
+using GraphQL.Server.Ui.GraphiQL;
 using Heroes.Contracts;
 using Heroes.Contracts.HeroCategories;
 using Heroes.Contracts.Heroes;
@@ -141,10 +142,13 @@ app.UseCors("TempCorsPolicy");
 // always returns 200 regardless of the {tenant} route param.
 app.MapGet("/ping", () => Results.Ok("pong")).ExcludeFromDescription();
 
-app.UseGraphQLPlayground("/", new()
+app.UseGraphQLGraphiQL("/ui/graphql", new()
 {
 	GraphQLEndPoint = "/graphql",
-	SubscriptionsEndPoint = "/graphql",
+	Headers = new Dictionary<string, string>
+	{
+		["X-Tenant"] = "lol",
+	},
 });
 
 if (app.Environment.IsDevelopment())

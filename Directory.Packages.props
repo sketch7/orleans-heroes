@@ -16,7 +16,7 @@
     <!-- <MultitenancyVersion>1.0.0</MultitenancyVersion> -->
     <MultitenancyVersion>link</MultitenancyVersion>
     <NewtonsoftJsonVersion>13.0.4</NewtonsoftJsonVersion>
-    <GraphQLVersion>7.5.0</GraphQLVersion>
+    <GraphQLVersion>8.3.3</GraphQLVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -51,8 +51,6 @@
 
     <!-- GraphQL packages -->
     <PackageVersion Include="GraphQL.Server.All" Version="$(GraphQLVersion)" />
-    <PackageVersion Include="GraphQL.DataLoader" Version="$(GraphQLVersion)" />
-    <PackageVersion Include="GraphQL.NewtonsoftJson" Version="$(GraphQLVersion)" />
 
     <!-- Serilog packages -->
     <PackageVersion Include="Serilog" Version="4.3.0" />

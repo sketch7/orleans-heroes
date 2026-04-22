@@ -6,8 +6,6 @@
 
   <ItemGroup>
     <PackageReference Include="GraphQL.Server.All" />
-    <PackageReference Include="GraphQL.DataLoader" />
-    <PackageReference Include="GraphQL.NewtonsoftJson" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="Microsoft.Orleans.Server" />
