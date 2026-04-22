@@ -45,10 +45,6 @@ public sealed class AppInfo : IAppInfo
 		["Production"] = "prod",
 	};
 
-	public AppInfo()
-	{
-	}
-
 	/// <summary>Resolve from <see cref="IConfiguration"/>.</summary>
 	public AppInfo(IConfiguration config)
 	{

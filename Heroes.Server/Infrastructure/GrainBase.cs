@@ -20,21 +20,6 @@ public interface IAppGrain : IAppGrainContract
 	string Source { get; }
 }
 
-/// <summary>Extensions which apply to <see cref="AppGrain{TState}"/>.</summary>
-public static class AppGrainExtensions
-{
-	private static readonly StringTokenParserFactory StringTokenParserFactory = new();
-
-	extension(IAppGrain grain)
-	{
-		/// <summary>Parses a template key string into an object.</summary>
-		/// <typeparam name="T">Type to cast key data to.</typeparam>
-		/// <param name="template">Template pattern to parse e.g. '{brand}/{locale}/{id}'</param>
-		public T ParseKey<T>(string template) where T : new()
-			=> StringTokenParserFactory.Get(template).Parse<T>(grain.PrimaryKey);
-	}
-}
-
 public abstract class AppGrain<TState> : Grain, IAppGrain
 	where TState : new()
 {
