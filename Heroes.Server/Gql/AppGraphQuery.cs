@@ -1,5 +1,4 @@
 using GraphQL;
-using Heroes.Server.Gql.Types;
 
 namespace Heroes.Server.Gql;
 

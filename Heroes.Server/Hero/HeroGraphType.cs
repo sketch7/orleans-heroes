@@ -1,6 +1,4 @@
-namespace Heroes.Server.Gql.Types;
-
-using Hero = Heroes.Server.Hero.Hero;
+namespace Heroes.Server.Hero;
 
 public class HeroGraphType : ObjectGraphType<Hero>
 {
