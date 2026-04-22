@@ -1,8 +1,8 @@
-using Heroes.Contracts;
+using Heroes.Server.Tenancy;
 
-namespace Heroes.Server;
+namespace Heroes.Server.Infrastructure;
 
-public class WarmupStartupTask : IStartupTask
+public sealed class WarmupStartupTask : IStartupTask
 {
 	private readonly IGrainFactory _grainFactory;
 	private readonly IAppTenantRegistry _appTenantRegistry;

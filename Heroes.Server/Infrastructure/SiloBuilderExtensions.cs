@@ -1,4 +1,3 @@
-using Heroes.Contracts;
 using Orleans.Configuration;
 using System.Diagnostics;
 using System.Net;

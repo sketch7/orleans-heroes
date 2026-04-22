@@ -1,20 +1,12 @@
 using GraphQL;
 using GraphQL.Server.Ui.GraphiQL;
-using Heroes.Contracts;
-using Heroes.Contracts.HeroCategories;
-using Heroes.Contracts.Heroes;
-using Heroes.Contracts.Stats;
-using Heroes.GrainClients.HeroCategories;
-using Heroes.GrainClients.Heroes;
-using Heroes.GrainClients.Statistics;
-using Heroes.Grains;
-using Heroes.Server;
 using Heroes.Server.Gql;
-using Heroes.Server.Gql.Core;
+using Heroes.Server.HeroCategory;
+using Heroes.Server.Hero;
+using Heroes.Server.HeroStat;
 using Heroes.Server.Infrastructure;
-using Heroes.Server.Realtime;
-using Heroes.Server.Sample;
 using Heroes.Server.Tenancy;
+using Heroes.Server.UserNotification;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi;
 using Serilog;
@@ -96,7 +88,6 @@ builder.Host.UseOrleans((ctx, silo) =>
 
 // Web services
 builder.Services
-	.AddSingleton<IHeroService, HeroService>()
 	.AddSingleton<IHeroStatsGrainClient, HeroStatsGrainClient>()
 	.AddScoped<IHeroCategoryGrainClient, HeroCategoryGrainClient>()
 	.AddScoped<IHeroGrainClient, HeroGrainClient>()

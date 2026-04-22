@@ -1,6 +1,4 @@
-﻿using Heroes.Contracts.Stats;
-
-namespace Heroes.Server.Gql.Types;
+﻿namespace Heroes.Server.Gql.Types;
 
 public class HeroStatsGraphType : ObjectGraphType<HeroStats>
 {

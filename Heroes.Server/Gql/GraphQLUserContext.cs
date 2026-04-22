@@ -1,10 +1,10 @@
-﻿using Heroes.Contracts.HeroCategories;
-using Heroes.Contracts.Heroes;
+using Heroes.Server.HeroCategory;
+using Heroes.Server.Hero;
 using System.Security.Claims;
 
-namespace Heroes.Server.Gql.Core;
+namespace Heroes.Server.Gql;
 
-public class GraphQLUserContext : Dictionary<string, object?>
+public sealed class GraphQLUserContext : Dictionary<string, object?>
 {
 	public required ClaimsPrincipal User { get; init; }
 

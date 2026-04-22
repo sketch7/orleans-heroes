@@ -1,0 +1,53 @@
+using Heroes.Server.Hero;
+using Microsoft.Extensions.Logging;
+using Orleans.Providers;
+using Sketch7.Multitenancy;
+using Sketch7.Multitenancy.Orleans;
+
+namespace Heroes.Server.HeroCategory;
+
+[GenerateSerializer]
+public sealed class HeroCategoryCollectionState
+{
+	[Id(0)]
+	public HashSet<string> HeroCategoryKeys { get; set; }
+}
+
+[StorageProvider(ProviderName = OrleansConstants.GrainMemoryStorage)]
+public sealed class HeroCategoryCollectionGrain : AppGrain<HeroCategoryCollectionState>, IHeroCategoryCollectionGrain, IWithTenantAccessor<AppTenant>
+{
+	public TenantAccessor<AppTenant> TenantAccessor { get; set; } = new();
+
+	private readonly IHeroDataClient _heroDataClient;
+
+	public HeroCategoryCollectionGrain(
+		ILogger<HeroCategoryCollectionGrain> logger,
+		IHeroDataClient heroDataClient
+	) : base(logger)
+	{
+		_heroDataClient = heroDataClient;
+	}
+
+	public override async Task OnActivateAsync(CancellationToken cancellationToken)
+	{
+		await base.OnActivateAsync(cancellationToken);
+
+		if (State.HeroCategoryKeys == null)
+			await FetchFromRemote();
+	}
+
+	public Task<List<string>> GetAll()
+		=> Task.FromResult(State.HeroCategoryKeys.ToList());
+
+	private async Task Set(List<string> keys)
+	{
+		State.HeroCategoryKeys = new HashSet<string>(keys);
+		await WriteStateAsync();
+	}
+
+	private async Task FetchFromRemote()
+	{
+		var heroCategories = await _heroDataClient.GetAllHeroCategory();
+		await Set(heroCategories.Select(x => x.Id).ToList());
+	}
+}

@@ -1,26 +1,28 @@
-﻿using Heroes.Contracts.HeroCategories;
-using Heroes.Contracts.Heroes;
-using Heroes.Server.Gql.Core;
+﻿using Heroes.Server.Gql;
 
-namespace Heroes.Server.Gql.Types;
-
-public class HeroCategoryGraphType : ObjectGraphType<HeroCategory>
+namespace Heroes.Server.Gql.Types
 {
-	public HeroCategoryGraphType()
+	using Hero = Heroes.Server.Hero.Hero;
+	using HeroCategory = Heroes.Server.HeroCategory.HeroCategory;
+
+	public class HeroCategoryGraphType : ObjectGraphType<HeroCategory>
 	{
-		Name = "HeroCategory";
-		Description = "A Hero category grouping.";
+		public HeroCategoryGraphType()
+		{
+			Name = "HeroCategory";
+			Description = "A Hero category grouping.";
 
-		Field(x => x.Id).Description("Hero category unique key.");
-		Field(x => x.Title).Description("Hero Category title.");
+			Field(x => x.Id).Description("Hero category unique key.");
+			Field(x => x.Title).Description("Hero Category title.");
 
-		Field<ListGraphType<HeroGraphType>, List<Hero>?>("heroes")
-			.ResolveAsync(async ctx =>
-			{
-				var client = ((GraphQLUserContext)ctx.UserContext).HeroGrainClient;
-				return await client.GetAllByRefs(ctx.Source.Heroes);
-			})
-			.Description("Heroes in category")
-			;
+			Field<ListGraphType<HeroGraphType>, List<Hero>?>("heroes")
+				.ResolveAsync(async ctx =>
+				{
+					var client = ((GraphQLUserContext)ctx.UserContext).HeroGrainClient;
+					return await client.GetAllByRefs(ctx.Source.Heroes);
+				})
+				.Description("Heroes in category")
+				;
+		}
 	}
 }

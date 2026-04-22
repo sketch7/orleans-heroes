@@ -6,8 +6,11 @@
 
   <ItemGroup>
     <PackageReference Include="GraphQL.Server.All" />
+    <PackageReference Include="Humanizer.Core" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Microsoft.Orleans.Client" />
+    <PackageReference Include="Microsoft.Orleans.Sdk" />
     <PackageReference Include="Microsoft.Orleans.Server" />
     <PackageReference Include="Microsoft.Orleans.Streaming" />
     <PackageReference Include="Scalar.AspNetCore" />
@@ -19,15 +22,18 @@
     <PackageReference Include="Serilog.Extensions.Logging" />
     <PackageReference Include="Serilog.Settings.Configuration" />
     <PackageReference Include="Serilog.Sinks.Console" />
+    <PackageReference Include="System.Reactive.Linq" />
     <!-- <PackageReference Include="Sucrose.Orleans.Persistence.Redis" /> -->
   </ItemGroup>
 
   <ItemGroup Condition="'$(MultitenancyVersion)' == 'link'">
+    <ProjectReference Include="$(MultitenancyBaseLinkPath)\src\Sketch7.Multitenancy\Sketch7.Multitenancy.csproj" />
     <ProjectReference Include="$(MultitenancyBaseLinkPath)\src\Sketch7.Multitenancy.AspNet\Sketch7.Multitenancy.AspNet.csproj" />
     <ProjectReference Include="$(MultitenancyBaseLinkPath)\src\Sketch7.Multitenancy.Orleans\Sketch7.Multitenancy.Orleans.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(MultitenancyVersion)' != 'link'">
+    <PackageReference Include="Sketch7.Multitenancy" />
     <PackageReference Include="Sketch7.Multitenancy.AspNet" />
     <PackageReference Include="Sketch7.Multitenancy.Orleans" />
   </ItemGroup>
@@ -42,12 +48,6 @@
     <PackageReference Include="Sketch7.SignalR.Orleans.AspNet" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Heroes.GrainClients\Heroes.GrainClients.csproj" />
-    <ProjectReference Include="..\Heroes.Contracts\Heroes.Contracts.csproj" />
-    <ProjectReference Include="..\Heroes.Core\Heroes.Core.csproj" />
-    <ProjectReference Include="..\Heroes.Grains\Heroes.Grains.csproj" />
-  </ItemGroup>
 
   <PropertyGroup>
     <ServerGarbageCollection>true</ServerGarbageCollection>
