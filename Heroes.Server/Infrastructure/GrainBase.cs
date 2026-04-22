@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using Orleans.Concurrency;
 
 namespace Heroes.Server.Infrastructure;

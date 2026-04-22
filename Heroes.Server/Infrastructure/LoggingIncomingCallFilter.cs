@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 namespace Heroes.Server.Infrastructure;
 
 public sealed class LoggingIncomingCallFilter : IIncomingGrainCallFilter

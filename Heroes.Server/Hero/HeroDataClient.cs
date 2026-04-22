@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Logging;
-
 namespace Heroes.Server.Hero;
 
 public interface IHeroDataClient

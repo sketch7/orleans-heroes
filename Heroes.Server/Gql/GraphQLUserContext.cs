@@ -1,5 +1,3 @@
-using Heroes.Server.HeroCategory;
-using Heroes.Server.Hero;
 using System.Security.Claims;
 
 namespace Heroes.Server.Gql;

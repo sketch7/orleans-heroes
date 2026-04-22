@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using Orleans.Providers;
 
 namespace Heroes.Server.HeroStat;

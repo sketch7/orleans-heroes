@@ -1,6 +1,4 @@
-using Microsoft.Extensions.Logging;
 using Orleans.Providers;
-using Sketch7.Multitenancy;
 using Sketch7.Multitenancy.Orleans;
 
 namespace Heroes.Server.Hero;

@@ -1,5 +1,3 @@
-using Sketch7.Multitenancy;
-
 namespace Heroes.Server.Tenancy;
 
 [DebuggerDisplay("{DebuggerDisplay,nq}")]

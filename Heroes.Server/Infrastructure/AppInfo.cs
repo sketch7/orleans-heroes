@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Configuration;
-
 namespace Heroes.Server.Infrastructure;
 
 /// <summary>Application metadata interface.</summary>

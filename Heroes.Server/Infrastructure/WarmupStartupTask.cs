@@ -1,5 +1,3 @@
-using Heroes.Server.Tenancy;
-
 namespace Heroes.Server.Infrastructure;
 
 public sealed class WarmupStartupTask : IStartupTask

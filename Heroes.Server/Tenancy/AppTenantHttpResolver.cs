@@ -1,4 +1,3 @@
-using Sketch7.Multitenancy;
 using Sketch7.Multitenancy.AspNet;
 
 namespace Heroes.Server.Tenancy;

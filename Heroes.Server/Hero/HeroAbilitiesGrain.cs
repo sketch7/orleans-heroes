@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using Orleans.Providers;
 using Sketch7.Multitenancy.Orleans;
 

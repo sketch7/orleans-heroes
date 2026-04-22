@@ -1,6 +1,3 @@
-using Heroes.Server.Hero;
-using Sketch7.Multitenancy;
-
 namespace Heroes.Server.HeroCategory;
 
 public interface IHeroCategoryGrainClient
