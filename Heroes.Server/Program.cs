@@ -113,7 +113,7 @@ builder.Services.AddGraphQL(gql => gql
 	// .AddExecutionStrategySelector<DefaultExecutionStrategySelector>()
 	.AddSchema<AppSchema>()
 	.AddGraphTypes()
-	.AddUserContextBuilder(httpContext => new GraphQLUserContext
+	.AddUserContextBuilder(httpContext => new AppGqlUserContext
 	{
 		User = httpContext.User,
 		// Capture grain clients from the HTTP request scope where the tenant accessor is already set
@@ -148,7 +148,10 @@ builder.Services.AddOpenApi(opts =>
 			return Task.CompletedTask;
 
 		foreach (var param in operation.Parameters.OfType<OpenApiParameter>().Where(p => p.Name == "id"))
-			param.Examples = new Dictionary<string, IOpenApiExample> { ["default"] = new OpenApiExample { Value = JsonNode.Parse("\"rengar\"") } };
+			param.Examples = new Dictionary<string, IOpenApiExample>
+			{
+				["default"] = new OpenApiExample { Value = JsonNode.Parse("\"rengar\"") }
+			};
 
 		return Task.CompletedTask;
 	});

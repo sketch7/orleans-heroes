@@ -2,7 +2,7 @@ using GraphQL;
 
 namespace Heroes.Server.Gql;
 
-public class AppGraphQuery : ObjectGraphType
+public sealed class AppGraphQuery : ObjectGraphType
 {
 	public AppGraphQuery()
 	{
@@ -13,7 +13,7 @@ public class AppGraphQuery : ObjectGraphType
 			.Argument<StringGraphType>("key", "Unique key.")
 			.ResolveAsync(async ctx =>
 			{
-				var client = ((GraphQLUserContext)ctx.UserContext).HeroGrainClient;
+				var client = ctx.AppUserContext.HeroGrainClient;
 				return await client.Get(ctx.GetArgument<string>("key"));
 			})
 			;
@@ -23,7 +23,7 @@ public class AppGraphQuery : ObjectGraphType
 			.Argument<HeroRoleGraphType>("role", "Filter by role.")
 			.ResolveAsync(async ctx =>
 			{
-				var client = ((GraphQLUserContext)ctx.UserContext).HeroGrainClient;
+				var client = ctx.AppUserContext.HeroGrainClient;
 				var role = ctx.GetArgument<int?>("role");
 				return await client.GetAll((HeroRoleType?)role);
 			})
@@ -33,7 +33,7 @@ public class AppGraphQuery : ObjectGraphType
 			.Description("All hero categories.")
 			.ResolveAsync(async ctx =>
 			{
-				var client = ((GraphQLUserContext)ctx.UserContext).HeroCategoryGrainClient;
+				var client = ctx.AppUserContext.HeroCategoryGrainClient;
 				return await client.GetAll();
 			})
 			;

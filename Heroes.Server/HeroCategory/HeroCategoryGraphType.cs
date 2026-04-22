@@ -15,7 +15,7 @@ public class HeroCategoryGraphType : ObjectGraphType<HeroCategoryModel>
 		Field<ListGraphType<HeroGraphType>, List<HeroModel>?>("heroes")
 			.ResolveAsync(async ctx =>
 			{
-				var client = ((GraphQLUserContext)ctx.UserContext).HeroGrainClient;
+				var client = ctx.AppUserContext.HeroGrainClient;
 				return await client.GetAllByRefs(ctx.Source.Heroes);
 			})
 			.Description("Heroes in category")

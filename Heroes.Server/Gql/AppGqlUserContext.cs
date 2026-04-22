@@ -1,8 +1,17 @@
+using GraphQL;
 using System.Security.Claims;
 
 namespace Heroes.Server.Gql;
 
-public sealed class GraphQLUserContext : Dictionary<string, object?>
+public static class ResolveFieldContextExtensions
+{
+	extension(IResolveFieldContext ctx)
+	{
+		public AppGqlUserContext AppUserContext => (AppGqlUserContext)ctx.UserContext;
+	}
+}
+
+public sealed class AppGqlUserContext : Dictionary<string, object?>
 {
 	public required ClaimsPrincipal User { get; init; }
 
