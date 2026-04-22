@@ -132,11 +132,13 @@ builder.Services.AddOpenApi(opts =>
 			return Task.CompletedTask;
 
 		foreach (var param in operation.Parameters.OfType<OpenApiParameter>().Where(p => p.Name == "tenant"))
+		{
 			param.Examples = new Dictionary<string, IOpenApiExample>
 			{
 				["lol"] = new OpenApiExample { Value = JsonNode.Parse("\"lol\"") },
 				["hots"] = new OpenApiExample { Value = JsonNode.Parse("\"hots\"") },
 			};
+		}
 
 		return Task.CompletedTask;
 	});
@@ -148,10 +150,12 @@ builder.Services.AddOpenApi(opts =>
 			return Task.CompletedTask;
 
 		foreach (var param in operation.Parameters.OfType<OpenApiParameter>().Where(p => p.Name == "id"))
+		{
 			param.Examples = new Dictionary<string, IOpenApiExample>
 			{
 				["default"] = new OpenApiExample { Value = JsonNode.Parse("\"rengar\"") }
 			};
+		}
 
 		return Task.CompletedTask;
 	});
@@ -194,10 +198,10 @@ app.MapHub<HeroHub>("/real-time/hero");
 app.MapHub<UserNotificationHub>("/userNotifications");
 
 // Heroes REST endpoints
-app.MapGet("/api/{tenant}/heroes", (string tenant, IHeroGrainClient client) => client.GetAll())
+app.MapGet("/api/{tenant}/heroes", (string _, IHeroGrainClient client) => client.GetAll())
 	.WithTags("Heroes");
 
-app.MapGet("/api/{tenant}/heroes/{id}", (string tenant, string id, IHeroGrainClient client) => client.Get(id))
+app.MapGet("/api/{tenant}/heroes/{id}", (string _, string id, IHeroGrainClient client) => client.Get(id))
 	.WithTags("Heroes");
 
 // GraphQL endpoint — tenant resolved from the X-Tenant request header
@@ -233,4 +237,4 @@ static int GetAvailablePort(int start, int end)
 }
 
 // Required for WebApplicationFactory<Program> from external test assemblies
-public partial class Program { }
+public partial class Program;
