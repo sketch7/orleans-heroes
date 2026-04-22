@@ -1,6 +1,4 @@
-﻿using Heroes.Contracts.Heroes;
-
-namespace Heroes.Server.Gql.Types;
+namespace Heroes.Server.Hero;
 
 public class HeroRoleGraphType : EnumerationGraphType
 {

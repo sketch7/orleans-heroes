@@ -1,8 +1,6 @@
-﻿using Heroes.Contracts.Heroes;
+namespace Heroes.Server.Hero;
 
-namespace Heroes.Server.Gql.Types;
-
-public class HeroGraphType : ObjectGraphType<Hero>
+public class HeroGraphType : ObjectGraphType<HeroModel>
 {
 	public HeroGraphType()
 	{

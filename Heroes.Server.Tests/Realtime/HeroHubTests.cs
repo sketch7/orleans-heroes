@@ -1,4 +1,4 @@
-using Heroes.Contracts.Heroes;
+using Heroes.Server.Hero;
 using Heroes.Server.Tests.Infrastructure;
 using Microsoft.AspNetCore.SignalR.Client;
 
@@ -113,9 +113,9 @@ public sealed class HeroHubTests(HeroesWebApplicationFactory factory)
 	public async Task HeroChanged_AfterJoiningHeroGroup_ReceivesHeroUpdate()
 	{
 		// Arrange
-		var tcs = new TaskCompletionSource<Hero>(TaskCreationOptions.RunContinuationsAsynchronously);
+		var tcs = new TaskCompletionSource<HeroModel>(TaskCreationOptions.RunContinuationsAsynchronously);
 		await using var connection = factory.CreateHubConnection(HubPath);
-		connection.On<Hero>("HeroChanged", hero => tcs.TrySetResult(hero));
+		connection.On<HeroModel>("HeroChanged", hero => tcs.TrySetResult(hero));
 
 		await connection.StartAsync(TestContext.Current.CancellationToken);
 		await connection.InvokeAsync("AddToGroup", "lol/hero", TestContext.Current.CancellationToken);

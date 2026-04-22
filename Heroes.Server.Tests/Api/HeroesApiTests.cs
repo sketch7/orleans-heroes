@@ -1,4 +1,4 @@
-using Heroes.Contracts.Heroes;
+using Heroes.Server.Hero;
 using Heroes.Server.Tests.Infrastructure;
 
 namespace Heroes.Server.Tests.Api;
@@ -26,7 +26,7 @@ public sealed class HeroesApiTests(HeroesWebApplicationFactory factory)
 	public async Task GetAll_LoLTenant_ReturnsNonEmptyList()
 	{
 		// Act
-		var heroes = await _client.GetFromJsonAsync<List<Hero>>(
+		var heroes = await _client.GetFromJsonAsync<List<HeroModel>>(
 			"/api/lol/heroes", TestContext.Current.CancellationToken);
 
 		// Assert
@@ -38,7 +38,7 @@ public sealed class HeroesApiTests(HeroesWebApplicationFactory factory)
 	public async Task GetAll_LoLTenant_HeroesHaveExpectedShape()
 	{
 		// Act
-		var heroes = await _client.GetFromJsonAsync<List<Hero>>(
+		var heroes = await _client.GetFromJsonAsync<List<HeroModel>>(
 			"/api/lol/heroes", TestContext.Current.CancellationToken);
 
 		// Assert
@@ -51,7 +51,7 @@ public sealed class HeroesApiTests(HeroesWebApplicationFactory factory)
 	public async Task GetAll_HotsTenant_ReturnsNonEmptyList()
 	{
 		// Act
-		var heroes = await _client.GetFromJsonAsync<List<Hero>>(
+		var heroes = await _client.GetFromJsonAsync<List<HeroModel>>(
 			"/api/hots/heroes", TestContext.Current.CancellationToken);
 
 		// Assert
@@ -85,7 +85,7 @@ public sealed class HeroesApiTests(HeroesWebApplicationFactory factory)
 	public async Task Get_WithValidHeroId_ReturnsCorrectHero()
 	{
 		// Act
-		var hero = await _client.GetFromJsonAsync<Hero>(
+		var hero = await _client.GetFromJsonAsync<HeroModel>(
 			"/api/lol/heroes/rengar", TestContext.Current.CancellationToken);
 
 		// Assert

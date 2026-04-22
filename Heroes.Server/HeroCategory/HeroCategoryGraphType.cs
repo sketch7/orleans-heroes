@@ -1,10 +1,8 @@
-﻿using Heroes.Contracts.HeroCategories;
-using Heroes.Contracts.Heroes;
-using Heroes.Server.Gql.Core;
+using Heroes.Server.Gql;
 
-namespace Heroes.Server.Gql.Types;
+namespace Heroes.Server.HeroCategory;
 
-public class HeroCategoryGraphType : ObjectGraphType<HeroCategory>
+public class HeroCategoryGraphType : ObjectGraphType<HeroCategoryModel>
 {
 	public HeroCategoryGraphType()
 	{
@@ -14,10 +12,10 @@ public class HeroCategoryGraphType : ObjectGraphType<HeroCategory>
 		Field(x => x.Id).Description("Hero category unique key.");
 		Field(x => x.Title).Description("Hero Category title.");
 
-		Field<ListGraphType<HeroGraphType>, List<Hero>?>("heroes")
+		Field<ListGraphType<HeroGraphType>, List<HeroModel>?>("heroes")
 			.ResolveAsync(async ctx =>
 			{
-				var client = ((GraphQLUserContext)ctx.UserContext).HeroGrainClient;
+				var client = ctx.AppUserContext.HeroGrainClient;
 				return await client.GetAllByRefs(ctx.Source.Heroes);
 			})
 			.Description("Heroes in category")

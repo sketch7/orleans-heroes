@@ -1,10 +1,17 @@
-﻿using Heroes.Contracts.HeroCategories;
-using Heroes.Contracts.Heroes;
+using GraphQL;
 using System.Security.Claims;
 
-namespace Heroes.Server.Gql.Core;
+namespace Heroes.Server.Gql;
 
-public class GraphQLUserContext : Dictionary<string, object?>
+public static class ResolveFieldContextExtensions
+{
+	extension(IResolveFieldContext ctx)
+	{
+		public AppGqlUserContext AppUserContext => (AppGqlUserContext)ctx.UserContext;
+	}
+}
+
+public sealed class AppGqlUserContext : Dictionary<string, object?>
 {
 	public required ClaimsPrincipal User { get; init; }
 

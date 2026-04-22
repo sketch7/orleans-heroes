@@ -17,14 +17,15 @@
     <!-- <MultitenancyVersion>link</MultitenancyVersion> -->
   </PropertyGroup>
 
-  <ItemGroup>
-    <!-- Orleans packages -->
+  <ItemGroup Label="Orleans">
     <PackageVersion Include="Microsoft.Orleans.Sdk" Version="$(OrleansVersion)" />
     <PackageVersion Include="Microsoft.Orleans.Client" Version="$(OrleansVersion)" />
     <PackageVersion Include="Microsoft.Orleans.Server" Version="$(OrleansVersion)" />
     <PackageVersion Include="Microsoft.Orleans.Streaming" Version="$(OrleansVersion)" />
+    <!-- <PackageVersion Include="Sucrose.Orleans.Persistence.Redis" Version="3.0.1" /> -->
+  </ItemGroup>
 
-    <!-- Microsoft.Extensions packages -->
+  <ItemGroup Label="Microsoft.Extensions">
     <PackageVersion Include="Microsoft.Extensions.Configuration" Version="10.0.7" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.7" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.CommandLine" Version="$(MicrosoftExtensionsVersion)" />
@@ -36,21 +37,29 @@
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="$(MicrosoftExtensionsVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Logging" Version="$(MicrosoftExtensionsVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.7" />
+  </ItemGroup>
 
-    <!-- ASP.NET Core packages -->
+  <ItemGroup Label="ASP.NET Core">
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.7" />
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.7" />
     <PackageVersion Include="Scalar.AspNetCore" Version="2.14.3" />
+  </ItemGroup>
 
-    <!-- Multitenancy packages — omitted in link mode (project references used instead) -->
+  <ItemGroup Label="Sketch7">
+    <!-- Multitenancy — omitted in link mode (project references used instead) -->
     <PackageVersion Include="Sketch7.Multitenancy" Version="$(MultitenancyVersion)" Condition="'$(MultitenancyVersion)' != 'link'" />
     <PackageVersion Include="Sketch7.Multitenancy.AspNet" Version="$(MultitenancyVersion)" Condition="'$(MultitenancyVersion)' != 'link'" />
     <PackageVersion Include="Sketch7.Multitenancy.Orleans" Version="$(MultitenancyVersion)" Condition="'$(MultitenancyVersion)' != 'link'" />
+    <!-- SignalR.Orleans — omitted in link mode (project references used instead) -->
+    <PackageVersion Include="Sketch7.SignalR.Orleans" Version="$(SignalROrleansVersion)" Condition="'$(SignalROrleansVersion)' != 'link'" />
+    <PackageVersion Include="Sketch7.SignalR.Orleans.AspNet" Version="$(SignalROrleansVersion)" Condition="'$(SignalROrleansVersion)' != 'link'" />
+  </ItemGroup>
 
-    <!-- GraphQL packages -->
+  <ItemGroup Label="GraphQL">
     <PackageVersion Include="GraphQL.Server.All" Version="8.3.3" />
+  </ItemGroup>
 
-    <!-- Serilog packages -->
+  <ItemGroup Label="Serilog">
     <PackageVersion Include="Serilog" Version="4.3.1" />
     <PackageVersion Include="Serilog.AspNetCore" Version="10.0.0" />
     <PackageVersion Include="Serilog.Extensions.Hosting" Version="10.0.0" />
@@ -59,16 +68,14 @@
     <PackageVersion Include="Serilog.Extensions.Logging" Version="10.0.0" />
     <PackageVersion Include="Serilog.Settings.Configuration" Version="10.0.0" />
     <PackageVersion Include="Serilog.Sinks.Console" Version="6.1.1" />
+  </ItemGroup>
 
-    <!-- Other packages -->
+  <ItemGroup Label="Other">
     <PackageVersion Include="Humanizer.Core" Version="3.0.10" />
     <PackageVersion Include="System.Reactive.Linq" Version="6.1.0" />
+  </ItemGroup>
 
-    <!-- <PackageVersion Include="Sucrose.Orleans.Persistence.Redis" Version="3.0.1" /> -->
-    <PackageVersion Include="Sketch7.SignalR.Orleans" Version="$(SignalROrleansVersion)" Condition="'$(SignalROrleansVersion)' != 'link'" />
-    <PackageVersion Include="Sketch7.SignalR.Orleans.AspNet" Version="$(SignalROrleansVersion)" Condition="'$(SignalROrleansVersion)' != 'link'" />
-
-    <!-- Test packages -->
+  <ItemGroup Label="Test">
     <PackageVersion Include="xunit.v3" Version="4.0.0-pre.81" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.0-pre.4" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.5.0" />

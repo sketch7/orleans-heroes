@@ -1,9 +1,5 @@
 <Solution>
 	<Folder Name="/src/">
-		<Project Path="Heroes.Contracts/Heroes.Contracts.csproj" />
-		<Project Path="Heroes.Core/Heroes.Core.csproj" />
-		<Project Path="Heroes.GrainClients/Heroes.GrainClients.csproj" />
-		<Project Path="Heroes.Grains/Heroes.Grains.csproj" />
 		<Project Path="Heroes.Server/Heroes.Server.csproj" />
 	</Folder>
 	<Folder Name="/tests/">

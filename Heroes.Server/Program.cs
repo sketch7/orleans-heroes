@@ -1,27 +1,10 @@
 using GraphQL;
-using GraphQL.Server.Ui.GraphiQL;
-using Heroes.Contracts;
-using Heroes.Contracts.HeroCategories;
-using Heroes.Contracts.Heroes;
-using Heroes.Contracts.Stats;
-using Heroes.GrainClients.HeroCategories;
-using Heroes.GrainClients.Heroes;
-using Heroes.GrainClients.Statistics;
-using Heroes.Grains;
-using Heroes.Server;
 using Heroes.Server.Gql;
-using Heroes.Server.Gql.Core;
-using Heroes.Server.Infrastructure;
-using Heroes.Server.Realtime;
-using Heroes.Server.Sample;
-using Heroes.Server.Tenancy;
-using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi;
+using Scalar.AspNetCore;
 using Serilog;
-using Sketch7.Multitenancy;
 using Sketch7.Multitenancy.AspNet;
 using Sketch7.Multitenancy.Orleans;
-using Scalar.AspNetCore;
 using System.Net.Sockets;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -96,7 +79,6 @@ builder.Host.UseOrleans((ctx, silo) =>
 
 // Web services
 builder.Services
-	.AddSingleton<IHeroService, HeroService>()
 	.AddSingleton<IHeroStatsGrainClient, HeroStatsGrainClient>()
 	.AddScoped<IHeroCategoryGrainClient, HeroCategoryGrainClient>()
 	.AddScoped<IHeroGrainClient, HeroGrainClient>()
@@ -131,7 +113,7 @@ builder.Services.AddGraphQL(gql => gql
 	// .AddExecutionStrategySelector<DefaultExecutionStrategySelector>()
 	.AddSchema<AppSchema>()
 	.AddGraphTypes()
-	.AddUserContextBuilder(httpContext => new GraphQLUserContext
+	.AddUserContextBuilder(httpContext => new AppGqlUserContext
 	{
 		User = httpContext.User,
 		// Capture grain clients from the HTTP request scope where the tenant accessor is already set
@@ -166,7 +148,10 @@ builder.Services.AddOpenApi(opts =>
 			return Task.CompletedTask;
 
 		foreach (var param in operation.Parameters.OfType<OpenApiParameter>().Where(p => p.Name == "id"))
-			param.Examples = new Dictionary<string, IOpenApiExample> { ["default"] = new OpenApiExample { Value = JsonNode.Parse("\"rengar\"") } };
+			param.Examples = new Dictionary<string, IOpenApiExample>
+			{
+				["default"] = new OpenApiExample { Value = JsonNode.Parse("\"rengar\"") }
+			};
 
 		return Task.CompletedTask;
 	});
