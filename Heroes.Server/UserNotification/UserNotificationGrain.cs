@@ -1,19 +1,14 @@
-using Orleans.Providers;
 using SignalR.Orleans.Core;
 
 namespace Heroes.Server.UserNotification;
 
-public sealed class UserNotificationGrain : AppGrain<UserNotificationState>, IUserNotificationGrain
+public sealed class UserNotificationGrain(
+	ILogger<UserNotificationGrain> logger,
+	[PersistentState("userNotification", OrleansConstants.GrainMemoryStorage)]
+	IPersistentState<UserNotificationState> state
+) : AppGrain<UserNotificationState>(logger, state), IUserNotificationGrain
 {
 	private HubContext<IUserNotificationHub>? _hubContext;
-
-	public UserNotificationGrain(
-		ILogger<UserNotificationGrain> logger,
-		[PersistentState("userNotification", OrleansConstants.GrainMemoryStorage)]
-		IPersistentState<UserNotificationState> state
-	) : base(logger, state)
-	{
-	}
 
 	public override async Task OnActivateAsync(CancellationToken cancellationToken)
 	{
@@ -24,7 +19,7 @@ public sealed class UserNotificationGrain : AppGrain<UserNotificationState>, IUs
 
 		// Only initialize state when truly new (not previously persisted)
 		if (State.UserNotification is null)
-			await Set(new UserNotification { MessageCount = 0 });
+			await Set(new() { MessageCount = 0 });
 
 		this.RegisterGrainTimer(async _ =>
 		{
@@ -32,7 +27,7 @@ public sealed class UserNotificationGrain : AppGrain<UserNotificationState>, IUs
 			await Set(updated);
 
 			await hubUser.Send("Broadcast", updated);
-		}, State, new GrainTimerCreationOptions { DueTime = TimeSpan.FromSeconds(2), Period = TimeSpan.FromSeconds(3), Interleave = true });
+		}, State, new() { DueTime = TimeSpan.FromSeconds(2), Period = TimeSpan.FromSeconds(3), Interleave = true });
 	}
 
 	public async Task Set(UserNotification item)

@@ -1,15 +1,13 @@
-using Orleans.Providers;
-
 namespace Heroes.Server.HeroStat;
 
 // Stats seed data (LoL heroes only)
-file static class StatsData
+static file class StatsData
 {
 	public static readonly List<HeroStats> All =
 	[
-		new HeroStats { HeroId = "rengar", BanRate = 20.75M, WinRate = 50.2M, TotalGames = 60 },
-		new HeroStats { HeroId = "kha-zix", BanRate = 32M, WinRate = 60.2M, TotalGames = 75 },
-		new HeroStats { HeroId = "singed", BanRate = 10M, WinRate = 75.2M, TotalGames = 100 },
+		new() { HeroId = "rengar", BanRate = 20.75M, WinRate = 50.2M, TotalGames = 60 },
+		new() { HeroId = "kha-zix", BanRate = 32M, WinRate = 60.2M, TotalGames = 75 },
+		new() { HeroId = "singed", BanRate = 10M, WinRate = 75.2M, TotalGames = 100 },
 	];
 }
 

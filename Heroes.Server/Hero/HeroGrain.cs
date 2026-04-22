@@ -1,4 +1,3 @@
-using Orleans.Providers;
 using Orleans.Streams;
 using SignalR.Orleans.Core;
 using Sketch7.Multitenancy.Orleans;
@@ -12,23 +11,17 @@ public sealed class HeroState
 	public HeroModel? Entity { get; set; }
 }
 
-public sealed class HeroGrain : AppGrain<HeroState>, IHeroGrain, IWithTenantAccessor<AppTenant>
+public sealed class HeroGrain(
+	ILogger<HeroGrain> logger,
+	IHeroDataClient heroDataClient,
+	[PersistentState("hero", OrleansConstants.GrainMemoryStorage)]
+	IPersistentState<HeroState> state
+) : AppGrain<HeroState>(logger, state), IHeroGrain, IWithTenantAccessor<AppTenant>
 {
 	public TenantAccessor<AppTenant> TenantAccessor { get; set; } = new();
 
-	private readonly IHeroDataClient _heroDataClient;
 	private TenantGrainKey _keyData;
 	private HubContext<IHeroHub>? _hubContext;
-
-	public HeroGrain(
-		ILogger<HeroGrain> logger,
-		IHeroDataClient heroDataClient,
-		[PersistentState("hero", OrleansConstants.GrainMemoryStorage)]
-		IPersistentState<HeroState> state
-	) : base(logger, state)
-	{
-		_heroDataClient = heroDataClient;
-	}
 
 	public override async Task OnActivateAsync(CancellationToken cancellationToken)
 	{
@@ -42,7 +35,7 @@ public sealed class HeroGrain : AppGrain<HeroState>, IHeroGrain, IWithTenantAcce
 
 		if (State.Entity is null)
 		{
-			var entity = await _heroDataClient.GetByKey(_keyData.GrainKey);
+			var entity = await heroDataClient.GetByKey(_keyData.GrainKey);
 
 			if (entity is null)
 			{
@@ -77,7 +70,7 @@ public sealed class HeroGrain : AppGrain<HeroState>, IHeroGrain, IWithTenantAcce
 							hubGroup.Send("HeroChanged", updated),
 							hubAllGroup.Send("HeroChanged", updated)
 						);
-					}, State, new GrainTimerCreationOptions { DueTime = TimeSpan.FromSeconds(2), Period = TimeSpan.FromSeconds(3), Interleave = true });
+					}, State, new() { DueTime = TimeSpan.FromSeconds(2), Period = TimeSpan.FromSeconds(3), Interleave = true });
 			}
 		}
 		catch (Exception ex)

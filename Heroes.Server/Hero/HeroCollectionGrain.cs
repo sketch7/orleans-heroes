@@ -1,4 +1,3 @@
-using Orleans.Providers;
 using Sketch7.Multitenancy.Orleans;
 
 namespace Heroes.Server.Hero;
@@ -10,21 +9,14 @@ public sealed class HeroCollectionState
 	public Dictionary<string, HeroRoleType>? HeroKeys { get; set; }
 }
 
-public sealed class HeroCollectionGrain : AppGrain<HeroCollectionState>, IHeroCollectionGrain, IWithTenantAccessor<AppTenant>
+public sealed class HeroCollectionGrain(
+	ILogger<HeroCollectionGrain> logger,
+	IHeroDataClient heroDataClient,
+	[PersistentState("heroCollection", OrleansConstants.GrainMemoryStorage)]
+	IPersistentState<HeroCollectionState> state
+) : AppGrain<HeroCollectionState>(logger, state), IHeroCollectionGrain, IWithTenantAccessor<AppTenant>
 {
 	public TenantAccessor<AppTenant> TenantAccessor { get; set; } = new();
-
-	private readonly IHeroDataClient _heroDataClient;
-
-	public HeroCollectionGrain(
-		ILogger<HeroCollectionGrain> logger,
-		IHeroDataClient heroDataClient,
-		[PersistentState("heroCollection", OrleansConstants.GrainMemoryStorage)]
-		IPersistentState<HeroCollectionState> state
-	) : base(logger, state)
-	{
-		_heroDataClient = heroDataClient;
-	}
 
 	public override async Task OnActivateAsync(CancellationToken cancellationToken)
 	{
@@ -54,7 +46,7 @@ public sealed class HeroCollectionGrain : AppGrain<HeroCollectionState>, IHeroCo
 
 	private async Task FetchFromRemote()
 	{
-		var heroes = await _heroDataClient.GetAll();
+		var heroes = await heroDataClient.GetAll();
 		await Set(heroes.OrderBy(x => x.Name).ThenBy(x => x.Role));
 	}
 }

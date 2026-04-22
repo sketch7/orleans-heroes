@@ -1,4 +1,3 @@
-using Orleans.Providers;
 using Sketch7.Multitenancy.Orleans;
 
 namespace Heroes.Server.HeroCategory;

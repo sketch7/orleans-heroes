@@ -10,11 +10,14 @@ public static class CollectionExtensions
 
 	public static T RandomElement<T>(this T[] array) => array[Random.Next(array.Length)];
 
-	public static Task ForEachAsync<T>(this IEnumerable<T> collection, Func<T, Task> transform)
-		=> Task.WhenAll(collection.Select(transform));
+	extension<T>(IEnumerable<T> collection)
+	{
+		public Task ForEachAsync(Func<T, Task> transform)
+			=> Task.WhenAll(collection.Select(transform));
 
-	public static Task<TResult[]> SelectAsync<TInput, TResult>(this IEnumerable<TInput> collection, Func<TInput, Task<TResult>> transform)
-		=> Task.WhenAll(collection.Select(transform));
+		public Task<TResult[]> SelectAsync<TResult>(Func<T, Task<TResult>> transform)
+			=> Task.WhenAll(collection.Select(transform));
+	}
 
 	/// <summary>Converts a dictionary to a generic type.</summary>
 	/// <typeparam name="TValue">Dictionary value type.</typeparam>

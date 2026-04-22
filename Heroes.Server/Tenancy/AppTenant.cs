@@ -20,7 +20,7 @@ public sealed class AppTenantRegistry : IAppTenantRegistry
 
 	public AppTenantRegistry()
 	{
-		_tenants = new Dictionary<string, AppTenant>
+		_tenants = new()
 		{
 			[LeagueOfLegends.Key] = LeagueOfLegends,
 			[HeroesOfTheStorm.Key] = HeroesOfTheStorm,

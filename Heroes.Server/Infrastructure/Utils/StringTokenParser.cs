@@ -69,7 +69,7 @@ public sealed class StringTokenParser
 			pattern = pattern.Replace(WrapWithVariableChars(variable), string.Format(VariableTokenPattern, variable));
 
 		Variables = vars;
-		return new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+		return new(pattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 	}
 
 	private string RemoveVariableChars(string input)
@@ -98,5 +98,5 @@ public sealed class StringTokenParserFactory : IStringTokenParserFactory
 
 	/// <inheritdoc />
 	public StringTokenParser Get(string template)
-		=> Cache.GetOrAdd(template, t => new StringTokenParser(t));
+		=> Cache.GetOrAdd(template, t => new(t));
 }

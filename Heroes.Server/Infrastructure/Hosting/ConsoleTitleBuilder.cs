@@ -1,5 +1,3 @@
-using System.Runtime.InteropServices;
-
 namespace Heroes.Server.Infrastructure.Hosting;
 
 /// <summary>Helpers for setting the console window title.</summary>

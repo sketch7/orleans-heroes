@@ -57,11 +57,11 @@ builder.Host.UseOrleans((ctx, silo) =>
 	silo
 		.AddMemoryStreams(OrleansConstants.StreamProvider)
 		.AddMemoryGrainStorage("PubSubStore")
-		.UseAppConfiguration(new AppSiloBuilderContext
+		.UseAppConfiguration(new()
 		{
 			AppInfo = appInfo,
 			HostBuilderContext = ctx,
-			SiloOptions = new AppSiloOptions
+			SiloOptions = new()
 			{
 				SiloPort = GetAvailablePort(11111, 12000),
 				GatewayPort = GetAvailablePort(30000, 31000),
@@ -173,7 +173,7 @@ app.MapGet("/ping", () => Results.Ok("pong")).ExcludeFromDescription();
 app.UseGraphQLGraphiQL("/ui/graphql", new()
 {
 	GraphQLEndPoint = "/graphql",
-	Headers = new Dictionary<string, string>
+	Headers = new()
 	{
 		["X-Tenant"] = "lol",
 	},

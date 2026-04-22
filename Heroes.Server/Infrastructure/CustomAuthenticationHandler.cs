@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
@@ -6,19 +6,15 @@ using System.Text.Encodings.Web;
 
 namespace Heroes.Server.Infrastructure;
 
-public class CustomAuthenticationHandler : AuthenticationHandler<JwtBearerOptions>
+public class CustomAuthenticationHandler(
+	IOptionsMonitor<JwtBearerOptions> options,
+	ILoggerFactory logger,
+	UrlEncoder encoder
+) : AuthenticationHandler<JwtBearerOptions>(options, logger, encoder)
 {
 	public const string Authorization = "token";
 	public const string TokenInvalid = "TokenInvalid";
 	public static string SecretKey = "orleans-test";
-
-	public CustomAuthenticationHandler(
-		IOptionsMonitor<JwtBearerOptions> options,
-		ILoggerFactory logger,
-		UrlEncoder encoder
-	) : base(options, logger, encoder)
-	{
-	}
 
 	protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
 	{
@@ -35,31 +31,31 @@ public class CustomAuthenticationHandler : AuthenticationHandler<JwtBearerOption
 
 		var claims = new List<Claim>
 		{
-			new Claim(ClaimTypes.Name, provider.Name),
-			new Claim(ClaimTypes.NameIdentifier, provider.Name)
+			new(ClaimTypes.Name, provider.Name),
+			new(ClaimTypes.NameIdentifier, provider.Name)
 		};
 		var claimsIdentity = new ClaimsIdentity(claims, SecretKey);
 		var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-		var authTicket = new AuthenticationTicket(claimsPrincipal, new AuthenticationProperties(), SecretKey);
+		var authTicket = new AuthenticationTicket(claimsPrincipal, new(), SecretKey);
 
 		return AuthenticateResult.Success(authTicket);
 	}
 
-	private readonly List<AuthModel> _mockUsers = new List<AuthModel>
-	{
-		new AuthModel
+	private readonly List<AuthModel> _mockUsers =
+	[
+		new()
 		{
 			Id = "cla",
 			Name = "clayton",
 			Key = "cla-key"
 		},
-		new AuthModel
+		new()
 		{
 			Id = "ste",
 			Name = "stephen",
 			Key = "ste-key"
-		},
-	};
+		}
+	];
 
 	public Task<AuthModel?> GetByKey(string key) => Task.FromResult(_mockUsers.FirstOrDefault(x => x.Key == key));
 }

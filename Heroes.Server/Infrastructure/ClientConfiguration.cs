@@ -1,9 +1,9 @@
-﻿namespace Heroes.Server.Infrastructure;
+namespace Heroes.Server.Infrastructure;
 
 public class ClientConfiguration
 {
 	public int DelayInitialConnectSeconds { get; set; } = 5;
-	public ClientRetryConfig ConnectionRetry { get; set; } = new ClientRetryConfig();
+	public ClientRetryConfig ConnectionRetry { get; set; } = new();
 }
 
 public class ClientRetryConfig

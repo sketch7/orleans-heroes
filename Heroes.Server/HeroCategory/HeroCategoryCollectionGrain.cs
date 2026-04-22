@@ -1,4 +1,3 @@
-using Orleans.Providers;
 using Sketch7.Multitenancy.Orleans;
 
 namespace Heroes.Server.HeroCategory;
@@ -10,21 +9,14 @@ public sealed class HeroCategoryCollectionState
 	public HashSet<string>? HeroCategoryKeys { get; set; }
 }
 
-public sealed class HeroCategoryCollectionGrain : AppGrain<HeroCategoryCollectionState>, IHeroCategoryCollectionGrain, IWithTenantAccessor<AppTenant>
+public sealed class HeroCategoryCollectionGrain(
+	ILogger<HeroCategoryCollectionGrain> logger,
+	IHeroDataClient heroDataClient,
+	[PersistentState("heroCategoryCollection", OrleansConstants.GrainMemoryStorage)]
+	IPersistentState<HeroCategoryCollectionState> state
+) : AppGrain<HeroCategoryCollectionState>(logger, state), IHeroCategoryCollectionGrain, IWithTenantAccessor<AppTenant>
 {
 	public TenantAccessor<AppTenant> TenantAccessor { get; set; } = new();
-
-	private readonly IHeroDataClient _heroDataClient;
-
-	public HeroCategoryCollectionGrain(
-		ILogger<HeroCategoryCollectionGrain> logger,
-		IHeroDataClient heroDataClient,
-		[PersistentState("heroCategoryCollection", OrleansConstants.GrainMemoryStorage)]
-		IPersistentState<HeroCategoryCollectionState> state
-	) : base(logger, state)
-	{
-		_heroDataClient = heroDataClient;
-	}
 
 	public override async Task OnActivateAsync(CancellationToken cancellationToken)
 	{
@@ -45,7 +37,7 @@ public sealed class HeroCategoryCollectionGrain : AppGrain<HeroCategoryCollectio
 
 	private async Task FetchFromRemote()
 	{
-		var heroCategories = await _heroDataClient.GetAllHeroCategory();
+		var heroCategories = await heroDataClient.GetAllHeroCategory();
 		await Set(heroCategories.Select(x => x.Id).ToList());
 	}
 }
