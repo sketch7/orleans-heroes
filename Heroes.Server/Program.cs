@@ -15,13 +15,16 @@ using Heroes.Server.Infrastructure;
 using Heroes.Server.Realtime;
 using Heroes.Server.Sample;
 using Heroes.Server.Tenancy;
-using Scalar.AspNetCore;
+using Microsoft.AspNetCore.OpenApi;
+using Microsoft.OpenApi;
 using Serilog;
 using Sketch7.Multitenancy;
 using Sketch7.Multitenancy.AspNet;
 using Sketch7.Multitenancy.Orleans;
+using Scalar.AspNetCore;
 using System.Net.Sockets;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -138,7 +141,36 @@ builder.Services.AddGraphQL(gql => gql
 		HeroCategoryGrainClient = httpContext.RequestServices.GetRequiredService<IHeroCategoryGrainClient>(),
 	})
 );
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(opts =>
+{
+	// Pre-fill the {tenant} path parameter in Scalar with a sensible default.
+	opts.AddOperationTransformer((operation, _, _) =>
+	{
+		if (operation.Parameters is null)
+			return Task.CompletedTask;
+
+		foreach (var param in operation.Parameters.OfType<OpenApiParameter>().Where(p => p.Name == "tenant"))
+			param.Examples = new Dictionary<string, IOpenApiExample>
+			{
+				["lol"] = new OpenApiExample { Value = JsonNode.Parse("\"lol\"") },
+				["hots"] = new OpenApiExample { Value = JsonNode.Parse("\"hots\"") },
+			};
+
+		return Task.CompletedTask;
+	});
+
+	// Pre-fill the {id} parameter for the heroes-by-id endpoint.
+	opts.AddOperationTransformer((operation, context, _) =>
+	{
+		if (operation.Parameters is null || context.Description.RelativePath?.Contains("heroes/{id}") != true)
+			return Task.CompletedTask;
+
+		foreach (var param in operation.Parameters.OfType<OpenApiParameter>().Where(p => p.Name == "id"))
+			param.Examples = new Dictionary<string, IOpenApiExample> { ["default"] = new OpenApiExample { Value = JsonNode.Parse("\"rengar\"") } };
+
+		return Task.CompletedTask;
+	});
+});
 
 var app = builder.Build();
 
