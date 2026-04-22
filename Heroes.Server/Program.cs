@@ -1,11 +1,11 @@
 using GraphQL;
 using Heroes.Server.Gql;
 using Microsoft.OpenApi;
+using Orleans.Configuration;
 using Scalar.AspNetCore;
 using Serilog;
 using Sketch7.Multitenancy.AspNet;
 using Sketch7.Multitenancy.Orleans;
-using System.Net.Sockets;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -28,11 +28,14 @@ builder.Host.UseSerilog((ctx, loggerConfig) =>
 	loggerConfig.WithAppInfo(appInfo);
 });
 
-// Core services
-builder.Services.AddSingleton<IAppInfo>(appInfo);
-
 var tenantRegistry = new AppTenantRegistry();
+
+// Core services
 builder.Services
+	.AddSingleton<IAppInfo>(appInfo)
+	.AddSingleton<IHeroStatsGrainClient, HeroStatsGrainClient>()
+	.AddScoped<IHeroCategoryGrainClient, HeroCategoryGrainClient>()
+	.AddScoped<IHeroGrainClient, HeroGrainClient>()
 	.AddMultitenancy<AppTenant>(opts => opts
 		.WithRegistry<IAppTenantRegistry>(tenantRegistry)
 		.WithHttpResolver<AppTenant, AppTenantHttpResolver>()
@@ -52,38 +55,108 @@ builder.Services.ConfigureHttpJsonOptions(opts =>
 });
 
 // Orleans
-builder.Host.UseOrleans((ctx, silo) =>
+builder.Host.UseOrleans((_, silo) =>
 {
 	silo
 		.AddMemoryStreams(OrleansConstants.StreamProvider)
-		.AddMemoryGrainStorage("PubSubStore")
-		.UseAppConfiguration(new()
+		.AddMemoryGrainStorage(OrleansConstants.GrainMemoryStorage)
+		.AddMemoryGrainStorage(OrleansConstants.GrainPersistenceStorage)
+		.AddMemoryGrainStorage(OrleansConstants.PubSubStore)
+		// TODO: Redis — add a compatible persistence package and replace AddMemoryGrainStorage calls above
+		// .AddRedisGrainStorage(OrleansConstants.GrainPersistenceStorage, cfg => cfg.Configure(options => { ... }))
+		.Configure<ClusterOptions>(options =>
 		{
-			AppInfo = appInfo,
-			HostBuilderContext = ctx,
-			SiloOptions = new()
-			{
-				SiloPort = GetAvailablePort(11111, 12000),
-				GatewayPort = GetAvailablePort(30000, 31000),
-			}
+			options.ClusterId = appInfo.ClusterId;
+			options.ServiceId = appInfo.Name;
 		})
+		// TODO: production clustering — replace UseLocalhostClustering with the appropriate provider
+		// .UseDevelopmentClustering(options => options.PrimarySiloEndpoint = new IPEndPoint(IPAddress.Loopback, 11111))
+		// .ConfigureEndpoints(IPAddress.Loopback, 11111, 30000)
+		// .Configure<GrainCollectionOptions>(options => options.CollectionAge = TimeSpan.FromMinutes(1.5))
+		// .Configure<ClusterMembershipOptions>(options => options.ExpectedClusterSize = 1)
+		.UseLocalhostClustering()
 		.AddIncomingGrainCallFilter<LoggingIncomingCallFilter>()
 		.AddStartupTask<WarmupStartupTask>()
 		.UseMultitenancy<AppTenant>()
 		.UseSignalR(cfg =>
 		{
-			cfg.Configure((siloBuilder, signalrBuilderConfig) =>
-				siloBuilder.UseStorage(signalrBuilderConfig.StorageProvider, appInfo, storeName: "SignalR"));
+			cfg.Configure((siloBuilder, signalrBuilderConfig) => siloBuilder
+				.AddMemoryGrainStorage(signalrBuilderConfig.StorageProvider)
+			);
 		});
 });
 
 // Web services
 builder.Services
-	.AddSingleton<IHeroStatsGrainClient, HeroStatsGrainClient>()
-	.AddScoped<IHeroCategoryGrainClient, HeroCategoryGrainClient>()
-	.AddScoped<IHeroGrainClient, HeroGrainClient>()
-;
-builder.Services.AddCustomAuthentication();
+	.AddAppAuth()
+	.AddCors(o => o.AddPolicy("TempCorsPolicy", policy =>
+	{
+		policy
+			.SetIsOriginAllowed(_ => true)
+			.AllowAnyMethod()
+			.AllowAnyHeader()
+			.AllowCredentials();
+	}))
+	.AddGraphQL(gql => gql
+		.AddSystemTextJson(options =>
+		{
+			options.AllowTrailingCommas = true;
+			options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+			options.ReadCommentHandling = JsonCommentHandling.Skip;
+			options.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+		})
+		.AddDataLoader()
+		// .AddExecutionStrategySelector<DefaultExecutionStrategySelector>()
+		.AddSchema<AppSchema>()
+		.AddGraphTypes()
+		.AddUserContextBuilder(httpContext => new AppGqlUserContext
+		{
+			User = httpContext.User,
+			// Capture grain clients from the HTTP request scope where the tenant accessor is already set
+			// by the multitenancy middleware. Avoids the scope isolation issue with GraphQL.NET's
+			// internal execution scope.
+			HeroGrainClient = httpContext.RequestServices.GetRequiredService<IHeroGrainClient>(),
+			HeroCategoryGrainClient = httpContext.RequestServices.GetRequiredService<IHeroCategoryGrainClient>(),
+		})
+	)
+	.AddOpenApi(opts =>
+	{
+		// Pre-fill the {tenant} path parameter in Scalar with a sensible default.
+		opts.AddOperationTransformer((operation, _, _) =>
+		{
+			if (operation.Parameters is null)
+				return Task.CompletedTask;
+
+			foreach (var param in operation.Parameters.OfType<OpenApiParameter>().Where(p => p.Name == "tenant"))
+			{
+				param.Examples = new Dictionary<string, IOpenApiExample>
+				{
+					["lol"] = new OpenApiExample { Value = JsonNode.Parse("\"lol\"") },
+					["hots"] = new OpenApiExample { Value = JsonNode.Parse("\"hots\"") },
+				};
+			}
+
+			return Task.CompletedTask;
+		});
+
+		// Pre-fill the {id} parameter for the heroes-by-id endpoint.
+		opts.AddOperationTransformer((operation, context, _) =>
+		{
+			if (operation.Parameters is null || context.Description.RelativePath?.Contains("heroes/{id}") != true)
+				return Task.CompletedTask;
+
+			foreach (var param in operation.Parameters.OfType<OpenApiParameter>().Where(p => p.Name == "id"))
+			{
+				param.Examples = new Dictionary<string, IOpenApiExample>
+				{
+					["default"] = new OpenApiExample { Value = JsonNode.Parse("\"rengar\"") }
+				};
+			}
+
+			return Task.CompletedTask;
+		});
+	});
+
 builder.Services.AddSignalR()
 	.AddJsonProtocol(opts =>
 	{
@@ -92,74 +165,6 @@ builder.Services.AddSignalR()
 	})
 	.AddOrleans();
 
-builder.Services.AddCors(o => o.AddPolicy("TempCorsPolicy", policy =>
-{
-	policy
-		.SetIsOriginAllowed(_ => true)
-		.AllowAnyMethod()
-		.AllowAnyHeader()
-		.AllowCredentials();
-}));
-
-builder.Services.AddGraphQL(gql => gql
-	.AddSystemTextJson(options =>
-	{
-		options.AllowTrailingCommas = true;
-		options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-		options.ReadCommentHandling = JsonCommentHandling.Skip;
-		options.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
-	})
-	.AddDataLoader()
-	// .AddExecutionStrategySelector<DefaultExecutionStrategySelector>()
-	.AddSchema<AppSchema>()
-	.AddGraphTypes()
-	.AddUserContextBuilder(httpContext => new AppGqlUserContext
-	{
-		User = httpContext.User,
-		// Capture grain clients from the HTTP request scope where the tenant accessor is already set
-		// by the multitenancy middleware. Avoids the scope isolation issue with GraphQL.NET's
-		// internal execution scope.
-		HeroGrainClient = httpContext.RequestServices.GetRequiredService<IHeroGrainClient>(),
-		HeroCategoryGrainClient = httpContext.RequestServices.GetRequiredService<IHeroCategoryGrainClient>(),
-	})
-);
-builder.Services.AddOpenApi(opts =>
-{
-	// Pre-fill the {tenant} path parameter in Scalar with a sensible default.
-	opts.AddOperationTransformer((operation, _, _) =>
-	{
-		if (operation.Parameters is null)
-			return Task.CompletedTask;
-
-		foreach (var param in operation.Parameters.OfType<OpenApiParameter>().Where(p => p.Name == "tenant"))
-		{
-			param.Examples = new Dictionary<string, IOpenApiExample>
-			{
-				["lol"] = new OpenApiExample { Value = JsonNode.Parse("\"lol\"") },
-				["hots"] = new OpenApiExample { Value = JsonNode.Parse("\"hots\"") },
-			};
-		}
-
-		return Task.CompletedTask;
-	});
-
-	// Pre-fill the {id} parameter for the heroes-by-id endpoint.
-	opts.AddOperationTransformer((operation, context, _) =>
-	{
-		if (operation.Parameters is null || context.Description.RelativePath?.Contains("heroes/{id}") != true)
-			return Task.CompletedTask;
-
-		foreach (var param in operation.Parameters.OfType<OpenApiParameter>().Where(p => p.Name == "id"))
-		{
-			param.Examples = new Dictionary<string, IOpenApiExample>
-			{
-				["default"] = new OpenApiExample { Value = JsonNode.Parse("\"rengar\"") }
-			};
-		}
-
-		return Task.CompletedTask;
-	});
-});
 
 var app = builder.Build();
 
@@ -212,29 +217,6 @@ app.MapOpenApi();
 app.MapScalarApiReference();
 
 await app.RunAsync();
-
-static int GetAvailablePort(int start, int end)
-{
-	for (var port = start; port < end; ++port)
-	{
-		var listener = TcpListener.Create(port);
-		listener.ExclusiveAddressUse = true;
-		try
-		{
-			listener.Start();
-			return port;
-		}
-		catch (SocketException)
-		{
-		}
-		finally
-		{
-			listener.Stop();
-		}
-	}
-
-	throw new InvalidOperationException("No available port found in range.");
-}
 
 // Required for WebApplicationFactory<Program> from external test assemblies
 public partial class Program;

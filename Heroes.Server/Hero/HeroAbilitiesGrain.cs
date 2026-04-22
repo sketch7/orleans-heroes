@@ -38,8 +38,7 @@ public sealed class HeroAbilitiesGrain(
 	ILogger<HeroAbilitiesGrain> logger,
 	[PersistentState("heroAbilities", OrleansConstants.GrainMemoryStorage)]
 	IPersistentState<HeroAbilitiesState> state
-)
-	: AppGrain<HeroAbilitiesState>(logger, state), IHeroAbilitiesGrain, IWithTenantAccessor<AppTenant>
+) : AppGrain<HeroAbilitiesState>(logger, state), IHeroAbilitiesGrain, IWithTenantAccessor<AppTenant>
 {
 	public TenantAccessor<AppTenant> TenantAccessor { get; set; } = new();
 

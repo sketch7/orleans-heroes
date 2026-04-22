@@ -62,23 +62,28 @@ public class CustomAuthenticationHandler(
 
 public static class AuthServiceCollectionExtensions
 {
-	public static void AddCustomAuthentication(this IServiceCollection services)
+	extension(IServiceCollection services)
 	{
-		services.AddAuthentication(CustomAuthenticationHandler.SecretKey)
-			.AddScheme<JwtBearerOptions, CustomAuthenticationHandler>(CustomAuthenticationHandler.SecretKey, null);
-
-		services.AddAuthorization(auth =>
+		public IServiceCollection AddAppAuth()
 		{
-			auth.AddPolicy(CustomAuthenticationHandler.SecretKey, builder =>
+			services.AddAuthentication(CustomAuthenticationHandler.SecretKey)
+				.AddScheme<JwtBearerOptions, CustomAuthenticationHandler>(CustomAuthenticationHandler.SecretKey, null);
+
+			services.AddAuthorization(auth =>
 			{
-				builder.AddAuthenticationSchemes(CustomAuthenticationHandler.SecretKey)
-					.RequireAuthenticatedUser();
+				auth.AddPolicy(CustomAuthenticationHandler.SecretKey, builder =>
+				{
+					builder.AddAuthenticationSchemes(CustomAuthenticationHandler.SecretKey)
+						.RequireAuthenticatedUser();
+				});
 			});
-		});
+
+			return services;
+		}
 	}
 }
 
-public class AuthModel
+public record AuthModel
 {
 	public required string Id { get; init; }
 	public required string Name { get; init; }
