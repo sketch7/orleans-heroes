@@ -17,13 +17,16 @@ file static class StatsData
 public sealed class HeroStatsState
 {
 	[Id(0)]
-	public HeroStats HeroStats { get; set; }
+	public HeroStats? HeroStats { get; set; }
 }
 
-[StorageProvider(ProviderName = OrleansConstants.GrainMemoryStorage)]
 public sealed class HeroStatGrain : AppGrain<HeroStatsState>, IHeroStatsGrain
 {
-	public HeroStatGrain(ILogger<HeroStatGrain> logger) : base(logger)
+	public HeroStatGrain(
+		ILogger<HeroStatGrain> logger,
+		[PersistentState("heroStats", OrleansConstants.GrainMemoryStorage)]
+		IPersistentState<HeroStatsState> state
+	) : base(logger, state)
 	{
 	}
 
@@ -31,11 +34,11 @@ public sealed class HeroStatGrain : AppGrain<HeroStatsState>, IHeroStatsGrain
 	{
 		await base.OnActivateAsync(cancellationToken);
 
-		if (State.HeroStats == null)
+		if (State.HeroStats is null)
 			State.HeroStats = StatsData.All.SingleOrDefault(x => x.HeroId == PrimaryKey);
 	}
 
-	public Task<HeroStats> Get()
+	public Task<HeroStats?> Get()
 		=> Task.FromResult(State.HeroStats);
 
 	public Task Set(HeroStats hero)

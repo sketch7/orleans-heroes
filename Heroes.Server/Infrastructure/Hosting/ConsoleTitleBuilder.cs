@@ -7,7 +7,7 @@ public static class ConsoleTitleBuilder
 {
 	/// <summary>Gets whether console title changes are supported (Windows/interactive only).</summary>
 	public static bool IsAvailable()
-		=> Environment.UserInteractive && !RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+		=> Environment.UserInteractive && OperatingSystem.IsWindows();
 
 	/// <summary>Set console title.</summary>
 	public static void Set(string title)
@@ -21,7 +21,7 @@ public static class ConsoleTitleBuilder
 	/// <summary>Append additional text to title.</summary>
 	public static void Append(string title)
 	{
-		if (!IsAvailable())
+		if (!Environment.UserInteractive || !OperatingSystem.IsWindows())
 			return;
 
 		Console.Title += $" {title}";

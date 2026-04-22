@@ -7,10 +7,9 @@ namespace Heroes.Server.HeroCategory;
 public sealed class HeroCategoryState
 {
 	[Id(0)]
-	public HeroCategoryModel Entity { get; set; }
+	public HeroCategoryModel? Entity { get; set; }
 }
 
-[StorageProvider(ProviderName = OrleansConstants.GrainMemoryStorage)]
 public sealed class HeroCategoryGrain : AppGrain<HeroCategoryState>, IHeroCategoryGrain, IWithTenantAccessor<AppTenant>
 {
 	public TenantAccessor<AppTenant> TenantAccessor { get; set; } = new();
@@ -20,8 +19,10 @@ public sealed class HeroCategoryGrain : AppGrain<HeroCategoryState>, IHeroCatego
 
 	public HeroCategoryGrain(
 		ILogger<HeroCategoryGrain> logger,
-		IHeroDataClient heroDataClient
-	) : base(logger)
+		IHeroDataClient heroDataClient,
+		[PersistentState("heroCategory", OrleansConstants.GrainMemoryStorage)]
+		IPersistentState<HeroCategoryState> state
+	) : base(logger, state)
 	{
 		_heroDataClient = heroDataClient;
 	}
@@ -31,18 +32,18 @@ public sealed class HeroCategoryGrain : AppGrain<HeroCategoryState>, IHeroCatego
 		await base.OnActivateAsync(cancellationToken);
 		_keyData = TenantGrainKey.Parse(PrimaryKey);
 
-		if (State.Entity == null)
+		if (State.Entity is null)
 		{
 			var entity = await _heroDataClient.GetHeroCategoryByKey(_keyData.GrainKey);
 
-			if (entity == null)
+			if (entity is null)
 				return;
 
 			await Set(entity);
 		}
 	}
 
-	public Task<HeroCategoryModel> Get() => Task.FromResult(State.Entity);
+	public Task<HeroCategoryModel?> Get() => Task.FromResult(State.Entity);
 
 	private Task Set(HeroCategoryModel entity)
 	{

@@ -25,20 +25,23 @@ public static class AppGrainExtensions
 {
 	private static readonly StringTokenParserFactory StringTokenParserFactory = new();
 
-	/// <summary>Parses a template key string into an object.</summary>
-	/// <typeparam name="T">Type to cast key data to.</typeparam>
-	/// <param name="grain">The grain instance.</param>
-	/// <param name="template">Template pattern to parse e.g. '{brand}/{locale}/{id}'</param>
-	public static T ParseKey<T>(this IAppGrain grain, string template) where T : new()
-		=> StringTokenParserFactory.Get(template).Parse<T>(grain.PrimaryKey);
+	extension(IAppGrain grain)
+	{
+		/// <summary>Parses a template key string into an object.</summary>
+		/// <typeparam name="T">Type to cast key data to.</typeparam>
+		/// <param name="template">Template pattern to parse e.g. '{brand}/{locale}/{id}'</param>
+		public T ParseKey<T>(string template) where T : new()
+			=> StringTokenParserFactory.Get(template).Parse<T>(grain.PrimaryKey);
+	}
 }
 
-public abstract class AppGrain<TState> : Grain<TState>, IAppGrain
+public abstract class AppGrain<TState> : Grain, IAppGrain
 	where TState : new()
 {
 	protected readonly ILogger Logger;
+	private readonly IPersistentState<TState> _stateContainer;
 
-	private string _primaryKey;
+	private string? _primaryKey;
 
 	/// <inheritdoc />
 	public string PrimaryKey => _primaryKey ??= this.GetPrimaryKeyAny();
@@ -46,10 +49,20 @@ public abstract class AppGrain<TState> : Grain<TState>, IAppGrain
 	/// <inheritdoc />
 	public string Source { get; }
 
-	protected AppGrain(ILogger logger)
+	/// <summary>Gets the current grain state.</summary>
+	protected TState State => _stateContainer.State;
+
+	/// <summary>Persists the current grain state.</summary>
+	protected Task WriteStateAsync() => _stateContainer.WriteStateAsync();
+
+	protected AppGrain(
+		ILogger logger,
+		IPersistentState<TState> state
+	)
 	{
 		Source = GetType().GetDemystifiedName();
 		Logger = logger;
+		_stateContainer = state;
 	}
 
 	/// <inheritdoc />
@@ -57,7 +70,7 @@ public abstract class AppGrain<TState> : Grain<TState>, IAppGrain
 
 	public override Task OnActivateAsync(CancellationToken cancellationToken)
 	{
-		if (!_primaryKey.IsNullOrEmpty())
+		if (_primaryKey is not null)
 			Logger.LogCritical("[{Grain}] Grain PrimaryKey was set before activation! Make sure to null PrimaryKey on deactivation!", Source);
 
 		Logger.LogInformation("[{Grain}] activated for key: {GrainPrimaryKey}", Source, PrimaryKey);

@@ -11,7 +11,7 @@ public enum StorageProviderType
 }
 
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
-public class AppSiloOptions
+public sealed class AppSiloOptions
 {
 	private string DebuggerDisplay => $"GatewayPort: '{GatewayPort}', SiloPort: '{SiloPort}'";
 
@@ -20,7 +20,7 @@ public class AppSiloOptions
 	public StorageProviderType? StorageProviderType { get; set; }
 }
 
-public class AppSiloBuilderContext
+public sealed record AppSiloBuilderContext
 {
 	public required HostBuilderContext HostBuilderContext { get; init; }
 	public required IAppInfo AppInfo { get; init; }

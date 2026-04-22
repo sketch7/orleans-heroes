@@ -2,9 +2,9 @@ namespace Heroes.Server.Hero;
 
 public interface IHeroDataClient
 {
-	Task<HeroModel> GetByKey(string key);
+	Task<HeroModel?> GetByKey(string key);
 	Task<List<HeroModel>> GetAll();
-	Task<HeroCategoryModel> GetHeroCategoryByKey(string key);
+	Task<HeroCategoryModel?> GetHeroCategoryByKey(string key);
 	Task<List<HeroCategoryModel>> GetAllHeroCategory();
 }
 
@@ -44,16 +44,16 @@ public sealed class MockLoLHeroDataClient : IHeroDataClient
 		return Task.FromResult(Heroes.ToList());
 	}
 
-	public Task<HeroModel> GetByKey(string key)
+	public Task<HeroModel?> GetByKey(string key)
 	{
 		_logger.LogDebug("[{Method}] Fetching key: {Key} from mock service", nameof(GetByKey), key);
-		return Task.FromResult(Heroes.FirstOrDefault(x => x.Id == key));
+		return Task.FromResult<HeroModel?>(Heroes.FirstOrDefault(x => x.Id == key));
 	}
 
-	public Task<HeroCategoryModel> GetHeroCategoryByKey(string key)
+	public Task<HeroCategoryModel?> GetHeroCategoryByKey(string key)
 	{
 		_logger.LogDebug("[{Method}] Fetching key: {Key} from mock service", nameof(GetHeroCategoryByKey), key);
-		return Task.FromResult(HeroCategories.FirstOrDefault(x => x.Id == key));
+		return Task.FromResult<HeroCategoryModel?>(HeroCategories.FirstOrDefault(x => x.Id == key));
 	}
 
 	public Task<List<HeroCategoryModel>> GetAllHeroCategory()
@@ -89,15 +89,16 @@ public sealed class MockHotsHeroDataClient : IHeroDataClient
 		return Task.FromResult(Heroes.ToList());
 	}
 
-	public Task<HeroModel> GetByKey(string key)
+	public Task<HeroModel?> GetByKey(string key)
 	{
 		_logger.LogDebug("[{Method}] Fetching key: {Key} from mock service", nameof(GetByKey), key);
-		return Task.FromResult(Heroes.FirstOrDefault(x => x.Id == key));
+		return Task.FromResult<HeroModel?>(Heroes.FirstOrDefault(x => x.Id == key));
 	}
 
-	public Task<HeroCategoryModel> GetHeroCategoryByKey(string key)
-		=> throw new NotImplementedException();
+	public Task<HeroCategoryModel?> GetHeroCategoryByKey(string key)
+		=> Task.FromResult<HeroCategoryModel?>(null);
 
 	public Task<List<HeroCategoryModel>> GetAllHeroCategory()
-		=> throw new NotImplementedException();
+		=> Task.FromResult<List<HeroCategoryModel>>([])
+		;
 }

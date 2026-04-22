@@ -7,10 +7,9 @@ namespace Heroes.Server.Hero;
 public sealed class HeroCollectionState
 {
 	[Id(0)]
-	public Dictionary<string, HeroRoleType> HeroKeys { get; set; }
+	public Dictionary<string, HeroRoleType>? HeroKeys { get; set; }
 }
 
-[StorageProvider(ProviderName = OrleansConstants.GrainMemoryStorage)]
 public sealed class HeroCollectionGrain : AppGrain<HeroCollectionState>, IHeroCollectionGrain, IWithTenantAccessor<AppTenant>
 {
 	public TenantAccessor<AppTenant> TenantAccessor { get; set; } = new();
@@ -19,8 +18,10 @@ public sealed class HeroCollectionGrain : AppGrain<HeroCollectionState>, IHeroCo
 
 	public HeroCollectionGrain(
 		ILogger<HeroCollectionGrain> logger,
-		IHeroDataClient heroDataClient
-	) : base(logger)
+		IHeroDataClient heroDataClient,
+		[PersistentState("heroCollection", OrleansConstants.GrainMemoryStorage)]
+		IPersistentState<HeroCollectionState> state
+	) : base(logger, state)
 	{
 		_heroDataClient = heroDataClient;
 	}
@@ -29,13 +30,13 @@ public sealed class HeroCollectionGrain : AppGrain<HeroCollectionState>, IHeroCo
 	{
 		await base.OnActivateAsync(cancellationToken);
 
-		if (State.HeroKeys == null)
+		if (State.HeroKeys is null)
 			await FetchFromRemote();
 	}
 
 	public Task<List<string>> GetAll(HeroRoleType? role = null)
 	{
-		var query = State.HeroKeys.AsQueryable();
+		var query = (State.HeroKeys ?? []).AsQueryable();
 
 		if (role.HasValue)
 			query = query.Where(x => x.Value == role);

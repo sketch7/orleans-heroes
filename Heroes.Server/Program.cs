@@ -55,7 +55,7 @@ builder.Services.ConfigureHttpJsonOptions(opts =>
 builder.Host.UseOrleans((ctx, silo) =>
 {
 	silo
-		.AddMemoryStreams(OrleansConstants.STREAM_PROVIDER)
+		.AddMemoryStreams(OrleansConstants.StreamProvider)
 		.AddMemoryGrainStorage("PubSubStore")
 		.UseAppConfiguration(new AppSiloBuilderContext
 		{

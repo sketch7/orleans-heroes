@@ -1,26 +1,31 @@
+using Orleans.Concurrency;
 using Sketch7.Multitenancy.Orleans;
 
 namespace Heroes.Server.HeroCategory;
 
+[Alias("IHeroCategoryGrain")]
 public interface IHeroCategoryGrain : IGrainWithStringKey, IAppGrainContract, ITenantGrain
 {
-	Task<HeroCategoryModel> Get();
+	[AlwaysInterleave]
+	[return: Immutable]
+	Task<HeroCategoryModel?> Get();
 }
 
+[Alias("IHeroCategoryCollectionGrain")]
 public interface IHeroCategoryCollectionGrain : IGrainWithStringKey, IAppGrainContract, ITenantGrain
 {
+	[AlwaysInterleave]
+	[return: Immutable]
 	Task<List<string>> GetAll();
 }
 
-[GenerateSerializer, DebuggerDisplay("{DebuggerDisplay,nq}")]
-public class HeroCategoryModel
+[GenerateSerializer]
+public sealed record HeroCategoryModel
 {
-	protected string DebuggerDisplay => $"Id: '{Id}', Title: '{Title}'";
-
 	[Id(0)]
-	public string Id { get; set; }
+	public required string Id { get; init; }
 	[Id(1)]
-	public string Title { get; set; }
+	public required string Title { get; init; }
 	[Id(2)]
-	public IList<string> Heroes { get; set; }
+	public IReadOnlyList<string> Heroes { get; init; } = [];
 }

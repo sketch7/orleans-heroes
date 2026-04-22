@@ -9,22 +9,23 @@ namespace Heroes.Server.Hero;
 public sealed class HeroState
 {
 	[Id(0)]
-	public HeroModel Entity { get; set; }
+	public HeroModel? Entity { get; set; }
 }
 
-[StorageProvider(ProviderName = OrleansConstants.GrainMemoryStorage)]
 public sealed class HeroGrain : AppGrain<HeroState>, IHeroGrain, IWithTenantAccessor<AppTenant>
 {
 	public TenantAccessor<AppTenant> TenantAccessor { get; set; } = new();
 
 	private readonly IHeroDataClient _heroDataClient;
 	private TenantGrainKey _keyData;
-	private HubContext<IHeroHub> _hubContext;
+	private HubContext<IHeroHub>? _hubContext;
 
 	public HeroGrain(
 		ILogger<HeroGrain> logger,
-		IHeroDataClient heroDataClient
-	) : base(logger)
+		IHeroDataClient heroDataClient,
+		[PersistentState("hero", OrleansConstants.GrainMemoryStorage)]
+		IPersistentState<HeroState> state
+	) : base(logger, state)
 	{
 		_heroDataClient = heroDataClient;
 	}
@@ -39,11 +40,11 @@ public sealed class HeroGrain : AppGrain<HeroState>, IHeroGrain, IWithTenantAcce
 
 		cancellationToken.ThrowIfCancellationRequested();
 
-		if (State.Entity == null)
+		if (State.Entity is null)
 		{
 			var entity = await _heroDataClient.GetByKey(_keyData.GrainKey);
 
-			if (entity == null)
+			if (entity is null)
 			{
 				Logger.LogWarning("Hero not found for id: {Id} in tenant: {Tenant}", _keyData.GrainKey, _keyData.TenantKey);
 				return;
@@ -61,20 +62,20 @@ public sealed class HeroGrain : AppGrain<HeroState>, IHeroGrain, IWithTenantAcce
 			var hubGroup = _hubContext.Group($"{_keyData.TenantKey}/hero/{_keyData.GrainKey}");
 			var hubAllGroup = _hubContext.Group($"{_keyData.TenantKey}/hero");
 
-			var streamProvider = this.GetStreamProvider(OrleansConstants.STREAM_PROVIDER);
+			var streamProvider = this.GetStreamProvider(OrleansConstants.StreamProvider);
 			var stream = streamProvider.GetStream<HeroModel>(StreamConstants.HeroStream.ToString(), $"hero:{_keyData.GrainKey}");
 
-			if (State.Entity != null)
+			if (State.Entity is not null)
 			{
 				this.RegisterGrainTimer(async x =>
 					{
-						State.Entity.Health = RandomUtils.GenerateNumber(1, 100);
+						var updated = x.Entity! with { Health = RandomUtils.GenerateNumber(1, 100) };
 
 						await Task.WhenAll(
-							Set(State.Entity),
-							stream.OnNextAsync(State.Entity),
-							hubGroup.Send("HeroChanged", State.Entity),
-							hubAllGroup.Send("HeroChanged", State.Entity)
+							Set(updated),
+							stream.OnNextAsync(updated),
+							hubGroup.Send("HeroChanged", updated),
+							hubAllGroup.Send("HeroChanged", updated)
 						);
 					}, State, new GrainTimerCreationOptions { DueTime = TimeSpan.FromSeconds(2), Period = TimeSpan.FromSeconds(3), Interleave = true });
 			}
@@ -85,7 +86,7 @@ public sealed class HeroGrain : AppGrain<HeroState>, IHeroGrain, IWithTenantAcce
 		}
 	}
 
-	public Task<HeroModel> Get() => Task.FromResult(State.Entity);
+	public Task<HeroModel?> Get() => Task.FromResult(State.Entity);
 
 	private Task Set(HeroModel hero)
 	{

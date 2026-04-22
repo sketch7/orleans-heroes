@@ -7,10 +7,9 @@ namespace Heroes.Server.HeroCategory;
 public sealed class HeroCategoryCollectionState
 {
 	[Id(0)]
-	public HashSet<string> HeroCategoryKeys { get; set; }
+	public HashSet<string>? HeroCategoryKeys { get; set; }
 }
 
-[StorageProvider(ProviderName = OrleansConstants.GrainMemoryStorage)]
 public sealed class HeroCategoryCollectionGrain : AppGrain<HeroCategoryCollectionState>, IHeroCategoryCollectionGrain, IWithTenantAccessor<AppTenant>
 {
 	public TenantAccessor<AppTenant> TenantAccessor { get; set; } = new();
@@ -19,8 +18,10 @@ public sealed class HeroCategoryCollectionGrain : AppGrain<HeroCategoryCollectio
 
 	public HeroCategoryCollectionGrain(
 		ILogger<HeroCategoryCollectionGrain> logger,
-		IHeroDataClient heroDataClient
-	) : base(logger)
+		IHeroDataClient heroDataClient,
+		[PersistentState("heroCategoryCollection", OrleansConstants.GrainMemoryStorage)]
+		IPersistentState<HeroCategoryCollectionState> state
+	) : base(logger, state)
 	{
 		_heroDataClient = heroDataClient;
 	}
@@ -29,16 +30,16 @@ public sealed class HeroCategoryCollectionGrain : AppGrain<HeroCategoryCollectio
 	{
 		await base.OnActivateAsync(cancellationToken);
 
-		if (State.HeroCategoryKeys == null)
+		if (State.HeroCategoryKeys is null)
 			await FetchFromRemote();
 	}
 
 	public Task<List<string>> GetAll()
-		=> Task.FromResult(State.HeroCategoryKeys.ToList());
+		=> Task.FromResult((State.HeroCategoryKeys ?? []).ToList());
 
 	private async Task Set(List<string> keys)
 	{
-		State.HeroCategoryKeys = new HashSet<string>(keys);
+		State.HeroCategoryKeys = [.. keys];
 		await WriteStateAsync();
 	}
 

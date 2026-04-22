@@ -32,17 +32,20 @@ file static class AbilitiesData
 public sealed class HeroAbilitiesState
 {
 	[Id(0)]
-	public List<HeroAbility> HeroAbilities { get; set; }
+	public List<HeroAbility>? HeroAbilities { get; set; }
 }
 
-[StorageProvider(ProviderName = OrleansConstants.GrainMemoryStorage)]
 public sealed class HeroAbilitiesGrain : AppGrain<HeroAbilitiesState>, IHeroAbilitiesGrain, IWithTenantAccessor<AppTenant>
 {
 	public TenantAccessor<AppTenant> TenantAccessor { get; set; } = new();
 
 	private TenantGrainKey _keyData;
 
-	public HeroAbilitiesGrain(ILogger<HeroAbilitiesGrain> logger) : base(logger)
+	public HeroAbilitiesGrain(
+		ILogger<HeroAbilitiesGrain> logger,
+		[PersistentState("heroAbilities", OrleansConstants.GrainMemoryStorage)]
+		IPersistentState<HeroAbilitiesState> state
+	) : base(logger, state)
 	{
 	}
 
@@ -51,7 +54,7 @@ public sealed class HeroAbilitiesGrain : AppGrain<HeroAbilitiesState>, IHeroAbil
 		await base.OnActivateAsync(cancellationToken);
 		_keyData = TenantGrainKey.Parse(PrimaryKey);
 
-		if (State.HeroAbilities == null)
+		if (State.HeroAbilities is null)
 		{
 			var abilities = AbilitiesData.All
 				.Where(x => x.HeroId == _keyData.GrainKey)
@@ -61,7 +64,7 @@ public sealed class HeroAbilitiesGrain : AppGrain<HeroAbilitiesState>, IHeroAbil
 	}
 
 	public Task<List<HeroAbility>> Get()
-		=> Task.FromResult(State.HeroAbilities);
+		=> Task.FromResult(State.HeroAbilities ?? []);
 
 	public Task Set(List<HeroAbility> heroAbilities)
 	{

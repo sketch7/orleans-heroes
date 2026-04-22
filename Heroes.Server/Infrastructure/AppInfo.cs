@@ -29,14 +29,14 @@ public interface IAppInfo
 
 public sealed class AppInfo : IAppInfo
 {
-	public string Name { get; set; }
-	public string ShortName { get; }
-	public string ClusterId { get; set; }
-	public string Environment { get; set; }
-	public string GitCommit { get; set; }
-	public string Version { get; set; }
+	public string Name { get; set; } = string.Empty;
+	public string ShortName { get; } = string.Empty;
+	public string ClusterId { get; set; } = string.Empty;
+	public string Environment { get; set; } = string.Empty;
+	public string GitCommit { get; set; } = string.Empty;
+	public string Version { get; set; } = string.Empty;
 	public bool IsDockerized { get; set; }
-	public string ServiceType { get; set; }
+	public string ServiceType { get; set; } = string.Empty;
 
 	private static readonly Dictionary<string, string> EnvironmentMapping = new()
 	{
@@ -52,26 +52,26 @@ public sealed class AppInfo : IAppInfo
 	/// <summary>Resolve from <see cref="IConfiguration"/>.</summary>
 	public AppInfo(IConfiguration config)
 	{
-		Name = config.GetValue("appName", "app");
-		Version = config.GetValue("version", "local");
-		GitCommit = config.GetValue("gitCommit", "-");
-		Environment = config.GetValue<string>("ASPNETCORE_ENVIRONMENT");
+		Name = config.GetValue("appName", "app") ?? "app";
+		Version = config.GetValue("version", "local") ?? "local";
+		GitCommit = config.GetValue("gitCommit", "-") ?? "-";
+		var rawEnv = config.GetValue<string>("ASPNETCORE_ENVIRONMENT");
 		IsDockerized = config.GetValue<bool>("DOCKER");
-		ServiceType = config.GetValue("serviceType", "dotnet");
+		ServiceType = config.GetValue("serviceType", "dotnet") ?? "dotnet";
 		ShortName = Name.Split('/').Last();
 
-		if (string.IsNullOrEmpty(Environment))
+		if (string.IsNullOrEmpty(rawEnv))
 			throw new InvalidOperationException("Environment is not set. Please specify the environment via 'ASPNETCORE_ENVIRONMENT'");
 
 		ClusterId = $"{Name}-{Version}";
-		Environment = MapEnvironmentName(Environment);
+		Environment = MapEnvironmentName(rawEnv);
 	}
 
+	/// <summary>Maps a full environment name to its short alias, or returns the original if not mapped.</summary>
 	public static string MapEnvironmentName(string environment)
 	{
-		if (environment == null) throw new ArgumentNullException(nameof(environment));
+		ArgumentException.ThrowIfNullOrWhiteSpace(environment);
 
-		EnvironmentMapping.TryGetValue(environment, out var env);
-		return env;
+		return EnvironmentMapping.TryGetValue(environment, out var env) ? env : environment;
 	}
 }
