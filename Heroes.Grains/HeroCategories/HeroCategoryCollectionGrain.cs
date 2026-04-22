@@ -21,7 +21,6 @@ public class HeroCategoryCollectionGrain : AppGrain<HeroCategoryCollectionState>
 	public TenantAccessor<AppTenant> TenantAccessor { get; set; } = new();
 
 	private readonly IHeroDataClient _heroDataClient;
-	private TenantKeyData _keyData;
 
 	public HeroCategoryCollectionGrain(
 		ILogger<HeroCategoryCollectionGrain> logger,
@@ -34,8 +33,6 @@ public class HeroCategoryCollectionGrain : AppGrain<HeroCategoryCollectionState>
 	public override async Task OnActivateAsync(CancellationToken cancellationToken)
 	{
 		await base.OnActivateAsync(cancellationToken);
-
-		_keyData = this.ParseKey<TenantKeyData>(TenantKeyData.Template);
 
 		if (State.HeroCategoryKeys == null)
 			await FetchFromRemote();

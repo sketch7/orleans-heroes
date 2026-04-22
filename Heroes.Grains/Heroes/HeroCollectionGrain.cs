@@ -21,7 +21,6 @@ public class HeroCollectionGrain : AppGrain<HeroCollectionState>, IHeroCollectio
 	public TenantAccessor<AppTenant> TenantAccessor { get; set; } = new();
 
 	private readonly IHeroDataClient _heroDataClient;
-	private TenantKeyData _keyData;
 
 	public HeroCollectionGrain(
 		ILogger<HeroCollectionGrain> logger,
@@ -34,8 +33,6 @@ public class HeroCollectionGrain : AppGrain<HeroCollectionState>, IHeroCollectio
 	public override async Task OnActivateAsync(CancellationToken cancellationToken)
 	{
 		await base.OnActivateAsync(cancellationToken);
-
-		_keyData = this.ParseKey<TenantKeyData>(TenantKeyData.Template);
 
 		if (State.HeroKeys == null)
 			await FetchFromRemote();

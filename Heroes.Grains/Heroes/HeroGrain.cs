@@ -8,7 +8,6 @@ using Orleans.Streams;
 using SignalR.Orleans.Core;
 using Sketch7.Multitenancy;
 using Sketch7.Multitenancy.Orleans;
-using System.Diagnostics;
 
 namespace Heroes.Grains.Heroes;
 
@@ -19,24 +18,13 @@ public class HeroState
 	public Hero Entity { get; set; }
 }
 
-[DebuggerDisplay("{DebuggerDisplay,nq}")]
-public struct HeroKeyData
-{
-	private string DebuggerDisplay => $"Tenant: '{Tenant}', Id: '{Id}'";
-
-	public static string Template = "tenant/{tenant}/{id}";
-
-	public string Tenant { get; set; }
-	public string Id { get; set; }
-}
-
 [StorageProvider(ProviderName = OrleansConstants.GrainMemoryStorage)]
 public class HeroGrain : AppGrain<HeroState>, IHeroGrain, IWithTenantAccessor<AppTenant>
 {
 	public TenantAccessor<AppTenant> TenantAccessor { get; set; } = new();
 
 	private readonly IHeroDataClient _heroDataClient;
-	private HeroKeyData _keyData;
+	private TenantGrainKey _keyData;
 
 	private HubContext<IHeroHub> _hubContext;
 
@@ -52,20 +40,20 @@ public class HeroGrain : AppGrain<HeroState>, IHeroGrain, IWithTenantAccessor<Ap
 	{
 		await base.OnActivateAsync(cancellationToken);
 
-		_keyData = this.ParseKey<HeroKeyData>(HeroKeyData.Template);
+		_keyData = TenantGrainKey.Parse(PrimaryKey);
 
-		Logger.LogInformation("Activating HeroGrain for tenant: {Tenant}, id: {Id}", TenantAccessor.Tenant?.Key, _keyData.Id);
+		Logger.LogInformation("Activating HeroGrain for tenant: {Tenant}, id: {Id}", TenantAccessor.Tenant?.Key, _keyData.GrainKey);
 
 		// Check cancellation before proceeding
 		cancellationToken.ThrowIfCancellationRequested();
 
 		if (State.Entity == null)
 		{
-			var entity = await _heroDataClient.GetByKey(_keyData.Id);
+			var entity = await _heroDataClient.GetByKey(_keyData.GrainKey);
 
 			if (entity == null)
 			{
-				Logger.LogWarning("Hero not found for id: {Id} in tenant: {Tenant}", _keyData.Id, _keyData.Tenant);
+				Logger.LogWarning("Hero not found for id: {Id} in tenant: {Tenant}", _keyData.GrainKey, _keyData.TenantKey);
 				return;
 			}
 
@@ -81,11 +69,11 @@ public class HeroGrain : AppGrain<HeroState>, IHeroGrain, IWithTenantAccessor<Ap
 		try
 		{
 			_hubContext = GrainFactory.GetHub<IHeroHub>();
-			var hubGroup = _hubContext.Group($"{_keyData.Tenant}/hero/{_keyData.Id}");
-			var hubAllGroup = _hubContext.Group($"{_keyData.Tenant}/hero"); // all
+			var hubGroup = _hubContext.Group($"{_keyData.TenantKey}/hero/{_keyData.GrainKey}");
+			var hubAllGroup = _hubContext.Group($"{_keyData.TenantKey}/hero"); // all
 
 			var streamProvider = this.GetStreamProvider(OrleansConstants.STREAM_PROVIDER);
-			var stream = streamProvider.GetStream<Hero>(StreamConstants.HeroStream.ToString(), $"hero:{_keyData.Id}");
+			var stream = streamProvider.GetStream<Hero>(StreamConstants.HeroStream.ToString(), $"hero:{_keyData.GrainKey}");
 
 			// Only register timer if we have a valid entity
 			if (State.Entity != null)
@@ -105,7 +93,7 @@ public class HeroGrain : AppGrain<HeroState>, IHeroGrain, IWithTenantAccessor<Ap
 		}
 		catch (Exception ex)
 		{
-			Logger.LogWarning(ex, "Hero {Id} (tenant: {Tenant}) activated without real-time support — SignalR/stream setup failed.", _keyData.Id, _keyData.Tenant);
+			Logger.LogWarning(ex, "Hero {Id} (tenant: {Tenant}) activated without real-time support — SignalR/stream setup failed.", _keyData.GrainKey, _keyData.TenantKey);
 		}
 	}
 
