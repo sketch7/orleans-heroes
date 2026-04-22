@@ -1,48 +1,55 @@
+using Orleans.Concurrency;
 using Sketch7.Multitenancy.Orleans;
 using System.Text.Json.Serialization;
 
 namespace Heroes.Server.Hero;
 
+[Alias("IHeroHub")]
 public interface IHeroHub
 {
 	Task Send(string message);
 }
 
+[Alias("IHeroGrain")]
 public interface IHeroGrain : IGrainWithStringKey, IAppGrainContract, ITenantGrain
 {
-	Task<HeroModel> Get();
+	[AlwaysInterleave]
+	[return: Immutable]
+	Task<HeroModel?> Get();
 }
 
+[Alias("IHeroCollectionGrain")]
 public interface IHeroCollectionGrain : IGrainWithStringKey, IAppGrainContract, ITenantGrain
 {
+	[AlwaysInterleave]
+	[return: Immutable]
 	Task<List<string>> GetAll(HeroRoleType? role = null);
 }
 
+[Alias("IHeroAbilitiesGrain")]
 public interface IHeroAbilitiesGrain : IGrainWithStringKey, IAppGrainContract, ITenantGrain
 {
+	[AlwaysInterleave]
+	[return: Immutable]
 	Task<List<HeroAbility>> Get();
-	Task Set(List<HeroAbility> heroAbilities);
+	Task Set([Immutable] List<HeroAbility> heroAbilities);
 }
 
-[GenerateSerializer, DebuggerDisplay("{DebuggerDisplay,nq}")]
-public class HeroModel
+[GenerateSerializer]
+public sealed record HeroModel
 {
-	protected string DebuggerDisplay => $"Id: '{Id}', Name: '{Name}', Role: {Role}, Health: {Health}, Popularity: {Popularity}";
-
 	[Id(0)]
-	public string Id { get; set; }
+	public required string Id { get; init; }
 	[Id(1)]
-	public string Name { get; set; }
+	public required string Name { get; init; }
 	[Id(2)]
-	public int Health { get; set; }
+	public int Health { get; init; }
 	[Id(3)]
-	public int Popularity { get; set; }
+	public int Popularity { get; init; }
 	[Id(4)]
-	public HeroRoleType Role { get; set; }
+	public HeroRoleType Role { get; init; }
 	[Id(5)]
-	public HashSet<string> Abilities { get; set; }
-
-	public override string ToString() => DebuggerDisplay;
+	public HashSet<string> Abilities { get; init; } = [];
 }
 
 [JsonConverter(typeof(JsonStringEnumConverter<HeroRoleType>))]
@@ -56,23 +63,19 @@ public enum HeroRoleType
 	Marksman = 6
 }
 
-[GenerateSerializer, DebuggerDisplay("{DebuggerDisplay,nq}")]
-public class HeroAbility
+[GenerateSerializer]
+public sealed record HeroAbility
 {
-	protected string DebuggerDisplay => $"Id: '{Id}', HeroId: '{HeroId}', Name: '{Name}', Damage: {Damage}, DamageType: {DamageType}";
-
 	[Id(0)]
-	public string Id { get; set; }
+	public required string Id { get; init; }
 	[Id(1)]
-	public string HeroId { get; set; }
+	public required string HeroId { get; init; }
 	[Id(2)]
-	public string Name { get; set; }
+	public required string Name { get; init; }
 	[Id(3)]
-	public int Damage { get; set; }
+	public int Damage { get; init; }
 	[Id(4)]
-	public DamageType DamageType { get; set; }
-
-	public override string ToString() => DebuggerDisplay;
+	public DamageType DamageType { get; init; }
 }
 
 public enum DamageType

@@ -6,7 +6,7 @@ using System.Threading.Channels;
 
 namespace Heroes.Server.Hero;
 
-file sealed class Subscription<T>
+sealed file class Subscription<T>
 {
 	public required StreamSubscriptionHandle<T> Stream { get; init; }
 	public required Subject<T> Subject { get; init; }
@@ -40,7 +40,7 @@ public sealed class HeroHub : Hub<IHeroHub>
 				.Send($"logged in user => {Context.User.Identity.Name} -> ConnectionId: {Context.ConnectionId}");
 		}
 
-		var streamProvider = _clusterClient.GetStreamProvider(OrleansConstants.STREAM_PROVIDER);
+		var streamProvider = _clusterClient.GetStreamProvider(OrleansConstants.StreamProvider);
 		Context.Items.Add(HeroStreamProviderKey, streamProvider);
 	}
 
@@ -76,8 +76,8 @@ public sealed class HeroHub : Hub<IHeroHub>
 		return heroSubject.AsObservable().AsChannelReader();
 	}
 
-	public async Task AddToGroup(string name)
-		=> await Groups.AddToGroupAsync(Context.ConnectionId, name);
+	public Task AddToGroup(string name)
+		=> Groups.AddToGroupAsync(Context.ConnectionId, name);
 
 	public async Task AddToGroups(HashSet<string> groups)
 	{

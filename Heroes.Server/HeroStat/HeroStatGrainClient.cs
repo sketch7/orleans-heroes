@@ -2,7 +2,7 @@ namespace Heroes.Server.HeroStat;
 
 public interface IHeroStatsGrainClient
 {
-	Task<HeroStats> Get(string heroId);
+	Task<HeroStats?> Get(string heroId);
 	Task Set(HeroStats heroStats);
 }
 
@@ -15,7 +15,7 @@ public sealed class HeroStatsGrainClient : IHeroStatsGrainClient
 		_grainFactory = grainFactory;
 	}
 
-	public Task<HeroStats> Get(string heroId)
+	public Task<HeroStats?> Get(string heroId)
 		=> _grainFactory.GetHeroStatsGrain(heroId).Get();
 
 	public Task Set(HeroStats heroStats)

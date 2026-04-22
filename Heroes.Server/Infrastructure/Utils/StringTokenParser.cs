@@ -32,7 +32,7 @@ public sealed class StringTokenParser
 	public string Template { get; }
 	public char VariableStartChar { get; }
 	public char VariableEndChar { get; }
-	public IReadOnlyCollection<string> Variables { get; private set; }
+	public IReadOnlyCollection<string> Variables { get; private set; } = [];
 
 	/// <summary>Extract variable values from a given instance string.</summary>
 	public Dictionary<string, string> Parse(string value)
@@ -62,14 +62,14 @@ public sealed class StringTokenParser
 
 		var vars = new HashSet<string>();
 		foreach (var match in matchCollection)
-			vars.Add(RemoveVariableChars(match.ToString()));
+			vars.Add(RemoveVariableChars(match.ToString() ?? string.Empty));
 
 		var pattern = Template;
 		foreach (var variable in vars)
 			pattern = pattern.Replace(WrapWithVariableChars(variable), string.Format(VariableTokenPattern, variable));
 
 		Variables = vars;
-		return new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+		return new(pattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 	}
 
 	private string RemoveVariableChars(string input)
@@ -98,5 +98,5 @@ public sealed class StringTokenParserFactory : IStringTokenParserFactory
 
 	/// <inheritdoc />
 	public StringTokenParser Get(string template)
-		=> Cache.GetOrAdd(template, t => new StringTokenParser(t));
+		=> Cache.GetOrAdd(template, t => new(t));
 }

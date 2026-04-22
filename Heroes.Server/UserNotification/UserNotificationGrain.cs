@@ -1,16 +1,14 @@
-using Orleans.Providers;
 using SignalR.Orleans.Core;
 
 namespace Heroes.Server.UserNotification;
 
-[StorageProvider(ProviderName = OrleansConstants.GrainMemoryStorage)]
-public sealed class UserNotificationGrain : AppGrain<UserNotificationState>, IUserNotificationGrain
+public sealed class UserNotificationGrain(
+	ILogger<UserNotificationGrain> logger,
+	[PersistentState("userNotification", OrleansConstants.GrainMemoryStorage)]
+	IPersistentState<UserNotificationState> state
+) : AppGrain<UserNotificationState>(logger, state), IUserNotificationGrain
 {
-	private HubContext<IUserNotificationHub> _hubContext;
-
-	public UserNotificationGrain(ILogger<UserNotificationGrain> logger) : base(logger)
-	{
-	}
+	private HubContext<IUserNotificationHub>? _hubContext;
 
 	public override async Task OnActivateAsync(CancellationToken cancellationToken)
 	{
@@ -20,19 +18,16 @@ public sealed class UserNotificationGrain : AppGrain<UserNotificationState>, IUs
 		var hubUser = _hubContext.User(PrimaryKey);
 
 		// Only initialize state when truly new (not previously persisted)
-		if (State.UserNotification == null)
-			await Set(new UserNotification { MessageCount = 0 });
+		if (State.UserNotification is null)
+			await Set(new() { MessageCount = 0 });
 
 		this.RegisterGrainTimer(async _ =>
 		{
-			State.UserNotification.MessageCount = RandomUtils.GenerateNumber(1, 100);
-			await Set(State.UserNotification);
+			var updated = new UserNotification { MessageCount = RandomUtils.GenerateNumber(1, 100) };
+			await Set(updated);
 
-			await hubUser.Send("Broadcast", new UserNotification
-			{
-				MessageCount = State.UserNotification.MessageCount
-			});
-		}, State, new GrainTimerCreationOptions { DueTime = TimeSpan.FromSeconds(2), Period = TimeSpan.FromSeconds(3), Interleave = true });
+			await hubUser.Send("Broadcast", updated);
+		}, State, new() { DueTime = TimeSpan.FromSeconds(2), Period = TimeSpan.FromSeconds(3), Interleave = true });
 	}
 
 	public async Task Set(UserNotification item)
@@ -42,5 +37,5 @@ public sealed class UserNotificationGrain : AppGrain<UserNotificationState>, IUs
 		await WriteStateAsync();
 	}
 
-	public Task<UserNotification> Get() => Task.FromResult(State.UserNotification);
+	public Task<UserNotification?> Get() => Task.FromResult(State.UserNotification);
 }

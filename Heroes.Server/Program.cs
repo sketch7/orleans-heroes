@@ -55,13 +55,13 @@ builder.Services.ConfigureHttpJsonOptions(opts =>
 builder.Host.UseOrleans((ctx, silo) =>
 {
 	silo
-		.AddMemoryStreams(OrleansConstants.STREAM_PROVIDER)
+		.AddMemoryStreams(OrleansConstants.StreamProvider)
 		.AddMemoryGrainStorage("PubSubStore")
-		.UseAppConfiguration(new AppSiloBuilderContext
+		.UseAppConfiguration(new()
 		{
 			AppInfo = appInfo,
 			HostBuilderContext = ctx,
-			SiloOptions = new AppSiloOptions
+			SiloOptions = new()
 			{
 				SiloPort = GetAvailablePort(11111, 12000),
 				GatewayPort = GetAvailablePort(30000, 31000),
@@ -132,11 +132,13 @@ builder.Services.AddOpenApi(opts =>
 			return Task.CompletedTask;
 
 		foreach (var param in operation.Parameters.OfType<OpenApiParameter>().Where(p => p.Name == "tenant"))
+		{
 			param.Examples = new Dictionary<string, IOpenApiExample>
 			{
 				["lol"] = new OpenApiExample { Value = JsonNode.Parse("\"lol\"") },
 				["hots"] = new OpenApiExample { Value = JsonNode.Parse("\"hots\"") },
 			};
+		}
 
 		return Task.CompletedTask;
 	});
@@ -148,10 +150,12 @@ builder.Services.AddOpenApi(opts =>
 			return Task.CompletedTask;
 
 		foreach (var param in operation.Parameters.OfType<OpenApiParameter>().Where(p => p.Name == "id"))
+		{
 			param.Examples = new Dictionary<string, IOpenApiExample>
 			{
 				["default"] = new OpenApiExample { Value = JsonNode.Parse("\"rengar\"") }
 			};
+		}
 
 		return Task.CompletedTask;
 	});
@@ -169,7 +173,7 @@ app.MapGet("/ping", () => Results.Ok("pong")).ExcludeFromDescription();
 app.UseGraphQLGraphiQL("/ui/graphql", new()
 {
 	GraphQLEndPoint = "/graphql",
-	Headers = new Dictionary<string, string>
+	Headers = new()
 	{
 		["X-Tenant"] = "lol",
 	},
@@ -233,4 +237,4 @@ static int GetAvailablePort(int start, int end)
 }
 
 // Required for WebApplicationFactory<Program> from external test assemblies
-public partial class Program { }
+public partial class Program;

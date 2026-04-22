@@ -1,24 +1,25 @@
+using Orleans.Concurrency;
+
 namespace Heroes.Server.HeroStat;
 
+[Alias("IHeroStatsGrain")]
 public interface IHeroStatsGrain : IGrainWithStringKey, IAppGrainContract
 {
-	Task<HeroStats> Get();
-	Task Set(HeroStats hero);
+	[AlwaysInterleave]
+	[return: Immutable]
+	Task<HeroStats?> Get();
+	Task Set([Immutable] HeroStats hero);
 }
 
-[GenerateSerializer, DebuggerDisplay("{DebuggerDisplay,nq}")]
-public class HeroStats
+[GenerateSerializer]
+public sealed record HeroStats
 {
-	protected string DebuggerDisplay => $"HeroId: '{HeroId}', WinRate: {WinRate}, BanRate: {BanRate}, TotalGames: {TotalGames}";
-
 	[Id(0)]
-	public string HeroId { get; set; }
+	public required string HeroId { get; init; }
 	[Id(1)]
-	public decimal WinRate { get; set; }
+	public decimal WinRate { get; init; }
 	[Id(2)]
-	public decimal BanRate { get; set; }
+	public decimal BanRate { get; init; }
 	[Id(3)]
-	public int TotalGames { get; set; }
-
-	public override string ToString() => DebuggerDisplay;
+	public int TotalGames { get; init; }
 }

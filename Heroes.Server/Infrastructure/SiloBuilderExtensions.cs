@@ -11,7 +11,7 @@ public enum StorageProviderType
 }
 
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
-public class AppSiloOptions
+public sealed class AppSiloOptions
 {
 	private string DebuggerDisplay => $"GatewayPort: '{GatewayPort}', SiloPort: '{SiloPort}'";
 
@@ -20,7 +20,7 @@ public class AppSiloOptions
 	public StorageProviderType? StorageProviderType { get; set; }
 }
 
-public class AppSiloBuilderContext
+public sealed record AppSiloBuilderContext
 {
 	public required HostBuilderContext HostBuilderContext { get; init; }
 	public required IAppInfo AppInfo { get; init; }
@@ -31,85 +31,88 @@ public static class SiloBuilderExtensions
 {
 	private static StorageProviderType _defaultProviderType;
 
-	public static ISiloBuilder UseAppConfiguration(this ISiloBuilder siloHost, AppSiloBuilderContext context)
+	extension(ISiloBuilder siloHost)
 	{
-		_defaultProviderType = context.SiloOptions.StorageProviderType ?? StorageProviderType.Memory;
+		public ISiloBuilder UseAppConfiguration(AppSiloBuilderContext context)
+		{
+			_defaultProviderType = context.SiloOptions.StorageProviderType ?? StorageProviderType.Memory;
 
-		var appInfo = context.AppInfo;
-		siloHost
-			.AddMemoryGrainStorage(OrleansConstants.GrainMemoryStorage)
-			.UseStorage(OrleansConstants.GrainPersistenceStorage, context.AppInfo)
-			.UseStorage(OrleansConstants.PubSubStore, context.AppInfo)
-			.Configure<ClusterOptions>(options =>
+			var appInfo = context.AppInfo;
+			siloHost
+				.AddMemoryGrainStorage(OrleansConstants.GrainMemoryStorage)
+				.UseStorage(OrleansConstants.GrainPersistenceStorage, context.AppInfo)
+				.UseStorage(OrleansConstants.PubSubStore, context.AppInfo)
+				.Configure<ClusterOptions>(options =>
+				{
+					options.ClusterId = appInfo.ClusterId;
+					options.ServiceId = appInfo.Name;
+				});
+
+			if (context.HostBuilderContext.HostingEnvironment.IsDevelopment())
 			{
-				options.ClusterId = appInfo.ClusterId;
-				options.ServiceId = appInfo.Name;
-			});
-
-		if (context.HostBuilderContext.HostingEnvironment.IsDevelopment())
-		{
-			siloHost.UseDevelopment(context);
-			siloHost.UseDevelopmentClustering(context);
-		}
-		// if (appInfo.IsDockerized)
-		// 	siloHost.UseDockerSwarm(context);
-		else
-		{
-			// Production clustering would go here
-			siloHost.UseDevelopmentClustering(context);
-		}
-
-		return siloHost;
-	}
-
-	private static ISiloBuilder UseDevelopment(this ISiloBuilder siloHost, AppSiloBuilderContext context)
-	{
-		siloHost
-			.ConfigureServices(services =>
+				siloHost.UseDevelopment(context);
+				siloHost.UseDevelopmentClustering(context);
+			}
+			// if (appInfo.IsDockerized)
+			// 	siloHost.UseDockerSwarm(context);
+			else
 			{
-				//services.Configure<GrainCollectionOptions>(options => { options.CollectionAge = TimeSpan.FromMinutes(1.5); });
-			});
-		//.Configure<ClusterMembershipOptions>(options => options.ExpectedClusterSize = 1);
+				// Production clustering would go here
+				siloHost.UseDevelopmentClustering(context);
+			}
 
-		return siloHost;
-	}
-
-	private static ISiloBuilder UseDevelopmentClustering(this ISiloBuilder siloHost, AppSiloBuilderContext context)
-	{
-		var siloAddress = IPAddress.Loopback;
-		var siloPort = context.SiloOptions.SiloPort;
-		var gatewayPort = context.SiloOptions.GatewayPort;
-
-		return siloHost
-				.UseLocalhostClustering(siloPort: siloPort, gatewayPort: gatewayPort)
-			//.UseDevelopmentClustering(options => options.PrimarySiloEndpoint = new IPEndPoint(siloAddress, siloPort))
-			//.ConfigureEndpoints(siloAddress, siloPort, gatewayPort) //, listenOnAnyHostAddress: true)
-			;
-	}
-
-	public static ISiloBuilder UseStorage(this ISiloBuilder siloBuilder, string storeProviderName, IAppInfo appInfo, StorageProviderType? storageProvider = null, string? storeName = null)
-	{
-		storeName = string.IsNullOrEmpty(storeName) ? storeProviderName : storeName;
-		storageProvider ??= _defaultProviderType;
-
-		switch (storageProvider)
-		{
-			case StorageProviderType.Memory:
-				siloBuilder.AddMemoryGrainStorage(storeProviderName);
-				break;
-			case StorageProviderType.Redis:
-				throw new NotSupportedException("Redis storage is not configured in this build. Add a Redis persistence package compatible with the current Orleans version.");
-			// siloBuilder
-			// 	.AddRedisGrainStorage(storeProviderName)
-			// 	.Build(builder =>
-			// 		builder.Configure(ConfigureRedisOptions(storeName, appInfo))
-			// 	);
-			// break;
-			default:
-				throw new ArgumentOutOfRangeException(nameof(storageProvider), $"Storage provider '{storageProvider}' is not supported.");
+			return siloHost;
 		}
 
-		return siloBuilder;
+		private ISiloBuilder UseDevelopment(AppSiloBuilderContext context)
+		{
+			siloHost
+				.ConfigureServices(services =>
+				{
+					//services.Configure<GrainCollectionOptions>(options => { options.CollectionAge = TimeSpan.FromMinutes(1.5); });
+				});
+			//.Configure<ClusterMembershipOptions>(options => options.ExpectedClusterSize = 1);
+
+			return siloHost;
+		}
+
+		private ISiloBuilder UseDevelopmentClustering(AppSiloBuilderContext context)
+		{
+			var siloAddress = IPAddress.Loopback;
+			var siloPort = context.SiloOptions.SiloPort;
+			var gatewayPort = context.SiloOptions.GatewayPort;
+
+			return siloHost
+					.UseLocalhostClustering(siloPort: siloPort, gatewayPort: gatewayPort)
+				//.UseDevelopmentClustering(options => options.PrimarySiloEndpoint = new IPEndPoint(siloAddress, siloPort))
+				//.ConfigureEndpoints(siloAddress, siloPort, gatewayPort) //, listenOnAnyHostAddress: true)
+				;
+		}
+
+		public ISiloBuilder UseStorage(string storeProviderName, IAppInfo appInfo, StorageProviderType? storageProvider = null, string? storeName = null)
+		{
+			storeName = string.IsNullOrEmpty(storeName) ? storeProviderName : storeName;
+			storageProvider ??= _defaultProviderType;
+
+			switch (storageProvider)
+			{
+				case StorageProviderType.Memory:
+					siloHost.AddMemoryGrainStorage(storeProviderName);
+					break;
+				case StorageProviderType.Redis:
+					throw new NotSupportedException("Redis storage is not configured in this build. Add a Redis persistence package compatible with the current Orleans version.");
+				// siloBuilder
+				// 	.AddRedisGrainStorage(storeProviderName)
+				// 	.Build(builder =>
+				// 		builder.Configure(ConfigureRedisOptions(storeName, appInfo))
+				// 	);
+				// break;
+				default:
+					throw new ArgumentOutOfRangeException(nameof(storageProvider), $"Storage provider '{storageProvider}' is not supported.");
+			}
+
+			return siloHost;
+		}
 	}
 
 	//private static Action<RedisStorageOptions> ConfigureRedisOptions(
@@ -126,21 +129,4 @@ public static class SiloBuilderExtensions
 	//		config.HumanReadableSerialization = true;
 	//	};
 	//}
-
-	// // todo: remove
-	// private static ISiloBuilder UseDockerSwarm(this ISiloBuilder siloHost, AppSiloBuilderContext context)
-	// {
-	// 	var siloPort = context.SiloOptions.SiloPort;
-	//
-	// 	var ips = Dns.GetHostAddresses(Dns.GetHostName());
-	// 	var defaultIpV4 = ips.First(x => x.AddressFamily == AddressFamily.InterNetwork);
-	//
-	// 	return siloHost
-	// 		.ConfigureEndpoints(
-	// 			defaultIpV4,
-	// 			siloPort,
-	// 			context.SiloOptions.GatewayPort,
-	// 			listenOnAnyHostAddress: true
-	// 		);
-	// }
 }

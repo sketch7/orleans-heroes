@@ -1,15 +1,13 @@
-using Orleans.Providers;
-
 namespace Heroes.Server.HeroStat;
 
 // Stats seed data (LoL heroes only)
-file static class StatsData
+static file class StatsData
 {
 	public static readonly List<HeroStats> All =
 	[
-		new HeroStats { HeroId = "rengar", BanRate = 20.75M, WinRate = 50.2M, TotalGames = 60 },
-		new HeroStats { HeroId = "kha-zix", BanRate = 32M, WinRate = 60.2M, TotalGames = 75 },
-		new HeroStats { HeroId = "singed", BanRate = 10M, WinRate = 75.2M, TotalGames = 100 },
+		new() { HeroId = "rengar", BanRate = 20.75M, WinRate = 50.2M, TotalGames = 60 },
+		new() { HeroId = "kha-zix", BanRate = 32M, WinRate = 60.2M, TotalGames = 75 },
+		new() { HeroId = "singed", BanRate = 10M, WinRate = 75.2M, TotalGames = 100 },
 	];
 }
 
@@ -17,13 +15,16 @@ file static class StatsData
 public sealed class HeroStatsState
 {
 	[Id(0)]
-	public HeroStats HeroStats { get; set; }
+	public HeroStats? HeroStats { get; set; }
 }
 
-[StorageProvider(ProviderName = OrleansConstants.GrainMemoryStorage)]
 public sealed class HeroStatGrain : AppGrain<HeroStatsState>, IHeroStatsGrain
 {
-	public HeroStatGrain(ILogger<HeroStatGrain> logger) : base(logger)
+	public HeroStatGrain(
+		ILogger<HeroStatGrain> logger,
+		[PersistentState("heroStats", OrleansConstants.GrainMemoryStorage)]
+		IPersistentState<HeroStatsState> state
+	) : base(logger, state)
 	{
 	}
 
@@ -31,11 +32,11 @@ public sealed class HeroStatGrain : AppGrain<HeroStatsState>, IHeroStatsGrain
 	{
 		await base.OnActivateAsync(cancellationToken);
 
-		if (State.HeroStats == null)
+		if (State.HeroStats is null)
 			State.HeroStats = StatsData.All.SingleOrDefault(x => x.HeroId == PrimaryKey);
 	}
 
-	public Task<HeroStats> Get()
+	public Task<HeroStats?> Get()
 		=> Task.FromResult(State.HeroStats);
 
 	public Task Set(HeroStats hero)
