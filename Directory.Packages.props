@@ -11,10 +11,10 @@
 
     <!-- vendors -->
     <OrleansVersion>10.1.0</OrleansVersion>
-    <!-- <SignalROrleansVersion>link</SignalROrleansVersion> -->
     <SignalROrleansVersion>8.0.0</SignalROrleansVersion>
-    <!-- <MultitenancyVersion>1.0.0</MultitenancyVersion> -->
-    <MultitenancyVersion>link</MultitenancyVersion>
+    <!-- <SignalROrleansVersion>link</SignalROrleansVersion> -->
+    <MultitenancyVersion>1.0.0-rc.2</MultitenancyVersion>
+    <!-- <MultitenancyVersion>link</MultitenancyVersion> -->
   </PropertyGroup>
 
   <ItemGroup>
