@@ -4,7 +4,7 @@ using Sketch7.Multitenancy.AspNet;
 
 namespace Heroes.Server.Tenancy;
 
-/// <summary>Resolves the current tenant from the <c>{tenant}</c> route segment.</summary>
+/// <summary>Resolves the current tenant from the <c>{tenant}</c> route segment or the <c>X-Tenant</c> header.</summary>
 public sealed class AppTenantHttpResolver : ITenantHttpResolver<AppTenant>
 {
 	private readonly ITenantRegistry<AppTenant> _registry;
@@ -16,7 +16,11 @@ public sealed class AppTenantHttpResolver : ITenantHttpResolver<AppTenant>
 
 	public ValueTask<AppTenant?> Resolve(HttpContext httpContext)
 	{
-		var tenantKey = httpContext.GetRouteValue("tenant") as string;
+		// REST routes supply the tenant via the {tenant} route segment;
+		// GraphQL and other non-routed callers pass it in the X-Tenant header.
+		var tenantKey = httpContext.GetRouteValue("tenant") as string
+			?? httpContext.Request.Headers["X-Tenant"].FirstOrDefault();
+
 		if (string.IsNullOrEmpty(tenantKey))
 			return ValueTask.FromResult<AppTenant?>(null);
 

@@ -123,7 +123,15 @@ builder.Services.AddGraphQL(gql => gql
 	// .AddExecutionStrategySelector<DefaultExecutionStrategySelector>()
 	.AddSchema<AppSchema>()
 	.AddGraphTypes()
-	.AddUserContextBuilder(httpContext => new GraphQLUserContext { User = httpContext.User })
+	.AddUserContextBuilder(httpContext => new GraphQLUserContext
+	{
+		User = httpContext.User,
+		// Capture grain clients from the HTTP request scope where the tenant accessor is already set
+		// by the multitenancy middleware. Avoids the scope isolation issue with GraphQL.NET's
+		// internal execution scope.
+		HeroGrainClient = httpContext.RequestServices.GetRequiredService<IHeroGrainClient>(),
+		HeroCategoryGrainClient = httpContext.RequestServices.GetRequiredService<IHeroCategoryGrainClient>(),
+	})
 );
 builder.Services.AddOpenApi();
 
@@ -136,7 +144,6 @@ app.UseCors("TempCorsPolicy");
 // always returns 200 regardless of the {tenant} route param.
 app.MapGet("/ping", () => Results.Ok("pong")).ExcludeFromDescription();
 
-app.UseGraphQL("/graphql");
 app.UseGraphQLPlayground("/", new()
 {
 	GraphQLEndPoint = "/graphql",
@@ -147,12 +154,14 @@ if (app.Environment.IsDevelopment())
 	app.UseDeveloperExceptionPage();
 
 app.UseRouting();
-// Apply multitenancy middleware only to /api/ routes — SignalR hubs and other
-// endpoints don't have a {tenant} route param and must not be blocked.
+// Apply multitenancy middleware to /api/ routes and /graphql — SignalR hubs
+// and other endpoints don't carry a tenant identifier.
 app.UseWhen(
-	ctx => ctx.Request.Path.StartsWithSegments("/api"),
+	ctx => ctx.Request.Path.StartsWithSegments("/api")
+		  || ctx.Request.Path.StartsWithSegments("/graphql"),
 	branch => branch.UseMultitenancy<AppTenant>()
 );
+
 app.UseAuthorization();
 
 // Hubs
@@ -165,6 +174,9 @@ app.MapGet("/api/{tenant}/heroes", (string tenant, IHeroGrainClient client) => c
 
 app.MapGet("/api/{tenant}/heroes/{id}", (string tenant, string id, IHeroGrainClient client) => client.Get(id))
 	.WithTags("Heroes");
+
+// GraphQL endpoint — tenant resolved from the X-Tenant request header
+app.MapGraphQL("/graphql");
 
 // OpenAPI + Scalar
 app.MapOpenApi();

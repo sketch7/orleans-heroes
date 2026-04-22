@@ -1,13 +1,12 @@
 ﻿using Heroes.Contracts.HeroCategories;
 using Heroes.Contracts.Heroes;
+using Heroes.Server.Gql.Core;
 
 namespace Heroes.Server.Gql.Types;
 
 public class HeroCategoryGraphType : ObjectGraphType<HeroCategory>
 {
-	public HeroCategoryGraphType(
-		IHeroGrainClient heroGrainClient
-	)
+	public HeroCategoryGraphType()
 	{
 		Name = "HeroCategory";
 		Description = "A Hero category grouping.";
@@ -16,7 +15,11 @@ public class HeroCategoryGraphType : ObjectGraphType<HeroCategory>
 		Field(x => x.Title).Description("Hero Category title.");
 
 		Field<ListGraphType<HeroGraphType>, List<Hero>?>("heroes")
-			.ResolveAsync(async ctx => await heroGrainClient.GetAllByRefs(ctx.Source.Heroes))
+			.ResolveAsync(async ctx =>
+			{
+				var client = ((GraphQLUserContext)ctx.UserContext).HeroGrainClient;
+				return await client.GetAllByRefs(ctx.Source.Heroes);
+			})
 			.Description("Heroes in category")
 			;
 	}

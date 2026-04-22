@@ -11,24 +11,28 @@ public sealed class HeroesGqlTests(HeroesWebApplicationFactory factory)
 
 	private readonly HttpClient _client = factory.CreateHttpClient();
 
-	[Fact(Skip = "GraphQL is currently broken — will be fixed in a separate step")]
+	[Fact(Timeout = 30_000)]
 	public async Task QueryHeroes_ReturnsHeroesList()
 	{
 		// Arrange
 		var query = new { query = "{ heroes { id name role } }" };
-		var body = new StringContent(
-			JsonSerializer.Serialize(query),
-			Encoding.UTF8,
-			"application/json");
+		var request = new HttpRequestMessage(HttpMethod.Post, GqlEndpoint)
+		{
+			Content = new StringContent(
+				JsonSerializer.Serialize(query),
+				Encoding.UTF8,
+				"application/json"),
+		};
+		request.Headers.Add("X-Tenant", "lol");
 
 		// Act
-		var response = await _client.PostAsync(GqlEndpoint, body, TestContext.Current.CancellationToken);
+		var response = await _client.SendAsync(request, TestContext.Current.CancellationToken);
 
 		// Assert
-		response.StatusCode.ShouldBe(HttpStatusCode.OK);
+		var responseBody = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+		response.StatusCode.ShouldBe(HttpStatusCode.OK, $"Response body: {responseBody}");
 
-		var json = await response.Content.ReadFromJsonAsync<JsonDocument>(
-			TestContext.Current.CancellationToken);
+		var json = JsonDocument.Parse(responseBody);
 
 		json.ShouldNotBeNull();
 		var heroes = json.RootElement
