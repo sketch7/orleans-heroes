@@ -1,5 +1,8 @@
 <Solution>
 	<Folder Name="/external-libs/">
+		<Project Path="../Sketch7.dotnet.multitenancy/src/Sketch7.Multitenancy.AspNet/Sketch7.Multitenancy.AspNet.csproj" />
+		<Project Path="../Sketch7.dotnet.multitenancy/src/Sketch7.Multitenancy.Orleans/Sketch7.Multitenancy.Orleans.csproj" />
+		<Project Path="../Sketch7.dotnet.multitenancy/src/Sketch7.Multitenancy/Sketch7.Multitenancy.csproj" />
 		<Project Path="../Sketch7.SignalR.Orleans/src/SignalR.Orleans.AspNet/SignalR.Orleans.AspNet.csproj" />
 		<Project Path="../Sketch7.SignalR.Orleans/src/SignalR.Orleans/SignalR.Orleans.csproj" />
 	</Folder>

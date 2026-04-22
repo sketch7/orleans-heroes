@@ -4,7 +4,8 @@ using Heroes.Core.Orleans;
 using Heroes.Grains.Heroes;
 using Microsoft.Extensions.Logging;
 using Orleans.Providers;
-using System.Diagnostics;
+using Sketch7.Multitenancy;
+using Sketch7.Multitenancy.Orleans;
 
 namespace Heroes.Grains.HeroCategories;
 
@@ -15,22 +16,13 @@ public class HeroCategoryState
 	public HeroCategory Entity { get; set; }
 }
 
-[DebuggerDisplay("{DebuggerDisplay,nq}")]
-public struct HeroCategoryKeyData
-{
-	private string DebuggerDisplay => $"Tenant: '{Tenant}', Id: '{Id}'";
-
-	public static string Template = "tenant/{tenant}/{id}";
-
-	public string Tenant { get; set; }
-	public string Id { get; set; }
-}
-
 [StorageProvider(ProviderName = OrleansConstants.GrainMemoryStorage)]
-public class HeroCategoryGrain : AppGrain<HeroCategoryState>, IHeroCategoryGrain
+public class HeroCategoryGrain : AppGrain<HeroCategoryState>, IHeroCategoryGrain, IWithTenantAccessor<AppTenant>
 {
+	public TenantAccessor<AppTenant> TenantAccessor { get; set; } = new();
+
 	private readonly IHeroDataClient _heroDataClient;
-	private HeroCategoryKeyData _keyData;
+	private TenantGrainKey _keyData;
 
 	public HeroCategoryGrain(
 		ILogger<HeroGrain> logger,
@@ -43,14 +35,11 @@ public class HeroCategoryGrain : AppGrain<HeroCategoryState>, IHeroCategoryGrain
 	public override async Task OnActivateAsync(CancellationToken cancellationToken)
 	{
 		await base.OnActivateAsync(cancellationToken);
-		_keyData = this.ParseKey<HeroCategoryKeyData>(HeroCategoryKeyData.Template);
-
-		// Set tenant in RequestContext for tenant-aware services
-		Orleans.Runtime.RequestContext.Set("tenant", _keyData.Tenant);
+		_keyData = TenantGrainKey.Parse(PrimaryKey);
 
 		if (State.Entity == null)
 		{
-			var entity = await _heroDataClient.GetHeroCategoryByKey(_keyData.Id);
+			var entity = await _heroDataClient.GetHeroCategoryByKey(_keyData.GrainKey);
 
 			if (entity == null)
 				return;

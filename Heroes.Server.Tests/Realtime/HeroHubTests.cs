@@ -11,7 +11,7 @@ public sealed class HeroHubTests(HeroesWebApplicationFactory factory)
 
 	// ---- connect ----
 
-	[Fact]
+	[Fact(Timeout = 30_000)]
 	public async Task Connect_WithAnonymousUser_Succeeds()
 	{
 		// Arrange
@@ -27,7 +27,7 @@ public sealed class HeroHubTests(HeroesWebApplicationFactory factory)
 		await connection.StopAsync(TestContext.Current.CancellationToken);
 	}
 
-	[Fact]
+	[Fact(Timeout = 30_000)]
 	public async Task Connect_WithAuthenticatedUser_Succeeds()
 	{
 		// Arrange
@@ -46,7 +46,7 @@ public sealed class HeroHubTests(HeroesWebApplicationFactory factory)
 
 	// ---- Send event (FE: send$()) ----
 
-	[Fact]
+	[Fact(Timeout = 30_000)]
 	public async Task OnConnect_Send_BroadcastsJoinedMessage()
 	{
 		// Arrange
@@ -67,7 +67,7 @@ public sealed class HeroHubTests(HeroesWebApplicationFactory factory)
 
 	// ---- AddToGroup (FE: addToGroup$()) ----
 
-	[Fact]
+	[Fact(Timeout = 30_000)]
 	public async Task AddToGroup_WhenInvoked_DoesNotThrow()
 	{
 		// Arrange
@@ -84,7 +84,7 @@ public sealed class HeroHubTests(HeroesWebApplicationFactory factory)
 
 	// ---- AddToGroups (FE: addToGroups$()) ----
 
-	[Fact]
+	[Fact(Timeout = 30_000)]
 	public async Task AddToGroups_WhenInvoked_DoesNotThrow()
 	{
 		// Arrange

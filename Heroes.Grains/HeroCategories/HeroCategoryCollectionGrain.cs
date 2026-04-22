@@ -1,8 +1,10 @@
-﻿﻿using Heroes.Contracts;
+﻿using Heroes.Contracts;
 using Heroes.Contracts.HeroCategories;
 using Heroes.Core.Orleans;
 using Microsoft.Extensions.Logging;
 using Orleans.Providers;
+using Sketch7.Multitenancy;
+using Sketch7.Multitenancy.Orleans;
 
 namespace Heroes.Grains.HeroCategories;
 
@@ -14,10 +16,11 @@ public class HeroCategoryCollectionState
 }
 
 [StorageProvider(ProviderName = OrleansConstants.GrainMemoryStorage)]
-public class HeroCategoryCollectionGrain : AppGrain<HeroCategoryCollectionState>, IHeroCategoryCollectionGrain
+public class HeroCategoryCollectionGrain : AppGrain<HeroCategoryCollectionState>, IHeroCategoryCollectionGrain, IWithTenantAccessor<AppTenant>
 {
+	public TenantAccessor<AppTenant> TenantAccessor { get; set; } = new();
+
 	private readonly IHeroDataClient _heroDataClient;
-	private TenantKeyData _keyData;
 
 	public HeroCategoryCollectionGrain(
 		ILogger<HeroCategoryCollectionGrain> logger,
@@ -30,11 +33,6 @@ public class HeroCategoryCollectionGrain : AppGrain<HeroCategoryCollectionState>
 	public override async Task OnActivateAsync(CancellationToken cancellationToken)
 	{
 		await base.OnActivateAsync(cancellationToken);
-
-		_keyData = this.ParseKey<TenantKeyData>(TenantKeyData.Template);
-
-		// Set tenant in RequestContext for tenant-aware services
-		Orleans.Runtime.RequestContext.Set("tenant", _keyData.Tenant);
 
 		if (State.HeroCategoryKeys == null)
 			await FetchFromRemote();

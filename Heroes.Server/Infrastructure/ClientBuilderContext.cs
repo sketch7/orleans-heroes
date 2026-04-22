@@ -1,5 +1,3 @@
-﻿using Orleans;
-
 namespace Heroes.Server.Infrastructure;
 
 public class ClientBuilderContext

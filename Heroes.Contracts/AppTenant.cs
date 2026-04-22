@@ -1,12 +1,12 @@
-using Heroes.Core.Tenancy;
+using Sketch7.Multitenancy;
 
 namespace Heroes.Contracts;
 
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
-public class AppTenant : ITenant
+public record AppTenant : ITenant
 {
 	private string DebuggerDisplay => $"Key: '{Key}', Name: '{Name}'";
 
-	public string Key { get; set; }
-	public string Name { get; set; }
+	public required string Key { get; init; }
+	public required string Name { get; init; }
 }

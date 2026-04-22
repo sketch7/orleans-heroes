@@ -1,10 +1,13 @@
+using Heroes.Server;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Orleans.Configuration;
+using Orleans.Runtime;
 
 namespace Heroes.Server.Tests.Infrastructure;
 
@@ -13,7 +16,11 @@ namespace Heroes.Server.Tests.Infrastructure;
 /// in-memory Orleans silo. Expensive to create — share it via
 /// <see cref="IntegrationCollection"/> so Orleans starts once per test run.
 /// </summary>
-public sealed class HeroesWebApplicationFactory : WebApplicationFactory<Program>
+/// <remarks>
+/// Implements <see cref="IAsyncLifetime"/> so xUnit v3 calls <see cref="InitializeAsync"/>
+/// before any test timeout window opens, giving the Orleans silo time to fully start.
+/// </remarks>
+public sealed class HeroesWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
 	protected override void ConfigureWebHost(IWebHostBuilder builder)
 	{
@@ -44,6 +51,12 @@ public sealed class HeroesWebApplicationFactory : WebApplicationFactory<Program>
 				opts.NumMissedProbesLimit = 1;
 				opts.TableRefreshTimeout = TimeSpan.FromSeconds(2);
 			});
+
+			// Remove ALL IStartupTask registrations — grains activate lazily in tests.
+			// Using RemoveAll<IStartupTask>() is the only reliable approach because
+			// AddStartupTask<T>() may register via a factory lambda (ImplementationType = null),
+			// making targeted removal by ImplementationType unreliable.
+			services.RemoveAll<IStartupTask>();
 		});
 	}
 
@@ -55,6 +68,7 @@ public sealed class HeroesWebApplicationFactory : WebApplicationFactory<Program>
 	public HttpClient CreateHttpClient(string? tokenKey = null)
 	{
 		var client = CreateClient();
+		client.Timeout = TimeSpan.FromSeconds(30);
 		if (!string.IsNullOrEmpty(tokenKey))
 			client.DefaultRequestHeaders.Add("token", tokenKey);
 		return client;
@@ -79,22 +93,46 @@ public sealed class HeroesWebApplicationFactory : WebApplicationFactory<Program>
 		return builder.Build();
 	}
 
-	// ---- Shutdown guard ----
-	// The Orleans silo's membership protocol can hang the process for ~11 minutes
-	// during teardown.  We schedule a forced exit before handing off to the base
-	// disposal, covering both the async path (called by xUnit v3 via IAsyncDisposable)
-	// and the sync path (Dispose(bool) called via IDisposable).
+	// ---- IAsyncLifetime ----
+	// InitializeAsync runs before any test timeout window opens, so the Orleans silo has
+	// time to fully start. Without this, the first test's 30-second timeout fires while
+	// the silo is still booting.
 
-	public override ValueTask DisposeAsync()
+	async ValueTask IAsyncLifetime.InitializeAsync()
 	{
-		ScheduleShutdownTimeout();
-		return base.DisposeAsync();
+		// Boot the host before any test timeout window opens.
+		// Use /ping (registered before multitenancy middleware) so tenant resolution
+		// never blocks this warmup request.
+		try
+		{
+			using var warmup = CreateClient();
+			warmup.Timeout = TimeSpan.FromSeconds(120);
+			await warmup.GetAsync("/ping", CancellationToken.None);
+		}
+		catch
+		{
+			// Ignore errors — we only need the host to have booted.
+		}
 	}
 
-	protected override void Dispose(bool disposing)
+	// ---- Shutdown guard ----
+	/// <summary>
+	/// Caps the overall disposal at 10 s to prevent the test process from hanging when Orleans
+	/// stream agents or SignalR.Orleans grains block shutdown (they retry for up to minutes on
+	/// graceful deactivation). After the cap, the silo threads become effectively orphaned but
+	/// are all daemon-ish — the test runner process exits normally.
+	/// </summary>
+	public override async ValueTask DisposeAsync()
 	{
-		ScheduleShutdownTimeout();
-		base.Dispose(disposing);
+		using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+		try
+		{
+			await base.DisposeAsync().AsTask().WaitAsync(cts.Token);
+		}
+		catch (OperationCanceledException)
+		{
+			// Orleans/SignalR grain deactivation exceeded the cap — proceed without blocking.
+		}
 	}
 
 	/// <summary>

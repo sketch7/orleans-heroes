@@ -1,6 +1,4 @@
-﻿﻿using Heroes.Contracts;
-using Orleans;
-using Orleans.Runtime;
+using Heroes.Contracts;
 
 namespace Heroes.Server;
 
@@ -20,25 +18,29 @@ public class WarmupStartupTask : IStartupTask
 
 	public async Task Execute(CancellationToken cancellationToken)
 	{
+		using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+		using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeout.Token);
+		var ct = linked.Token;
+
 		foreach (var tenant in _appTenantRegistry.GetAll())
 		{
-			if (cancellationToken.IsCancellationRequested)
+			if (ct.IsCancellationRequested)
 				break;
 
 			try
 			{
 				var grain = _grainFactory.GetHeroCollectionGrain(tenant.Key);
-				await grain.Activate();
+				await grain.Activate().WaitAsync(ct);
 
-				var heroes = await grain.GetAll();
+				var heroes = await grain.GetAll().WaitAsync(ct);
 				foreach (var heroKey in heroes)
 				{
-					if (cancellationToken.IsCancellationRequested)
+					if (ct.IsCancellationRequested)
 						break;
 
 					try
 					{
-						await _grainFactory.GetHeroGrain(tenant.Key, heroKey).Activate();
+						await _grainFactory.GetHeroGrain(tenant.Key, heroKey).Activate().WaitAsync(ct);
 					}
 					catch (Exception ex)
 					{

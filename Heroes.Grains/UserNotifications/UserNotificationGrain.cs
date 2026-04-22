@@ -1,12 +1,9 @@
-﻿using Heroes.Contracts;
+using Heroes.Contracts;
 using Heroes.Contracts.UserNotifications;
 using Heroes.Core.Orleans;
 using Heroes.Core.Utils;
 using Microsoft.Extensions.Logging;
-using Orleans;
 using Orleans.Providers;
-using Orleans.Runtime;
-
 using SignalR.Orleans.Core;
 
 namespace Heroes.Grains.UserNotifications;

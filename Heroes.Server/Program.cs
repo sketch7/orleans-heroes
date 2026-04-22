@@ -1,16 +1,30 @@
+using GraphQL;
+using GraphQL.Server.Ui.GraphiQL;
 using Heroes.Contracts;
+using Heroes.Contracts.HeroCategories;
 using Heroes.Contracts.Heroes;
-using Heroes.GrainClients;
+using Heroes.Contracts.Stats;
+using Heroes.GrainClients.HeroCategories;
+using Heroes.GrainClients.Heroes;
+using Heroes.GrainClients.Statistics;
+using Heroes.Grains;
 using Heroes.Server;
 using Heroes.Server.Gql;
+using Heroes.Server.Gql.Core;
 using Heroes.Server.Infrastructure;
 using Heroes.Server.Realtime;
 using Heroes.Server.Sample;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Scalar.AspNetCore;
+using Heroes.Server.Tenancy;
+using Microsoft.AspNetCore.OpenApi;
+using Microsoft.OpenApi;
 using Serilog;
+using Sketch7.Multitenancy;
+using Sketch7.Multitenancy.AspNet;
+using Sketch7.Multitenancy.Orleans;
+using Scalar.AspNetCore;
 using System.Net.Sockets;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,14 +47,31 @@ builder.Host.UseSerilog((ctx, loggerConfig) =>
 
 // Core services
 builder.Services.AddSingleton<IAppInfo>(appInfo);
-builder.Services.AddSingleton<IAppTenantRegistry, AppTenantRegistry>();
+
+var tenantRegistry = new AppTenantRegistry();
+builder.Services
+	.AddMultitenancy<AppTenant>(opts => opts
+		.WithRegistry<IAppTenantRegistry>(tenantRegistry)
+		.WithHttpResolver<AppTenant, AppTenantHttpResolver>()
+		.WithServices(tsb => tsb
+			.For("lol", s => s.AddSingleton<IHeroDataClient, MockLoLHeroDataClient>())
+			.For("hots", s => s.AddSingleton<IHeroDataClient, MockHotsHeroDataClient>())
+		)
+	);
+
 builder.Services.Configure<ConsoleLifetimeOptions>(options => options.SuppressStatusMessages = true);
+
+// Global JSON options for minimal API endpoints — camelCase properties + string enums
+builder.Services.ConfigureHttpJsonOptions(opts =>
+{
+	opts.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+	opts.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+});
 
 // Orleans
 builder.Host.UseOrleans((ctx, silo) =>
 {
 	silo
-		.ConfigureServices(services => services.AddAppGrains())
 		.AddMemoryStreams(OrleansConstants.STREAM_PROVIDER)
 		.AddMemoryGrainStorage("PubSubStore")
 		.UseAppConfiguration(new AppSiloBuilderContext
@@ -50,11 +81,12 @@ builder.Host.UseOrleans((ctx, silo) =>
 			SiloOptions = new AppSiloOptions
 			{
 				SiloPort = GetAvailablePort(11111, 12000),
-				GatewayPort = 30001,
+				GatewayPort = GetAvailablePort(30000, 31000),
 			}
 		})
 		.AddIncomingGrainCallFilter<LoggingIncomingCallFilter>()
 		.AddStartupTask<WarmupStartupTask>()
+		.UseMultitenancy<AppTenant>()
 		.UseSignalR(cfg =>
 		{
 			cfg.Configure((siloBuilder, signalrBuilderConfig) =>
@@ -63,7 +95,12 @@ builder.Host.UseOrleans((ctx, silo) =>
 });
 
 // Web services
-builder.Services.AddSingleton<IHeroService, HeroService>();
+builder.Services
+	.AddSingleton<IHeroService, HeroService>()
+	.AddSingleton<IHeroStatsGrainClient, HeroStatsGrainClient>()
+	.AddScoped<IHeroCategoryGrainClient, HeroCategoryGrainClient>()
+	.AddScoped<IHeroGrainClient, HeroGrainClient>()
+;
 builder.Services.AddCustomAuthentication();
 builder.Services.AddSignalR()
 	.AddJsonProtocol(opts =>
@@ -82,28 +119,89 @@ builder.Services.AddCors(o => o.AddPolicy("TempCorsPolicy", policy =>
 		.AllowCredentials();
 }));
 
-builder.Services.Configure<KestrelServerOptions>(options => options.AllowSynchronousIO = true);
+builder.Services.AddGraphQL(gql => gql
+	.AddSystemTextJson(options =>
+	{
+		options.AllowTrailingCommas = true;
+		options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+		options.ReadCommentHandling = JsonCommentHandling.Skip;
+		options.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+	})
+	.AddDataLoader()
+	// .AddExecutionStrategySelector<DefaultExecutionStrategySelector>()
+	.AddSchema<AppSchema>()
+	.AddGraphTypes()
+	.AddUserContextBuilder(httpContext => new GraphQLUserContext
+	{
+		User = httpContext.User,
+		// Capture grain clients from the HTTP request scope where the tenant accessor is already set
+		// by the multitenancy middleware. Avoids the scope isolation issue with GraphQL.NET's
+		// internal execution scope.
+		HeroGrainClient = httpContext.RequestServices.GetRequiredService<IHeroGrainClient>(),
+		HeroCategoryGrainClient = httpContext.RequestServices.GetRequiredService<IHeroCategoryGrainClient>(),
+	})
+);
+builder.Services.AddOpenApi(opts =>
+{
+	// Pre-fill the {tenant} path parameter in Scalar with a sensible default.
+	opts.AddOperationTransformer((operation, _, _) =>
+	{
+		if (operation.Parameters is null)
+			return Task.CompletedTask;
 
-builder.Services.AddAppClients();
-builder.Services.AddAppGraphQL();
-builder.Services.AddOpenApi();
+		foreach (var param in operation.Parameters.OfType<OpenApiParameter>().Where(p => p.Name == "tenant"))
+			param.Examples = new Dictionary<string, IOpenApiExample>
+			{
+				["lol"] = new OpenApiExample { Value = JsonNode.Parse("\"lol\"") },
+				["hots"] = new OpenApiExample { Value = JsonNode.Parse("\"hots\"") },
+			};
+
+		return Task.CompletedTask;
+	});
+
+	// Pre-fill the {id} parameter for the heroes-by-id endpoint.
+	opts.AddOperationTransformer((operation, context, _) =>
+	{
+		if (operation.Parameters is null || context.Description.RelativePath?.Contains("heroes/{id}") != true)
+			return Task.CompletedTask;
+
+		foreach (var param in operation.Parameters.OfType<OpenApiParameter>().Where(p => p.Name == "id"))
+			param.Examples = new Dictionary<string, IOpenApiExample> { ["default"] = new OpenApiExample { Value = JsonNode.Parse("\"rengar\"") } };
+
+		return Task.CompletedTask;
+	});
+});
 
 var app = builder.Build();
 
 // Middleware pipeline
 app.UseCors("TempCorsPolicy");
 
-app.UseGraphQL("/graphql");
-app.UseGraphQLPlayground("/", new()
+// Lightweight health probe — registered BEFORE multitenancy middleware so it
+// always returns 200 regardless of the {tenant} route param.
+app.MapGet("/ping", () => Results.Ok("pong")).ExcludeFromDescription();
+
+app.UseGraphQLGraphiQL("/ui/graphql", new()
 {
 	GraphQLEndPoint = "/graphql",
-	SubscriptionsEndPoint = "/graphql",
+	Headers = new Dictionary<string, string>
+	{
+		["X-Tenant"] = "lol",
+	},
 });
 
 if (app.Environment.IsDevelopment())
 	app.UseDeveloperExceptionPage();
 
 app.UseRouting();
+// Apply multitenancy middleware to /api/ routes and /graphql — SignalR hubs
+// and other endpoints don't carry a tenant identifier.
+app.UseWhen(
+	ctx => ctx.Request.Path.StartsWithSegments("/api")
+		  || ctx.Request.Path.StartsWithSegments("/graphql"),
+	branch => branch.UseMultitenancy<AppTenant>()
+);
+
 app.UseAuthorization();
 
 // Hubs
@@ -111,11 +209,14 @@ app.MapHub<HeroHub>("/real-time/hero");
 app.MapHub<UserNotificationHub>("/userNotifications");
 
 // Heroes REST endpoints
-app.MapGet("/api/heroes", (IHeroGrainClient client) => client.GetAll())
+app.MapGet("/api/{tenant}/heroes", (string tenant, IHeroGrainClient client) => client.GetAll())
 	.WithTags("Heroes");
 
-app.MapGet("/api/heroes/{id}", (string id, IHeroGrainClient client) => client.Get(id))
+app.MapGet("/api/{tenant}/heroes/{id}", (string tenant, string id, IHeroGrainClient client) => client.Get(id))
 	.WithTags("Heroes");
+
+// GraphQL endpoint — tenant resolved from the X-Tenant request header
+app.MapGraphQL("/graphql");
 
 // OpenAPI + Scalar
 app.MapOpenApi();

@@ -6,6 +6,6 @@ public class AppSchema : Schema
 		: base(provider)
 	{
 		Query = provider.GetRequiredService<AppGraphQuery>();
-		Mutation = provider.GetRequiredService<AppGraphSubscription>();
+		Subscription = provider.GetRequiredService<AppGraphSubscription>();
 	}
 }

@@ -1,10 +1,7 @@
-﻿using Heroes.Contracts;
+using Heroes.Contracts;
 using Orleans.Configuration;
-using Orleans.Hosting;
-using Orleans.Persistence.Redis.Config;
 using System.Diagnostics;
 using System.Net;
-using System.Net.Sockets;
 using HostBuilderContext = Microsoft.Extensions.Hosting.HostBuilderContext;
 
 namespace Heroes.Server.Infrastructure;
@@ -103,12 +100,13 @@ public static class SiloBuilderExtensions
 				siloBuilder.AddMemoryGrainStorage(storeProviderName);
 				break;
 			case StorageProviderType.Redis:
-				siloBuilder
-					.AddRedisGrainStorage(storeProviderName)
-					.Build(builder =>
-						builder.Configure(ConfigureRedisOptions(storeName, appInfo))
-					);
-				break;
+				throw new NotSupportedException("Redis storage is not configured in this build. Add a Redis persistence package compatible with the current Orleans version.");
+			// siloBuilder
+			// 	.AddRedisGrainStorage(storeProviderName)
+			// 	.Build(builder =>
+			// 		builder.Configure(ConfigureRedisOptions(storeName, appInfo))
+			// 	);
+			// break;
 			default:
 				throw new ArgumentOutOfRangeException(nameof(storageProvider), $"Storage provider '{storageProvider}' is not supported.");
 		}
@@ -116,20 +114,20 @@ public static class SiloBuilderExtensions
 		return siloBuilder;
 	}
 
-	private static Action<RedisStorageOptions> ConfigureRedisOptions(
-		string tableType,
-		IAppInfo appInfo
-	)
-	{
-		// todo: make configurable
-		return config =>
-		{
-			config.Servers = new[] { "localhost" };
-			config.ClientName = appInfo.ClusterId;
-			config.KeyPrefix = $"{appInfo.ShortName}-{tableType}";
-			config.HumanReadableSerialization = true;
-		};
-	}
+	//private static Action<RedisStorageOptions> ConfigureRedisOptions(
+	//	string tableType,
+	//	IAppInfo appInfo
+	//)
+	//{
+	//	// todo: make configurable
+	//	return config =>
+	//	{
+	//		config.Servers = new[] { "localhost" };
+	//		config.ClientName = appInfo.ClusterId;
+	//		config.KeyPrefix = $"{appInfo.ShortName}-{tableType}";
+	//		config.HumanReadableSerialization = true;
+	//	};
+	//}
 
 	// // todo: remove
 	// private static ISiloBuilder UseDockerSwarm(this ISiloBuilder siloHost, AppSiloBuilderContext context)
