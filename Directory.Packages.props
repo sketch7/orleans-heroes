@@ -11,7 +11,7 @@
 
     <!-- vendors -->
     <OrleansVersion>10.1.0</OrleansVersion>
-    <SignalROrleansVersion>8.0.0</SignalROrleansVersion>
+    <SignalROrleansVersion>9.0.0-rc.1</SignalROrleansVersion>
     <!-- <SignalROrleansVersion>link</SignalROrleansVersion> -->
     <MultitenancyVersion>1.0.0-rc.2</MultitenancyVersion>
     <!-- <MultitenancyVersion>link</MultitenancyVersion> -->

@@ -52,7 +52,11 @@ public sealed class HeroHubTests(HeroesWebApplicationFactory factory)
 		// Arrange
 		var tcs = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
 		await using var connection = factory.CreateHubConnection(HubPath);
-		connection.On<string>("Send", msg => tcs.TrySetResult(msg));
+		connection.On<string>("Send", msg =>
+		{
+			if (msg.EndsWith(" joined", StringComparison.OrdinalIgnoreCase))
+				tcs.TrySetResult(msg);
+		});
 
 		// Act
 		await connection.StartAsync(TestContext.Current.CancellationToken);
