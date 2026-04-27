@@ -132,12 +132,4 @@ public sealed class HeroesWebApplicationFactory : WebApplicationFactory<Program>
 			// Orleans/SignalR grain deactivation exceeded the cap — proceed without blocking.
 		}
 	}
-
-	/// <summary>
-	/// Schedules <see cref="Environment.Exit"/> after 30 seconds on a thread-pool thread.
-	/// If the process exits normally before the delay completes the scheduled action is moot.
-	/// </summary>
-	private static void ScheduleShutdownTimeout() =>
-		_ = Task.Delay(TimeSpan.FromSeconds(30))
-			.ContinueWith(_ => Environment.Exit(0), TaskScheduler.Default);
 }
