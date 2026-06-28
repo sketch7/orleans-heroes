@@ -9,7 +9,7 @@
     <MicrosoftAspnetCoreVersion>10.0.9</MicrosoftAspnetCoreVersion>
 
     <!-- vendors -->
-    <OrleansVersion>10.2.0</OrleansVersion>
+    <OrleansVersion>10.2.1</OrleansVersion>
     <SignalROrleansVersion>link</SignalROrleansVersion>
     <NewtonsoftJsonVersion>13.0.4</NewtonsoftJsonVersion>
     <GraceVersion>8.0.0-stla.2</GraceVersion>

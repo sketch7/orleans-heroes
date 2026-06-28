@@ -230,6 +230,9 @@ tmp/
 **/*/wwwroot/index.html
 _artifact
 
+# Angular build output
+**/dist/
+
 # System Files
 .DS_Store
 Thumbs.db
