@@ -1,5 +1,4 @@
-﻿﻿using Grace.DependencyInjection;
-using Heroes.GrainClients;
+﻿﻿using Heroes.GrainClients;
 using Heroes.Server.Gql;
 using Heroes.Server.Infrastructure;
 using Heroes.Server.Realtime;
@@ -22,11 +21,6 @@ public class ApiStartup
 	{
 		_configuration = configuration;
 		_appInfo = appInfo;
-	}
-
-	public void ConfigureContainer(IInjectionScope scope)
-	{
-
 	}
 
 	// This method gets called by the runtime. Use this method to add services to the container.

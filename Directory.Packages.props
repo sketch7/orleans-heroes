@@ -12,8 +12,6 @@
     <OrleansVersion>10.2.1</OrleansVersion>
     <SignalROrleansVersion>link</SignalROrleansVersion>
     <NewtonsoftJsonVersion>13.0.4</NewtonsoftJsonVersion>
-    <GraceVersion>8.0.0-stla.2</GraceVersion>
-    <GraceAspNetCoreHostingVersion>8.0.0-stla.2</GraceAspNetCoreHostingVersion>
     <GraphQLVersion>7.5.0</GraphQLVersion>
   </PropertyGroup>
 
@@ -41,11 +39,6 @@
     <!-- ASP.NET Core packages -->
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(MicrosoftAspnetCoreVersion)" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(MicrosoftAspnetCoreVersion)" />
-
-    <!-- Grace DI packages -->
-    <PackageVersion Include="Grace" Version="$(GraceVersion)" />
-    <PackageVersion Include="Grace.AspNetCore.Hosting" Version="$(GraceAspNetCoreHostingVersion)" />
-    <PackageVersion Include="Grace.DependencyInjection.Extensions" Version="$(GraceAspNetCoreHostingVersion)" />
 
     <!-- GraphQL packages -->
     <PackageVersion Include="GraphQL.Server.All" Version="$(GraphQLVersion)" />

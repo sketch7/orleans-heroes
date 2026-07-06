@@ -5,9 +5,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Grace" />
-    <PackageReference Include="Grace.AspNetCore.Hosting" />
-    <PackageReference Include="Grace.DependencyInjection.Extensions" />
     <PackageReference Include="GraphQL.Server.All" />
     <PackageReference Include="GraphQL.DataLoader" />
     <PackageReference Include="GraphQL.NewtonsoftJson" />
